@@ -972,10 +972,32 @@ const ContactSection = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [0, 1, 1]);
 
   const [formData, setFormData] = useState({ name: '', email: '', projectType: '', message: '' });
+  // Novo estado para controlar o botão (idle, loading, success, error)
+  const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Obrigado! Entraremos em contacto em breve.');
+    setFormStatus('loading');
+
+    const form = e.target as HTMLFormElement;
+    const data = new FormData(form);
+
+    try {
+      await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(data as any).toString(),
+      });
+      
+      setFormStatus('success');
+      setFormData({ name: '', email: '', projectType: '', message: '' }); // Limpa o formulário
+      
+      // Volta ao estado normal após 5 segundos
+      setTimeout(() => setFormStatus('idle'), 5000);
+    } catch (error) {
+      setFormStatus('error');
+      setTimeout(() => setFormStatus('idle'), 5000);
+    }
   };
 
   return (
@@ -1073,7 +1095,16 @@ const ContactSection = () => {
           </TransitionReveal>
 
           <TransitionReveal direction="right">
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form 
+              name="contacto" 
+              method="POST" 
+              data-netlify="true" 
+              onSubmit={handleSubmit} 
+              className="space-y-5"
+            >
+              {/* Input escondido exigido pelo Netlify */}
+              <input type="hidden" name="form-name" value="contacto" />
+
               {[
                 { id: 'name', label: 'Nome *', type: 'text', placeholder: 'O teu nome' },
                 { id: 'email', label: 'Email *', type: 'email', placeholder: 'email@exemplo.com' }
@@ -1088,6 +1119,7 @@ const ContactSection = () => {
                   <input
                     type={field.type}
                     id={field.id}
+                    name={field.id} // <-- MUITO IMPORTANTE!
                     required
                     value={formData[field.id as keyof typeof formData]}
                     onChange={e =>
@@ -1108,6 +1140,7 @@ const ContactSection = () => {
                 </label>
                 <select
                   id="projectType"
+                  name="projectType" // <-- MUITO IMPORTANTE!
                   value={formData.projectType}
                   onChange={e => setFormData({ ...formData, projectType: e.target.value })}
                   className="w-full px-4 py-3 bg-white border-2 border-black/10 rounded-2xl text-black focus:outline-none focus:border-tomo-blue focus:ring-2 focus:ring-tomo-blue/20 transition-all"
@@ -1129,6 +1162,7 @@ const ContactSection = () => {
                 </label>
                 <textarea
                   id="message"
+                  name="message" // <-- MUITO IMPORTANTE!
                   required
                   rows={4}
                   value={formData.message}
@@ -1142,13 +1176,20 @@ const ContactSection = () => {
 
               <motion.button
                 type="submit"
-                className="w-full px-8 py-4 bg-gradient-to-r from-tomo-blue to-tomo-pink text-white font-medium text-sm rounded-full hover:shadow-lg transition-all"
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
+                disabled={formStatus === 'loading'}
+                className={`w-full px-8 py-4 text-white font-medium text-sm rounded-full transition-all ${
+                  formStatus === 'success' ? 'bg-green-500' : 
+                  formStatus === 'error' ? 'bg-red-500' :
+                  'bg-gradient-to-r from-tomo-blue to-tomo-pink hover:shadow-lg'
+                }`}
+                whileHover={formStatus === 'idle' ? { scale: 1.02, y: -2 } : {}}
+                whileTap={formStatus === 'idle' ? { scale: 0.98 } : {}}
               >
                 <span className="flex items-center justify-center gap-3">
-                  Enviar mensagem
-                  <Send size={16} />
+                  {formStatus === 'idle' && <>Enviar mensagem <Send size={16} /></>}
+                  {formStatus === 'loading' && 'A enviar...'}
+                  {formStatus === 'success' && 'Mensagem enviada com sucesso!'}
+                  {formStatus === 'error' && 'Erro ao enviar. Tenta de novo.'}
                 </span>
               </motion.button>
             </form>
