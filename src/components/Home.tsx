@@ -1032,7 +1032,7 @@ const ContactSection = () => {
                   {
                     icon: Mail,
                     title: 'Email',
-                    info: 'ola@tomostudio.pt',
+                    info: 'tomostudiocontacto@gmail.com',
                     sub: '(em breve)',
                     color: 'pink'
                   },
@@ -1214,7 +1214,7 @@ const Footer = () => {
             </h4>
             <ul className="space-y-3 text-sm text-white/60">
               <li>Viseu, Portugal</li>
-              <li>ola@tomostudio.pt</li>
+              <li>tomostudiocontacto@gmail.com</li>
             </ul>
           </div>
         </div>
