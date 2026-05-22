@@ -8,6 +8,8 @@ import { ArrowLeft, ArrowUpRight, Sparkles, Filter } from 'lucide-react';
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation'; 
+
+// IMPORTS DAS IMAGENS DO LOGOFÓLIO
 import imgAvellon from '../assets/thumbs/avellon.png';
 import imgForma from '../assets/thumbs/forma.png';
 import imgBloomly from '../assets/thumbs/bloomly.png';
@@ -16,6 +18,16 @@ import imgOrbital from '../assets/thumbs/orbitalspace.png';
 import imgKaya from '../assets/thumbs/kaya.png';
 import imgStacked from '../assets/thumbs/stacked.png';
 import imgArco from '../assets/thumbs/arco.png';
+
+// IMPORTS DAS IMAGENS DOS PROJETOS PRINCIPAIS
+import imgPoliempreende from '../assets/thumbs/poliempreende.png';
+import imgAveimedica from '../assets/thumbs/aveimedica.png';
+import imgIdipv from '../assets/thumbs/idipv.png';
+import imgSobfoco from '../assets/thumbs/sobfoco.png';
+import imgJazz from '../assets/thumbs/jazz.png';
+import imgTomostudio from '../assets/thumbs/tomostudio.png';
+import imgPuppyyoga from '../assets/thumbs/puppyyoga.png';
+
 // ============================================
 // TYPES
 // ============================================
@@ -47,7 +59,7 @@ const projects: Project[] = [
     color: 'blue',
     description: 'Identidade visual completa para o concurso nacional de empreendedorismo.',
     featured: true,
-    image: '/src/assets/thumbs/poliempreende.png',
+    image: imgPoliempreende,
     path: '/poliempreende' 
   },
   {
@@ -60,7 +72,7 @@ const projects: Project[] = [
     color: 'pink',
     description: 'Renovação estratégica da identidade para centro médico.',
     featured: true,
-    image: '/src/assets/thumbs/aveimedica.png',
+    image: imgAveimedica,
     path: '/aveimedica' 
   },
   {
@@ -72,7 +84,7 @@ const projects: Project[] = [
     tags: ['Branding', 'Social Media', 'Photography'],
     color: 'blue',
     description: 'Sistema visual completo para instituto.',
-    image: '/src/assets/thumbs/idipv.png',
+    image: imgIdipv,
     path: '/idipv' 
   },
   {
@@ -84,7 +96,7 @@ const projects: Project[] = [
     tags: ['Website', 'UI/UX', 'Digital'],
     color: 'blue',
     description: 'Design e desenvolvimento de website corporativo.',
-    image: '/src/assets/thumbs/sobfoco.png', 
+    image: imgSobfoco, 
     path: 'https://sobfoco.com' 
   },
   {
@@ -96,7 +108,7 @@ const projects: Project[] = [
     tags: ['Branding', 'Wayfinding', 'Print'],
     color: 'pink',
     description: 'Um festival de cor e ritmo em Oxford Street.',
-    image: '/src/assets/thumbs/jazz.png',
+    image: imgJazz,
     path: '/jazz'
   },
   {
@@ -108,7 +120,7 @@ const projects: Project[] = [
     tags: ['Identidade Visual', 'Sistema de Marca', 'Brandbook', 'Digital'],
     color: 'blue',
     description: 'O nosso próprio branding e brandbook completo, demonstrando o sistema de marca e diretrizes.',
-    image: '/src/assets/thumbs/tomostudio.png',
+    image: imgTomostudio,
     path: '/tomostudio' 
   },
   {
@@ -120,7 +132,7 @@ const projects: Project[] = [
     tags: ['Website', 'UI/UX', 'Digital'],
     color: 'pink',
     description: 'Design e desenvolvimento de plataforma digital intuitiva e envolvente para sessões de Puppy Yoga.',
-    image: '/src/assets/thumbs/puppyyoga.png', 
+    image: imgPuppyyoga, 
     path: 'https://puppyyoga.netlify.app/' 
   },
 ];
