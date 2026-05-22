@@ -8,7 +8,14 @@ import { ArrowLeft, ArrowUpRight, Sparkles, Filter } from 'lucide-react';
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation'; 
-
+import imgAvellon from '../assets/thumbs/avellon.png';
+import imgForma from '../assets/thumbs/forma.png';
+import imgBloomly from '../assets/thumbs/bloomly.png';
+import imgNorthfox from '../assets/thumbs/northfox.png';
+import imgOrbital from '../assets/thumbs/orbitalspace.png';
+import imgKaya from '../assets/thumbs/kaya.png';
+import imgStacked from '../assets/thumbs/stacked.png';
+import imgArco from '../assets/thumbs/arco.png';
 // ============================================
 // TYPES
 // ============================================
@@ -122,14 +129,14 @@ const projects: Project[] = [
 // LOGOFOLIO DATA
 // ============================================
 const logofolio = [
-  { id: 1, client: 'Avellon', img: '/src/assets/thumbs/avellon.png' },
-  { id: 2, client: 'forma', img: '/src/assets/thumbs/forma.png' },
-  { id: 3, client: 'bloomly', img: '/src/assets/thumbs/bloomly.png' },
-  { id: 4, client: 'Northfox', img: '/src/assets/thumbs/northfox.png' },
-  { id: 5, client: 'Orbital Space', img: '/src/assets/thumbs/orbitalspace.png' },
-  { id: 6, client: 'kaya', img: '/src/assets/thumbs/kaya.png' },
-  { id: 7, client: 'Stacked Sandwich Club', img: '/src/assets/thumbs/stacked.png' },
-  { id: 8, client: 'arco', img: '/src/assets/thumbs/arco.png' },
+  { id: 1, client: 'Avellon', img: imgAvellon },
+  { id: 2, client: 'forma', img: imgForma },
+  { id: 3, client: 'bloomly', img: imgBloomly },
+  { id: 4, client: 'Northfox', img: imgNorthfox },
+  { id: 5, client: 'Orbital Space', img: imgOrbital },
+  { id: 6, client: 'kaya', img: imgKaya },
+  { id: 7, client: 'Stacked Sandwich Club', img: imgStacked },
+  { id: 8, client: 'arco', img: imgArco },
 ];
 
 // ============================================
