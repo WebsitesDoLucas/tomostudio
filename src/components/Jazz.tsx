@@ -16,7 +16,7 @@ import { Navigation } from './Navigation';
 // ============================================
 import billboardImg from '../assets/jazz/billboard.png';
 import billboard2Img from '../assets/jazz/billboard2.png';
-import blhcImg from '../assets/jazz/BLHC0954.jpg'; // Usado como Logo/Elemento Gráfico
+import blhcImg from '../assets/jazz/BLHC0954.JPG'; // Usado como Logo/Elemento Gráfico
 import keychainImg from '../assets/jazz/Keychain Mockup.png';
 import lanyardImg from '../assets/jazz/Lanyard ID badge mockup.png';
 import postersImg from '../assets/jazz/Posters.png';
