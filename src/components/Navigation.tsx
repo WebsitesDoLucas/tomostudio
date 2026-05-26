@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-import logo from '../assets/Logo.svg';
+import logo from '../assets/Logo.webp';
 import { Link } from 'react-router-dom';
 
 const navItems = [
   { name: 'Trabalhos', href: '/trabalhos' }, 
   { name: 'Serviços', href: '/#servicos' },
-  { name: 'Processo', href: '/progresso' }, // <-- Adicionado o link para a página de processo
+  { name: 'Processo', href: '/Processo' }, // <-- Adicionado o link para a página de processo
   { name: 'Sobre', href: '/#sobre' }
   // Contacto foi removido daqui pois o botão "Vamos Falar" já faz essa função
 ];

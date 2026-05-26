@@ -10,23 +10,23 @@ import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation'; 
 
 // IMPORTS DAS IMAGENS DO LOGOFÓLIO
-import imgAvellon from '../assets/thumbs/avellon.png';
-import imgForma from '../assets/thumbs/forma.png';
-import imgBloomly from '../assets/thumbs/bloomly.png';
-import imgNorthfox from '../assets/thumbs/northfox.png';
-import imgOrbital from '../assets/thumbs/orbitalspace.png';
-import imgKaya from '../assets/thumbs/kaya.png';
-import imgStacked from '../assets/thumbs/stacked.png';
-import imgArco from '../assets/thumbs/arco.png';
+import imgAvellon from '../assets/thumbs/avellon.webp';
+import imgForma from '../assets/thumbs/forma.webp';
+import imgBloomly from '../assets/thumbs/bloomly.webp';
+import imgNorthfox from '../assets/thumbs/northfox.webp';
+import imgOrbital from '../assets/thumbs/orbitalspace.webp';
+import imgKaya from '../assets/thumbs/kaya.webp';
+import imgStacked from '../assets/thumbs/stacked.webp';
+import imgArco from '../assets/thumbs/arco.webp';
 
 // IMPORTS DAS IMAGENS DOS PROJETOS PRINCIPAIS
-import imgPoliempreende from '../assets/thumbs/poliempreende.png';
-import imgAveimedica from '../assets/thumbs/aveimedica.png';
-import imgIdipv from '../assets/thumbs/idipv.png';
-import imgSobfoco from '../assets/thumbs/sobfoco.png';
-import imgJazz from '../assets/thumbs/jazz.png';
-import imgTomostudio from '../assets/thumbs/tomostudio.png';
-import imgPuppyyoga from '../assets/thumbs/puppyyoga.png';
+import imgPoliempreende from '../assets/thumbs/poliempreende.webp';
+import imgAveimedica from '../assets/thumbs/aveimedica.webp';
+import imgIdipv from '../assets/thumbs/idipv.webp';
+import imgSobfoco from '../assets/thumbs/sobfoco.webp';
+import imgJazz from '../assets/thumbs/jazz.webp';
+import imgTomostudio from '../assets/thumbs/tomostudio.webp';
+import imgPuppyyoga from '../assets/thumbs/puppyyoga.webp';
 
 // ============================================
 // TYPES
@@ -46,7 +46,7 @@ interface Project {
 }
 
 // ============================================
-// MOCK DATA 
+// MOCK DATA (Tags corrigidas e limpas)
 // ============================================
 const projects: Project[] = [
   {
@@ -54,8 +54,8 @@ const projects: Project[] = [
     title: 'PoliEmpreende',
     client: 'Instituto Politécnico de Viseu',
     year: '2024',
-    category: 'Branding & Identidade',
-    tags: ['Identidade Visual', 'Sistema de Marca', 'Evento'],
+    category: 'Rebrand',
+    tags: ['Rebrand', 'Social Media'],
     color: 'blue',
     description: 'Identidade visual completa para o concurso nacional de empreendedorismo.',
     featured: true,
@@ -67,8 +67,8 @@ const projects: Project[] = [
     title: 'AveiMédica',
     client: 'Centro Médico',
     year: '2024',
-    category: 'Rebrand Corporativo',
-    tags: ['Rebrand', 'Healthcare', 'Digital'],
+    category: 'Rebrand',
+    tags: ['Rebrand', 'Social Media'],
     color: 'pink',
     description: 'Renovação estratégica da identidade para centro médico.',
     featured: true,
@@ -80,8 +80,8 @@ const projects: Project[] = [
     title: 'IDIPV',
     client: 'IDIPV',
     year: '2024',
-    category: 'Branding & Redes Sociais',
-    tags: ['Branding', 'Social Media', 'Photography'],
+    category: 'Social Media',
+    tags: ['Branding', 'Social Media'],
     color: 'blue',
     description: 'Sistema visual completo para instituto.',
     image: imgIdipv,
@@ -92,8 +92,8 @@ const projects: Project[] = [
     title: 'Sobfoco',
     client: 'Sobfoco',
     year: '2024',
-    category: 'Web Design & Development',
-    tags: ['Website', 'UI/UX', 'Digital'],
+    category: 'Website',
+    tags: ['Website', 'UI/UX'],
     color: 'blue',
     description: 'Design e desenvolvimento de website corporativo.',
     image: imgSobfoco, 
@@ -104,8 +104,8 @@ const projects: Project[] = [
     title: 'Concerto Jazz',
     client: 'Concerto Jazz',
     year: '2023',
-    category: 'Event Branding',
-    tags: ['Branding', 'Wayfinding', 'Print'],
+    category: 'Branding',
+    tags: ['Branding', 'Identidade Visual'],
     color: 'pink',
     description: 'Um festival de cor e ritmo em Oxford Street.',
     image: imgJazz,
@@ -116,8 +116,8 @@ const projects: Project[] = [
     title: 'TomoStudio',
     client: 'tomostudio',
     year: '2024',
-    category: 'Branding & Brandbook',
-    tags: ['Identidade Visual', 'Sistema de Marca', 'Brandbook', 'Digital'],
+    category: 'Branding',
+    tags: ['Branding', 'Identidade Visual'],
     color: 'blue',
     description: 'O nosso próprio branding e brandbook completo, demonstrando o sistema de marca e diretrizes.',
     image: imgTomostudio,
@@ -128,8 +128,8 @@ const projects: Project[] = [
     title: 'Puppy Yoga',
     client: 'Puppy Yoga',
     year: '2026',
-    category: 'Web Design & Development',
-    tags: ['Website', 'UI/UX', 'Digital'],
+    category: 'Website',
+    tags: ['Website', 'UI/UX'],
     color: 'pink',
     description: 'Design e desenvolvimento de plataforma digital intuitiva e envolvente para sessões de Puppy Yoga.',
     image: imgPuppyyoga, 
@@ -209,7 +209,6 @@ const FloatingImagePreview = ({ project, mousePosition }: { project: Project | n
             delay: 0.05
           }}
         >
-          
           <motion.div 
             className="relative aspect-[4/3] bg-white rounded-2xl mb-6 p-8 flex items-center justify-center shadow-sm overflow-hidden"
           >
@@ -230,7 +229,6 @@ const FloatingImagePreview = ({ project, mousePosition }: { project: Project | n
                 target.style.display = 'none';
               }}
             />
-            
             <div className={`absolute inset-0 rounded-2xl ${
               project.color === 'blue'
                 ? 'shadow-inner shadow-tomo-blue/10'
@@ -512,7 +510,6 @@ const FilterBar = ({ activeFilter, setActiveFilter }: FilterBarProps) => {
 const HeroSection = () => {
   return (
     <section className="relative pt-40 pb-20 flex flex-col items-center text-center">
-      {/* Camada de fundo com máscara de Fade-Out (desvanecimento) */}
       <div 
         className="absolute inset-0 pointer-events-none z-0"
         style={{
@@ -522,7 +519,6 @@ const HeroSection = () => {
       >
         <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
         
-        {/* Auras de cor centradas */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="absolute w-[45vw] h-[45vw] max-w-[600px] max-h-[600px] bg-tomo-blue/15 rounded-full blur-[120px] -translate-x-1/4 -translate-y-12" />
           <div className="absolute w-[40vw] h-[40vw] max-w-[500px] max-h-[500px] bg-tomo-pink/15 rounded-full blur-[120px] translate-x-1/4 -translate-y-12" />
@@ -552,7 +548,7 @@ const HeroSection = () => {
             O nosso trabalho<span className="text-tomo-blue">.</span>
           </h1>
           <p className="text-lg md:text-xl text-black/60 leading-relaxed max-w-2xl mx-auto">
-            Uma seleção cuidadosa de marcas construídas com estratégia, propósito e design intencional.
+            Onde a estratégia ganha forma
           </p>
         </motion.div>
       </div>
@@ -573,10 +569,10 @@ const LogofolioSection = () => {
     >
       <div className="text-center mb-12">
         <h3 className="text-3xl lg:text-4xl font-bold text-black mb-4 tracking-tight">
-          Mais marcas que ganharam vida
+          Galeria de identidades
         </h3>
         <p className="text-black/50">
-          Uma seleção rápida de outras identidades visuais criadas por nós.
+          Uma amostra de outros sistemas visuais criados por nós para dar vida a novas ideias.
         </p>
       </div>
 
@@ -629,7 +625,7 @@ export const Trabalhos = () => {
     return () => window.removeEventListener('mousemove', updateMousePosition);
   }, []);
 
-  // Lógica de Filtragem
+  // Lógica de Filtragem Corrigida
   const filteredProjects = projects.filter(project => {
     if (activeFilter === 'Todos') return true;
     

@@ -28,11 +28,11 @@ import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation';
 
 // Importações de Imagens
-import fotocasal from '../assets/fotocasal.jpg';
-import LogoCompleto from '../assets/LogoCompleto.svg';
-import logoPng from '../assets/logo.png';
-import poliempreendeImg from '../assets/poliempreende/Billboard.jpg';
-import AveimédicaImg from '../assets/aveimedica/FACHADA1.png';
+import fotocasal from '../assets/fotocasal.webp';
+import LogoCompleto from '../assets/LogoCompleto.webp';
+import logowebp from '../assets/Logo.webp'; // <-- Dá-lhe o nome logoPng aqui!
+import poliempreendeImg from '../assets/poliempreende/Billboard.webp';
+import AveimédicaImg from '../assets/aveimedica/FACHADA1.webp';
 
 // ============================================
 // UTILS: MAGNETIC COMPONENT
@@ -375,7 +375,7 @@ const HeroSection = () => {
            <div className="absolute bottom-[10%] right-[10%] w-[50vw] h-[50vw] rounded-full blur-[100px] opacity-10 bg-[#020224]" />
         </motion.div>
         
-        <div className="absolute inset-0 opacity-[0.35] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+        <div className="absolute inset-0 opacity-[0.35] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.webp')]" />
 
         <div className="relative z-10 flex flex-col items-center text-center">
           <motion.div 
@@ -418,7 +418,7 @@ const HeroSection = () => {
                  className="relative w-[10vw] h-[10vw] md:w-[7vw] md:h-[7vw] lg:w-[6vw] lg:h-[6vw] mb-[2vw] perspective-1000"
                >
                  <motion.img 
-                   src={logoPng} 
+                   src={logowebp} 
                    alt="Tomo Logo" 
                    initial={{ scale: 0, rotate: -90, opacity: 0 }}
                    animate={showContent ? { scale: 1, rotate: 0, opacity: 1 } : {}}
@@ -499,7 +499,7 @@ const ServicesSection = () => {
       number: '02',
       title: 'UI/UX Design',
       description: 'Interfaces digitais focadas em experiência do utilizador e conversão.',
-      features: ['Websites responsivos', 'Prototipagem', 'Design systems', 'User research'],
+      features: ['Websites responsivos', 'Prototipagem', 'Design de interfaces', 'Estrutura UX'],
       color: 'pink'
     },
     {
@@ -522,10 +522,10 @@ const ServicesSection = () => {
               </span>
             </div>
             <h2 className="text-5xl lg:text-6xl font-bold text-black mb-4 tracking-tight">
-              Serviços que elevam
+              Serviços que geram impacto
             </h2>
             <p className="text-lg lg:text-xl text-black/60 max-w-2xl mx-auto">
-              Transformamos marcas através de design estratégico e intencional
+              Transformamos marcas com propósito
             </p>
           </div>
         </TransitionReveal>
@@ -856,7 +856,7 @@ const ProcessJourney = () => {
         </div>
 
         <TransitionReveal>
-          <Link to="/progresso">
+          <Link to="/Processo">
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -1055,41 +1055,46 @@ const ContactSection = () => {
                     icon: Mail,
                     title: 'Email',
                     info: 'tomostudiocontacto@gmail.com',
-                    sub: '(em breve)',
+
                     color: 'pink'
                   },
-                  {
-                    icon: Instagram,
-                    title: 'Instagram',
-                    info: '@tomo.studio',
-                    sub: '(em breve)',
-                    color: 'blue'
-                  }
+{
+  icon: Instagram,
+  title: 'Instagram',
+  info: '@tomostudio.pt',
+  color: 'blue',
+  // Garante que o link tem o https completo
+  href: 'https://www.instagram.com/tomostudio.pt' 
+}
                 ].map(item => (
-                  <motion.div
-                    key={item.title}
-                    className="flex items-start gap-4"
-                    whileHover={{ x: 4 }}
-                  >
-                    <div
-                      className={`w-12 h-12 rounded-2xl ${
-                        item.color === 'blue' ? 'bg-tomo-blue/10' : 'bg-tomo-pink/10'
-                      } flex items-center justify-center flex-shrink-0`}
-                    >
-                      <item.icon
-                        className={
-                          item.color === 'blue' ? 'text-tomo-blue' : 'text-tomo-pink'
-                        }
-                        size={18}
-                      />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-medium text-black mb-1">{item.title}</h4>
-                      <p className="text-sm text-black/60">{item.info}</p>
-                      <p className="text-xs text-black/40 italic">{item.sub}</p>
-                    </div>
-                  </motion.div>
-                ))}
+    <motion.a
+      key={item.title}
+      href={item.href} // Adicionamos o atributo href
+      target={item.href?.startsWith('http') ? "_blank" : undefined} // Abre redes sociais noutro tab
+      rel={item.href?.startsWith('http') ? "noopener noreferrer" : undefined}
+      className="flex items-start gap-4 cursor-pointer"
+      whileHover={{ x: 4 }}
+    >
+      <div
+        className={`w-12 h-12 rounded-2xl ${
+          item.color === 'blue' ? 'bg-tomo-blue/10' : 'bg-tomo-pink/10'
+        } flex items-center justify-center flex-shrink-0`}
+      >
+        <item.icon
+          className={
+            item.color === 'blue' ? 'text-tomo-blue' : 'text-tomo-pink'
+          }
+          size={18}
+        />
+      </div>
+      <div>
+        <h4 className="text-sm font-medium text-black mb-1">{item.title}</h4>
+        <p className="text-sm text-black/60 hover:text-tomo-blue transition-colors">{item.info}</p>
+        <p className="text-xs text-black/40 italic">{item.sub}</p>
+      </div>
+    </motion.a>
+  ))
+}
               </div>
             </div>
           </TransitionReveal>
@@ -1203,7 +1208,7 @@ const ContactSection = () => {
 // ============================================
 // FOOTER
 // ============================================
-const Footer = () => {
+export const Footer = () => {
   const navLinks = [
     { label: 'Trabalhos', id: 'trabalhos' },
     { label: 'Serviços', id: 'servicos' },
@@ -1215,22 +1220,17 @@ const Footer = () => {
     <footer className="relative py-12 bg-black text-white">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-10">
+          
+          {/* Brand & Logo */}
           <div className="lg:col-span-2">
-            <h3 className="text-2xl font-bold mb-4 tracking-tight">
-              tomo<span className="text-tomo-blue">.</span>
-            </h3>
-            <p className="text-white/60 leading-relaxed text-sm max-w-md mb-6">
-              Estúdio de design em Viseu dedicado a criar identidades visuais que elevam marcas.
-            </p>
-            <motion.a
-              href="#"
-              className="w-10 h-10 rounded-full bg-white/10 inline-flex items-center justify-center hover:bg-tomo-blue transition-colors"
-              whileHover={{ y: -2 }}
-            >
-              <Instagram size={18} />
-            </motion.a>
+            <img 
+              src={LogoCompleto} 
+              alt="Tomo Studio" 
+              className="h-8 w-auto mb-4 invert brightness-0 saturate-100" 
+            />
           </div>
 
+          {/* Navegação */}
           <div>
             <h4 className="text-xs font-medium uppercase tracking-[0.2em] mb-4 text-white/40">
               Navegação
@@ -1249,20 +1249,26 @@ const Footer = () => {
             </ul>
           </div>
 
+          {/* Contacto */}
           <div>
             <h4 className="text-xs font-medium uppercase tracking-[0.2em] mb-4 text-white/40">
               Contacto
             </h4>
             <ul className="space-y-3 text-sm text-white/60">
               <li>Viseu, Portugal</li>
-              <li>tomostudiocontacto@gmail.com</li>
+              <li>
+                <a href="mailto:tomostudiocontacto@gmail.com" className="hover:text-white transition-colors">
+                  tomostudiocontacto@gmail.com
+                </a>
+              </li>
             </ul>
           </div>
         </div>
 
+        {/* Bottom */}
         <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-white/40">
-            © {new Date().getFullYear()} tomo studio
+            © {new Date().getFullYear()} tomo studio. Todos os direitos reservados.
           </p>
           <p className="text-xs text-white/40 flex items-center gap-2">
             Feito com <Heart size={10} className="inline" fill="currentColor" /> em Viseu

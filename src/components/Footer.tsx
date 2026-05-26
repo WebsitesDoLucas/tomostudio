@@ -1,61 +1,74 @@
 import { motion } from 'framer-motion';
-import { Heart } from 'lucide-react';
+import { Heart, Instagram } from 'lucide-react';
+import LogoCompleto from '../assets/LogoCompleto.webp';
 
 export const Footer = () => {
+  const navLinks = [
+    { label: 'Trabalhos', id: 'trabalhos' },
+    { label: 'Serviços', id: 'servicos' },
+    { label: 'Sobre', id: 'sobre' },
+    { label: 'Contacto', id: 'contacto' }
+  ];
+
   return (
-    <footer className="relative bg-tomo-dark text-white py-16">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid md:grid-cols-3 gap-12 mb-12">
-          {/* Brand */}
-          <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-tomo-blue rounded-lg flex items-center justify-center">
-                <span className="text-white font-chillax font-bold text-xl">t</span>
-              </div>
-              <span className="font-chillax font-bold text-xl">
-                tomo <span className="font-inter font-normal text-sm opacity-60">studio</span>
-              </span>
-            </div>
-            <p className="text-white/60 font-inter text-sm leading-relaxed">
-              Parceiros na construção da tua identidade visual.
+    <footer className="relative py-12 bg-black text-white">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-10">
+          {/* Brand com Logo */}
+          <div className="lg:col-span-2">
+            <img src={LogoCompleto} alt="Tomo Studio" className="h-10 mb-4 brightness-0 invert" />
+            <p className="text-white/60 leading-relaxed text-sm max-w-md mb-6">
+              Estúdio de design em Viseu dedicado a criar identidades visuais que elevam marcas.
             </p>
+            <motion.a
+              href="https://www.instagram.com/tomostudio.pt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-white/10 inline-flex items-center justify-center hover:bg-[#0055FF] transition-colors"
+              whileHover={{ y: -2 }}
+            >
+              <Instagram size={18} />
+            </motion.a>
           </div>
 
-          {/* Quick links */}
+          {/* Navegação */}
           <div>
-            <h4 className="font-inter font-semibold mb-4 text-sm uppercase tracking-wider">Navegação</h4>
-            <ul className="space-y-2">
-              {['Trabalhos', 'Serviços', 'Sobre', 'Contacto'].map((item) => (
-                <li key={item}>
+            <h4 className="text-xs font-medium uppercase tracking-[0.2em] mb-4 text-white/40">
+              Navegação
+            </h4>
+            <ul className="space-y-3">
+              {navLinks.map(item => (
+                <li key={item.id}>
                   <a
-                    href={`#${item.toLowerCase()}`}
-                    className="text-white/60 hover:text-tomo-blue transition-colors font-inter text-sm"
+                    href={`#${item.id}`}
+                    className="text-sm text-white/60 hover:text-white transition-colors"
                   >
-                    {item}
+                    {item.label}
                   </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Contact */}
+          {/* Contacto */}
           <div>
-            <h4 className="font-inter font-semibold mb-4 text-sm uppercase tracking-wider">Contacto</h4>
-            <ul className="space-y-2 text-sm">
-              <li className="text-white/60 font-inter">Viseu, Portugal</li>
-              <li className="text-white/60 font-inter">ola@tomostudio.pt</li>
-              <li className="text-white/40 font-inter text-xs italic">(em breve)</li>
+            <h4 className="text-xs font-medium uppercase tracking-[0.2em] mb-4 text-white/40">
+              Contacto
+            </h4>
+            <ul className="space-y-3 text-sm text-white/60">
+              <li>Viseu, Portugal</li>
+              <li>tomostudiocontacto@gmail.com</li>
             </ul>
           </div>
         </div>
 
         {/* Bottom */}
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-white/40 font-inter text-sm flex items-center gap-2">
-            Feito com <Heart size={14} className="text-tomo-pink" fill="currentColor" /> pela tomo studio
+        <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-white/40">
+            © {new Date().getFullYear()} tomo studio
           </p>
-          <p className="text-white/40 font-inter text-sm">
-            © 2025 tomo studio. Todos os direitos reservados.
+          <p className="text-xs text-white/40 flex items-center gap-2">
+            Feito com <Heart size={10} className="inline" fill="currentColor" /> em Viseu
           </p>
         </div>
       </div>
