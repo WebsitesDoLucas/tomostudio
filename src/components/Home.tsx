@@ -30,7 +30,7 @@ import { Navigation } from './Navigation';
 // Importações de Imagens
 import fotocasal from '../assets/fotocasal.webp';
 import LogoCompleto from '../assets/LogoCompleto.webp';
-import logowebp from '../assets/Logo.webp'; // <-- Dá-lhe o nome logoPng aqui!
+import logowebp from '../assets/logo.webp'; // <-- Dá-lhe o nome logoPng aqui!
 import poliempreendeImg from '../assets/poliempreende/Billboard.webp';
 import AveimédicaImg from '../assets/aveimedica/FACHADA1.webp';
 
@@ -410,7 +410,7 @@ const HeroSection = () => {
                  className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
                  style={{ color: tomoNavy }}
                >
-                 CONSIGO
+                 CONTIGO
                </motion.h1>
 
                <motion.div 
@@ -444,7 +444,7 @@ const HeroSection = () => {
              transition={{ delay: 1 }}
           >
             <p className="mt-6 text-lg md:text-xl font-medium italic opacity-60" style={{ color: tomoNavy }}>
-               ( não só para si )
+               ( não apenas para ti )
             </p>
           </motion.div>
 

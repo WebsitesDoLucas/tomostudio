@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-import logo from '../assets/Logo.webp';
+import logo from '../assets/logo.webp';
 import { Link } from 'react-router-dom';
 
 const navItems = [
