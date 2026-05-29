@@ -9,7 +9,7 @@ import {
   Variants
 } from 'framer-motion';
 import { ArrowUpRight, Check, Download } from 'lucide-react';
-import { useRef, useState, useLayoutEffect } from 'react';
+import { useRef, useState, useEffect, useLayoutEffect, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation';
 
@@ -650,9 +650,26 @@ const ApplicationsSection = () => {
 };
 
 // ============================================
-// VIDEO NARRATIVE SECTION
+// VIDEO NARRATIVE SECTION (iOS Fix para Múltiplos Vídeos)
 // ============================================
 const VideoSection = () => {
+  // Criamos referências separadas para cada vídeo gerido pelo .map
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+
+  useEffect(() => {
+    videoRefs.current.forEach((video) => {
+      if (video) {
+        // Forçar estritamente o muted no DOM para quebrar o bloqueio de poupança de bateria do iOS
+        video.muted = true;
+        video.play().catch((err) => {
+          console.log("Autoplay defendido pelo iOS:", err);
+        });
+      }
+    });
+  }, []);
+
+  const videos = [video1, video2];
+
   return (
     <section className="relative py-16 sm:py-24 lg:py-32 bg-gray-50 border-y border-black/5">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
@@ -665,21 +682,25 @@ const VideoSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto w-full">
-          {[video1, video2].map((src, i) => (
+          {videos.map((src, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 50, scale: 0.95 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 1, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] as const }}
+              className="will-change-transform transform-gpu"
             >
               <div className="relative aspect-[9/16] md:aspect-square rounded-[2rem] sm:rounded-[2.5rem] bg-white border border-black/5 shadow-[0_20px_60px_rgba(0,0,0,0.04)] overflow-hidden">
                 <video 
+                  ref={(el) => { videoRefs.current[i] = el; }} // Atribui a ref dinamicamente na lista
                   src={src} 
-                  controls 
+                  autoPlay
+                  loop
                   playsInline 
+                  controls={false} // Removemos os controlos nativos feios que bugam no iPhone
                   preload="metadata"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover opacity-95 hover:opacity-100 transition-opacity"
                 />
               </div>
             </motion.div>

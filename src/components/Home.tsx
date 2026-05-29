@@ -262,39 +262,40 @@ const LoaderIntro = ({ onComplete }: { onComplete: () => void }) => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCount(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(onComplete, 300);
-          return 100;
-        }
-        return prev + Math.random() * 15;
-      });
-    }, 50);
+    // Usamos um crescimento linear previsível para não sufocar a thread principal do iOS
+    const startTime = Date.now();
+    const duration = 1200; // 1.2 segundos fixos de loading para dar tempo ao browser
 
-    return () => clearInterval(interval);
+    const updateCounter = () => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min((elapsed / duration) * 100, 100);
+      
+      setCount(progress);
+
+      if (progress < 100) {
+        requestAnimationFrame(updateCounter); // Usa o sincronismo nativo do ecrã (60/120Hz) em vez de setInterval
+      } else {
+        setTimeout(onComplete, 200);
+      }
+    };
+
+    requestAnimationFrame(updateCounter);
   }, [onComplete]);
 
   return (
     <motion.div
       className="fixed inset-0 z-[100] bg-white flex items-center justify-center"
       exit={{ y: '-100%' }}
-      transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+      transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
     >
       <div className="text-center">
-        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="mb-8">
+        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="mb-8">
           <img src={LogoCompleto} alt="tomo studio" className="h-16 mx-auto" />
         </motion.div>
-
         <div className="flex items-center gap-3">
-          <motion.div className="w-32 h-px bg-black/10 overflow-hidden rounded-full">
-            <motion.div
-              className="h-full bg-gradient-to-r from-tomo-blue to-tomo-pink"
-              style={{ width: `${Math.min(count, 100)}%` }}
-            />
-          </motion.div>
-
+          <div className="w-32 h-px bg-black/10 overflow-hidden rounded-full">
+            <div className="h-full bg-gradient-to-r from-tomo-blue to-tomo-pink transition-all duration-75" style={{ width: `${count}%` }} />
+          </div>
           <span className="text-sm font-mono text-black/40 tabular-nums w-12 text-right">
             {Math.floor(count)}%
           </span>
@@ -679,14 +680,15 @@ const WorksSection = () => {
                       }`}
                     >
                       {/* OTIMIZAÇÃO 2: decoding="async" adicionado e fetchPriority corrigido (CamelCase) */}
-                      <motion.img 
-                        style={{ y: project.parallax, scale: 1.15 }}
-                        src={project.image} 
-                        alt={project.title} 
-                        decoding="async" 
-                        fetchPriority={index === 0 ? "high" : "auto"} 
-                        className="w-full h-full object-cover transition-transform duration-700 will-change-transform"
-                      />
+                 <motion.img 
+  style={{ y: project.parallax, scale: 1.15 }} 
+  src={project.image} 
+  alt={project.title} 
+  decoding="async" 
+  loading="eager" // 🌟 FORÇA O SAFARI A CARREGAR IMEDIATAMENTE
+  fetchPriority={index === 0 ? "high" : "auto"} 
+  className="w-full h-full object-cover transition-transform duration-700 will-change-transform" 
+/>
                       <div className="absolute inset-0 bg-black/0 hover:bg-black/5 transition-colors duration-500 pointer-events-none" />
                     </div>
                   </motion.div>

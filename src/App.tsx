@@ -1,9 +1,11 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-// IMPORTS LAZY (Otimização de Performance)
-const Home = lazy(() => import('./components/Home').then(module => ({ default: module.Home })));
-const Trabalhos = lazy(() => import('./components/Trabalhos').then(module => ({ default: module.Trabalhos })));
+// IMPORTS ESTÁTICOS (Páginas principais carregam instantaneamente sem esperar pela rede)
+import { Home } from './components/Home';
+import { Trabalhos } from './components/Trabalhos';
+
+// IMPORTS LAZY (Apenas os projetos pesados secundários ficam em lazy)
 const Poliempreende = lazy(() => import('./components/Poliempreende').then(module => ({ default: module.Poliempreende })));
 const Aveimedica = lazy(() => import('./components/Aveimedica').then(module => ({ default: module.Aveimedica })));
 const IDIPV = lazy(() => import('./components/IDIPV').then(module => ({ default: module.IDIPV })));
@@ -22,8 +24,11 @@ function App() {
     <Router>
       <Suspense fallback={<PageLoader />}>
         <Routes>
+          {/* Home e Trabalhos agora abrem sem delay de rede */}
           <Route path="/" element={<Home />} />
           <Route path="/trabalhos" element={<Trabalhos />} />
+          
+          {/* Projetos continuam protegidos e leves */}
           <Route path="/poliempreende" element={<Poliempreende />} />
           <Route path="/aveimedica" element={<Aveimedica />} />
           <Route path="/idipv" element={<IDIPV />} /> 
