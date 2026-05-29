@@ -2,14 +2,17 @@ import {
   motion, 
   useScroll, 
   useSpring, 
-  AnimatePresence 
+  AnimatePresence,
+  useMotionValue
 } from 'framer-motion';
 import { ArrowLeft, ArrowUpRight, Sparkles, Filter } from 'lucide-react';
-import { useState, useEffect, useLayoutEffect } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation'; 
 
-// IMPORTS DAS IMAGENS DO LOGOFÓLIO
+// ============================================
+// IMPORTAÇÃO DE ASSETS
+// ============================================
 import imgAvellon from '../assets/thumbs/avellon.webp';
 import imgForma from '../assets/thumbs/forma.webp';
 import imgBloomly from '../assets/thumbs/bloomly.webp';
@@ -19,7 +22,6 @@ import imgKaya from '../assets/thumbs/kaya.webp';
 import imgStacked from '../assets/thumbs/stacked.webp';
 import imgArco from '../assets/thumbs/arco.webp';
 
-// IMPORTS DAS IMAGENS DOS PROJETOS PRINCIPAIS
 import imgPoliempreende from '../assets/thumbs/poliempreende.webp';
 import imgAveimedica from '../assets/thumbs/aveimedica.webp';
 import imgIdipv from '../assets/thumbs/idipv.webp';
@@ -29,7 +31,7 @@ import imgTomostudio from '../assets/thumbs/tomostudio.webp';
 import imgPuppyyoga from '../assets/thumbs/puppyyoga.webp';
 
 // ============================================
-// TYPES
+// TYPES & INTERFACES
 // ============================================
 interface Project {
   id: number;
@@ -45,8 +47,13 @@ interface Project {
   path: string;
 }
 
+interface FilterBarProps {
+  activeFilter: string;
+  setActiveFilter: (filter: string) => void;
+}
+
 // ============================================
-// MOCK DATA (Tags corrigidas e limpas)
+// MOCK DATA
 // ============================================
 const projects: Project[] = [
   {
@@ -137,9 +144,6 @@ const projects: Project[] = [
   },
 ];
 
-// ============================================
-// LOGOFOLIO DATA
-// ============================================
 const logofolio = [
   { id: 1, client: 'Avellon', img: imgAvellon },
   { id: 2, client: 'forma', img: imgForma },
@@ -150,6 +154,40 @@ const logofolio = [
   { id: 7, client: 'Stacked Sandwich Club', img: imgStacked },
   { id: 8, client: 'arco', img: imgArco },
 ];
+
+// ============================================
+// UTILS: MAGNETIC COMPONENT
+// ============================================
+const Magnetic = ({ children }: { children: React.ReactNode }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const position = { x: useMotionValue(0), y: useMotionValue(0) };
+
+  const handleMouse = (e: React.MouseEvent) => {
+    const { clientX, clientY } = e;
+    const { height, width, left, top } = ref.current?.getBoundingClientRect() || { height: 0, width: 0, left: 0, top: 0 };
+    const middleX = clientX - (left + width / 2);
+    const middleY = clientY - (top + height / 2);
+    position.x.set(middleX * 0.1); 
+    position.y.set(middleY * 0.1);
+  };
+
+  const reset = () => {
+    position.x.set(0);
+    position.y.set(0);
+  };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouse}
+      onMouseLeave={reset}
+      style={{ x: position.x, y: position.y }}
+      className="will-change-transform inline-block"
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 // ============================================
 // SCROLL PROGRESS
@@ -164,7 +202,7 @@ const ScrollProgress = () => {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-tomo-blue via-tomo-pink to-tomo-blue origin-left z-50"
+      className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-tomo-blue via-tomo-pink to-tomo-blue origin-left z-50 pointer-events-none transform-gpu"
       style={{ scaleX }}
     />
   );
@@ -178,7 +216,7 @@ const FloatingImagePreview = ({ project, mousePosition }: { project: Project | n
 
   return (
     <motion.div
-      className="fixed pointer-events-none z-50 hidden lg:block"
+      className="fixed pointer-events-none z-50 hidden lg:block transform-gpu"
       style={{
         left: mousePosition.x + 40,
         top: mousePosition.y - 200,
@@ -223,10 +261,6 @@ const FloatingImagePreview = ({ project, mousePosition }: { project: Project | n
                 stiffness: 200,
                 damping: 20,
                 delay: 0.1
-              }}
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
               }}
             />
             <div className={`absolute inset-0 rounded-2xl ${
@@ -296,7 +330,7 @@ const FloatingImagePreview = ({ project, mousePosition }: { project: Project | n
 };
 
 // ============================================
-// PROJECT ROW 
+// PROJECT ROW (Animação Original com Performance Pró)
 // ============================================
 const ProjectRow = ({ project, index, onHover }: { 
   project: Project; 
@@ -319,18 +353,20 @@ const ProjectRow = ({ project, index, onHover }: {
 
   const content = (
     <motion.div
-      className="group relative border-t border-black/5 py-8 cursor-pointer block"
-      initial={{ opacity: 0, y: 20 }}
+      className="group relative border-t border-black/5 py-8 cursor-pointer block will-change-transform transform-gpu"
+      // Mantemos a animação original de entrada por scroll com as tuas curvas de agência cúbicas
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true, margin: "-20px" }}
       transition={{ 
-        duration: 0.5, 
-        delay: index * 0.05,
+        duration: 0.7, 
+        delay: index * 0.04,
         ease: [0.21, 0.45, 0.27, 0.9]
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
+      {/* O efeito original de revelação de fundo pelo centro (scaleX) mantido intacto */}
       <motion.div
         className={`absolute inset-0 -mx-6 lg:-mx-12 ${
           project.color === 'blue' ? 'bg-tomo-blue/5' : 'bg-tomo-pink/5'
@@ -344,7 +380,7 @@ const ProjectRow = ({ project, index, onHover }: {
         style={{ originX: 0 }}
       />
 
-      <div className="relative grid grid-cols-12 gap-4 lg:gap-8 items-center">
+      <div className="relative grid grid-cols-12 gap-4 lg:gap-8 items-center z-10">
         <motion.div 
           className="col-span-1 text-right"
           animate={{ x: isHovered ? 8 : 0 }}
@@ -362,7 +398,7 @@ const ProjectRow = ({ project, index, onHover }: {
         <motion.div 
           className="col-span-11 lg:col-span-4"
           animate={{ x: isHovered ? 8 : 0 }}
-          transition={{ duration: 0.4, delay: 0.05 }}
+          transition={{ duration: 0.4, delay: 0.02 }}
         >
           <div className="flex items-center gap-3">
             <h3 className="text-2xl lg:text-3xl font-bold text-black tracking-tight group-hover:text-tomo-dark transition-colors">
@@ -372,7 +408,7 @@ const ProjectRow = ({ project, index, onHover }: {
               <motion.span
                 initial={{ scale: 0, rotate: -45 }}
                 animate={{ scale: 1, rotate: 0 }}
-                transition={{ delay: 0.3, type: 'spring' }}
+                transition={{ delay: 0.2, type: 'spring' }}
               >
                 <Sparkles className={project.color === 'blue' ? 'text-tomo-blue' : 'text-tomo-pink'} size={16} />
               </motion.span>
@@ -384,7 +420,7 @@ const ProjectRow = ({ project, index, onHover }: {
         <motion.div 
           className="hidden lg:block lg:col-span-3"
           animate={{ x: isHovered ? 8 : 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
+          transition={{ duration: 0.4, delay: 0.04 }}
         >
           <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full transition-all ${
             isHovered
@@ -403,12 +439,12 @@ const ProjectRow = ({ project, index, onHover }: {
             x: isHovered ? 8 : 0,
             opacity: isHovered ? 1 : 0.6,
           }}
-          transition={{ duration: 0.4, delay: 0.15 }}
+          transition={{ duration: 0.4, delay: 0.06 }}
         >
           {project.tags.slice(0, 2).map((tag) => (
             <span 
               key={tag}
-              className="text-xs text-black/40 border border-black/10 px-2 py-1 rounded-full"
+              className="text-xs text-black/40 border border-black/10 px-2 py-1 rounded-full bg-white/50"
             >
               {tag}
             </span>
@@ -424,7 +460,7 @@ const ProjectRow = ({ project, index, onHover }: {
             x: isHovered ? 12 : 0,
             opacity: isHovered ? 1 : 0,
           }}
-          transition={{ duration: 0.4, delay: 0.2 }}
+          transition={{ duration: 0.4, delay: 0.08 }}
         >
           <ArrowUpRight 
             className={project.color === 'blue' ? 'text-tomo-blue' : 'text-tomo-pink'} 
@@ -465,22 +501,17 @@ const ProjectRow = ({ project, index, onHover }: {
 };
 
 // ============================================
-// FILTER BAR 
+// FILTER BAR
 // ============================================
-interface FilterBarProps {
-  activeFilter: string;
-  setActiveFilter: (filter: string) => void;
-}
-
 const FilterBar = ({ activeFilter, setActiveFilter }: FilterBarProps) => {
   const filters = ['Todos', 'Branding', 'Rebrand', 'Website', 'Social Media'];
 
   return (
     <motion.div
-      className="flex items-center md:justify-center gap-3 mb-16 overflow-x-auto py-4 px-1 scrollbar-hide"
+      className="flex items-center md:justify-center gap-3 mb-16 overflow-x-auto py-4 px-1 scrollbar-hide will-change-transform transform-gpu"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 }}
+      transition={{ delay: 0.2 }}
     >
       <div className="hidden md:flex items-center gap-2 text-sm text-black/40 whitespace-nowrap mr-2">
         <Filter size={14}/> Filtrar:
@@ -489,10 +520,10 @@ const FilterBar = ({ activeFilter, setActiveFilter }: FilterBarProps) => {
         <motion.button
           key={filter}
           onClick={() => setActiveFilter(filter)}
-          className={`px-5 py-2.5 text-sm font-medium rounded-full whitespace-nowrap transition-all ${
+          className={`px-5 py-2.5 text-sm font-medium rounded-full whitespace-nowrap transition-all duration-300 ${
             activeFilter === filter
               ? 'bg-gradient-to-r from-tomo-blue to-tomo-pink text-white shadow-lg shadow-tomo-blue/20'
-              : 'bg-white border border-black/10 text-black/60 hover:border-tomo-blue hover:text-tomo-blue hover:shadow-sm'
+              : 'bg-white border border-black/10 text-black/60 hover:border-tomo-blue hover:text-tomo-blue shadow-sm'
           }`}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.98 }}
@@ -509,7 +540,7 @@ const FilterBar = ({ activeFilter, setActiveFilter }: FilterBarProps) => {
 // ============================================
 const HeroSection = () => {
   return (
-    <section className="relative pt-40 pb-20 flex flex-col items-center text-center">
+    <section className="relative pt-40 pb-20 flex flex-col items-center text-center overflow-hidden">
       <div 
         className="absolute inset-0 pointer-events-none z-0"
         style={{
@@ -519,21 +550,21 @@ const HeroSection = () => {
       >
         <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
         
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center justify-center opacity-70">
           <div className="absolute w-[45vw] h-[45vw] max-w-[600px] max-h-[600px] bg-tomo-blue/15 rounded-full blur-[120px] -translate-x-1/4 -translate-y-12" />
           <div className="absolute w-[40vw] h-[40vw] max-w-[500px] max-h-[500px] bg-tomo-pink/15 rounded-full blur-[120px] translate-x-1/4 -translate-y-12" />
         </div>
       </div>
 
-      <div className="relative max-w-[1400px] mx-auto px-6 lg:px-12 flex flex-col items-center z-10 w-full">
+      <div className="relative max-w-[1400px] mx-auto px-6 lg:px-12 flex flex-col items-center z-10 w-full transform-gpu">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="mb-10"
         >
-          <Link to="/" className="inline-flex items-center gap-2 text-sm text-black/50 hover:text-black transition-colors group font-medium px-5 py-2.5 rounded-full border border-black/5 bg-white/60 backdrop-blur-md shadow-sm hover:shadow-md">
-            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+          <Link to="/" className="inline-flex items-center gap-2 text-sm text-black/50 hover:text-black transition-all px-5 py-2.5 rounded-full border border-black/5 bg-white/60 backdrop-blur-md shadow-sm">
+            <ArrowLeft size={16} />
             Voltar à home
           </Link>
         </motion.div>
@@ -544,10 +575,11 @@ const HeroSection = () => {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="w-full flex flex-col items-center"
         >
-          <h1 className="text-5xl md:text-7xl lg:text-[6rem] font-bold text-black leading-tight tracking-tight mb-6 drop-shadow-sm">
+          {/* text-5xl fixo para mobile impede cortes laterais do texto em ecrãs pequenos */}
+          <h1 className="text-5xl sm:text-7xl lg:text-[6rem] font-black text-black leading-tight tracking-tight mb-6 drop-shadow-sm">
             O nosso trabalho<span className="text-tomo-blue">.</span>
           </h1>
-          <p className="text-lg md:text-xl text-black/60 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-black/60 leading-relaxed max-w-2xl mx-auto font-medium">
             Onde a estratégia ganha forma
           </p>
         </motion.div>
@@ -562,16 +594,17 @@ const HeroSection = () => {
 const LogofolioSection = () => {
   return (
     <motion.div 
-      className="mt-32 mb-16 pt-20 border-t border-black/5"
+      className="mt-32 mb-16 pt-20 border-t border-black/5 will-change-transform transform-gpu"
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
     >
       <div className="text-center mb-12">
-        <h3 className="text-3xl lg:text-4xl font-bold text-black mb-4 tracking-tight">
+        <h3 className="text-3xl lg:text-4xl font-black text-black mb-4 tracking-tight">
           Galeria de identidades
         </h3>
-        <p className="text-black/50">
+        <p className="text-black/40 max-w-xl mx-auto text-sm sm:text-base font-medium">
           Uma amostra de outros sistemas visuais criados por nós para dar vida a novas ideias.
         </p>
       </div>
@@ -582,17 +615,19 @@ const LogofolioSection = () => {
             key={logo.id}
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: i * 0.05 }}
+            viewport={{ once: true, margin: "-20px" }}
+            transition={{ duration: 0.5, delay: i * 0.04 }}
             whileHover={{ y: -5, scale: 1.02 }}
-            className="aspect-[4/3] bg-gray-50 rounded-2xl flex items-center justify-center p-8 border border-black/5 cursor-pointer hover:shadow-lg hover:shadow-black/5 transition-all"
+            className="aspect-[4/3] bg-gray-50/70 rounded-2xl flex items-center justify-center p-6 sm:p-8 border border-black/5 cursor-pointer transition-all duration-300 hover:bg-white hover:shadow-lg hover:shadow-black/5 active:scale-98 transform-gpu"
             title={logo.client}
           >
-            {logo.img.includes('caminho') ? (
-               <span className="text-black/30 font-bold">{logo.client}</span>
-            ) : (
-               <img src={logo.img} alt={logo.client} className="w-full h-full object-contain mix-blend-multiply opacity-80 hover:opacity-100 transition-opacity" />
-            )}
+            <img 
+              src={logo.img} 
+              alt={logo.client} 
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-contain mix-blend-multiply opacity-80 hover:opacity-100 transition-opacity duration-300" 
+            />
           </motion.div>
         ))}
       </div>
@@ -600,16 +635,14 @@ const LogofolioSection = () => {
   );
 };
 
+
+
 // ============================================
 // MAIN COMPONENT
 // ============================================
 export const Trabalhos = () => {
   useLayoutEffect(() => {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'instant' 
-    });
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, []);
 
   const [hoveredProject, setHoveredProject] = useState<Project | null>(null);
@@ -617,27 +650,26 @@ export const Trabalhos = () => {
   const [activeFilter, setActiveFilter] = useState('Todos');
 
   useEffect(() => {
+    const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+    if (!isDesktop) return;
+
     const updateMousePosition = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
-    window.addEventListener('mousemove', updateMousePosition);
+    window.addEventListener('mousemove', updateMousePosition, { passive: true });
     return () => window.removeEventListener('mousemove', updateMousePosition);
   }, []);
 
-  // Lógica de Filtragem Corrigida
   const filteredProjects = projects.filter(project => {
     if (activeFilter === 'Todos') return true;
-    
     const searchTerm = activeFilter.toLowerCase();
-    const inCategory = project.category.toLowerCase().includes(searchTerm);
-    const inTags = project.tags.some(tag => tag.toLowerCase().includes(searchTerm));
-    
-    return inCategory || inTags;
+    return project.category.toLowerCase().includes(searchTerm) || 
+           project.tags.some(tag => tag.toLowerCase().includes(searchTerm));
   });
 
   return (
-    <div className="bg-white min-h-screen overflow-x-hidden w-full">
+    <div className="bg-white min-h-screen overflow-x-hidden w-full selection:bg-tomo-blue selection:text-white">
       <Navigation />
       <ScrollProgress />
       <HeroSection />
@@ -647,16 +679,16 @@ export const Trabalhos = () => {
           
           <FilterBar activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
           
-          <motion.div layout className="relative min-h-[500px]">
+          <div className="relative min-h-[500px] will-change-transform transform-gpu">
+            {/* Removemos o layout das linhas para o Safari não recalcular geometrias no clique */}
             <AnimatePresence mode="popLayout">
               {filteredProjects.map((project, index) => (
                 <motion.div
                   key={project.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
-                  transition={{ duration: 0.4 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0, transition: { duration: 0.15 } }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
                 >
                   <ProjectRow 
                     project={project} 
@@ -668,15 +700,11 @@ export const Trabalhos = () => {
             </AnimatePresence>
 
             {filteredProjects.length === 0 && (
-              <motion.div 
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }} 
-                className="py-12 text-center text-black/40"
-              >
+              <div className="py-12 text-center text-black/40 text-sm">
                 Nenhum projeto encontrado nesta categoria.
-              </motion.div>
+              </div>
             )}
-          </motion.div>
+          </div>
 
           <AnimatePresence>
             {hoveredProject && (
@@ -689,32 +717,23 @@ export const Trabalhos = () => {
 
           <LogofolioSection />
 
+
           <div className="border-t border-black/5 mt-8" />
 
-          <motion.div
-            className="mt-32 text-center"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h3 className="text-4xl lg:text-5xl font-bold text-black mb-6 tracking-tight">
+          <div className="mt-24 sm:mt-32 text-center px-4 will-change-transform transform-gpu">
+            <h3 className="text-3xl sm:text-5xl font-black text-black mb-6 tracking-tight">
               Pronto para o teu capítulo?
             </h3>
-            <p className="text-lg text-black/60 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-black/60 mb-8 max-w-2xl mx-auto font-medium">
               Cada projeto começa com uma conversa. Conta-nos a história da tua marca.
             </p>
             
             <a href="/#contacto">
-              <motion.button
-                className="px-8 py-4 bg-gradient-to-r from-tomo-blue to-tomo-pink text-white font-medium text-sm rounded-full hover:shadow-2xl hover:shadow-tomo-blue/30 transition-all"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-              >
+              <button className="px-8 py-4 bg-gradient-to-r from-tomo-blue to-tomo-pink text-white font-bold text-sm rounded-full shadow-lg active:scale-95 transition-transform duration-200">
                 Começar o teu projeto
-              </motion.button>
+              </button>
             </a>
-            
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>
