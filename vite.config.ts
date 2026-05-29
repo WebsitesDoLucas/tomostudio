@@ -1,9 +1,11 @@
 import path from "path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import basicSsl from '@vitejs/plugin-basic-ssl'; // 🌟 1. Importa o plugin de segurança
 
 export default defineConfig({
-  plugins: [react()],
+  // 🌟 2. Adiciona o basicSsl() à lista de plugins
+  plugins: [react(), basicSsl()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

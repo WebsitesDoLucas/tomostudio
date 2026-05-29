@@ -8,8 +8,8 @@ import {
   useInView,
   Variants
 } from 'framer-motion';
-import { ArrowUpRight, Check, Download } from 'lucide-react';
-import { useRef, useState, useEffect, useLayoutEffect, type ReactNode } from 'react';
+import { ArrowUpRight, Check, Download, Play, X } from 'lucide-react';
+import { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation';
 
@@ -340,7 +340,6 @@ const ConceptSection = () => {
 
   return (
     <section ref={containerRef} className="relative py-24 lg:py-36 bg-gray-50 border-t border-black/5 overflow-hidden flex flex-col items-center">
-      
       <div className="max-w-[1000px] mx-auto px-6 w-full text-center flex flex-col items-center mb-16 lg:mb-24">
         <FadeIn yOffset={50}>
           <span className="text-[10px] tracking-[0.3em] font-bold text-[#2c9ed6] uppercase block mb-6">
@@ -403,7 +402,6 @@ const BeforeAfterSection = () => {
   return (
     <section className="relative py-24 sm:py-32 bg-white overflow-hidden border-t border-black/5">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12">
-        
         <div className="text-center mb-10 sm:mb-16">
           <FadeIn yOffset={30}>
             <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-black mb-6 tracking-tight">
@@ -417,31 +415,34 @@ const BeforeAfterSection = () => {
           </FadeIn>
         </div>
 
-        <FadeIn delay={0.2} yOffset={20}>
-          <div className="flex justify-center mb-10 lg:mb-16">
-            <div className="bg-gray-50 p-1.5 rounded-full inline-flex relative shadow-inner border border-black/5">
-              <motion.div
-                className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white rounded-full shadow-sm will-change-transform border border-black/[0.03]"
-                initial={false}
-                animate={{ x: showAfter ? '100%' : '0%' }}
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              />
-              
-              <button 
-                onClick={() => setShowAfter(false)} 
-                className={`relative z-10 px-8 py-3 text-sm font-bold transition-colors rounded-full ${!showAfter ? 'text-black' : 'text-black/40 hover:text-black/60'}`}
-              >
-                Antes
-              </button>
-              <button 
-                onClick={() => setShowAfter(true)} 
-                className={`relative z-10 px-8 py-3 text-sm font-bold transition-colors rounded-full ${showAfter ? 'text-[#3f75ed]' : 'text-black/40 hover:text-black/60'}`}
-              >
-                Depois
-              </button>
-            </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="flex justify-center mb-10 lg:mb-16"
+        >
+          <div className="bg-gray-50 p-1.5 rounded-full inline-flex relative shadow-inner border border-black/5">
+            <motion.div
+              className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white rounded-full shadow-sm will-change-transform border border-black/[0.03]"
+              initial={false}
+              animate={{ x: showAfter ? '100%' : '0%' }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            />
+            
+            <button 
+              onClick={() => setShowAfter(false)} 
+              className={`relative z-10 px-8 py-3 text-sm font-bold transition-colors rounded-full ${!showAfter ? 'text-black' : 'text-black/40 hover:text-black/60'}`}
+            >
+              Antes
+            </button>
+            <button 
+              onClick={() => setShowAfter(true)} 
+              className={`relative z-10 px-8 py-3 text-sm font-bold transition-colors rounded-full ${showAfter ? 'text-[#3f75ed]' : 'text-black/40 hover:text-black/60'}`}
+            >
+              Depois
+            </button>
           </div>
-        </FadeIn>
+        </motion.div>
 
         <motion.div 
           initial={{ opacity: 0, y: 50, scale: 0.95 }}
@@ -463,6 +464,7 @@ const BeforeAfterSection = () => {
                 <img 
                   src={antesImg} 
                   alt="Marca Antiga" 
+                  decoding="async"
                   className="w-[85%] h-[85%] object-contain mix-blend-multiply opacity-70" 
                 />
               </motion.div>
@@ -478,13 +480,13 @@ const BeforeAfterSection = () => {
                 <img 
                   src={logoImg} 
                   alt="Nova Marca" 
+                  decoding="async"
                   className="w-full h-full object-contain scale-[1.2] sm:scale-[1.6] mix-blend-multiply" 
                 />
               </motion.div>
             )}
           </AnimatePresence>
         </motion.div>
-
       </div>
     </section>
   );
@@ -574,18 +576,16 @@ const ApplicationsSection = () => {
     { name: 'Merchandise Textil', img: tshirtImg }
   ];
 
-  // Variáveis para a Animação em Cascata (Stagger)
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15, // Atraso entre a entrada de cada imagem
+        staggerChildren: 0.15,
       }
     }
   };
 
-  // Efeito de entrada de cada imagem (suave, linear e sem bounce)
   const itemVariants: Variants = {
     hidden: { opacity: 0, y: 60, scale: 0.95 },
     visible: { 
@@ -599,7 +599,6 @@ const ApplicationsSection = () => {
   return (
     <section className="relative py-24 lg:py-32 bg-white overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        
         <div className="text-center mb-16 sm:mb-24">
           <FadeIn>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black mb-6 tracking-tighter">
@@ -613,7 +612,6 @@ const ApplicationsSection = () => {
           </FadeIn>
         </div>
 
-        {/* Grelha com a Revelação em Cascata */}
         <motion.div 
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full"
           variants={containerVariants}
@@ -632,6 +630,7 @@ const ApplicationsSection = () => {
                   src={app.img} 
                   alt={app.name} 
                   loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[0.16,1,0.3,1] group-hover:scale-[1.05] will-change-transform"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -643,32 +642,31 @@ const ApplicationsSection = () => {
             </motion.div>
           ))}
         </motion.div>
-
       </div>
     </section>
   );
 };
 
 // ============================================
-// VIDEO NARRATIVE SECTION (iOS Fix para Múltiplos Vídeos)
+// VIDEO NARRATIVE SECTION (Ambos Quadrados + Lightbox)
 // ============================================
 const VideoSection = () => {
-  // Criamos referências separadas para cada vídeo gerido pelo .map
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
+  const [activeVideo, setActiveVideo] = useState<string | null>(null);
 
   useEffect(() => {
     videoRefs.current.forEach((video) => {
       if (video) {
-        // Forçar estritamente o muted no DOM para quebrar o bloqueio de poupança de bateria do iOS
         video.muted = true;
-        video.play().catch((err) => {
-          console.log("Autoplay defendido pelo iOS:", err);
-        });
+        video.play().catch((err) => console.log("Autoplay defendido pelo iOS:", err));
       }
     });
   }, []);
 
-  const videos = [video1, video2];
+  const videos = [
+    { src: video1, aspect: "aspect-square", label: "Vídeo Promocional Com Som" },
+    { src: video2, aspect: "aspect-square", label: "Vídeo Promocional 1" }
+  ];
 
   return (
     <section className="relative py-16 sm:py-24 lg:py-32 bg-gray-50 border-y border-black/5">
@@ -681,42 +679,89 @@ const VideoSection = () => {
           </FadeIn>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto w-full">
-          {videos.map((src, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-4xl mx-auto w-full items-center">
+          {videos.map((video, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 50, scale: 0.95 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 1, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] as const }}
-              className="will-change-transform transform-gpu"
+              transition={{ duration: 1, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="will-change-transform transform-gpu cursor-pointer group relative"
+              onClick={() => setActiveVideo(video.src)}
             >
-              <div className="relative aspect-[9/16] md:aspect-square rounded-[2rem] sm:rounded-[2.5rem] bg-white border border-black/5 shadow-[0_20px_60px_rgba(0,0,0,0.04)] overflow-hidden">
+              <div className={`relative ${video.aspect} rounded-[2rem] sm:rounded-[2.5rem] bg-black border border-black/5 shadow-[0_20px_60px_rgba(0,0,0,0.04)] overflow-hidden`}>
                 <video 
-                  ref={(el) => { videoRefs.current[i] = el; }} // Atribui a ref dinamicamente na lista
-                  src={src} 
+                  ref={(el) => { videoRefs.current[i] = el; }}
+                  src={video.src} 
                   autoPlay
                   loop
                   playsInline 
-                  controls={false} // Removemos os controlos nativos feios que bugam no iPhone
+                  controls={false}
                   preload="metadata"
-                  className="w-full h-full object-cover opacity-95 hover:opacity-100 transition-opacity"
+                  className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-300"
                 />
+                
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                  <motion.div 
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-14 h-14 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-black shadow-lg opacity-0 group-hover:opacity-100 sm:opacity-100 transition-opacity duration-300"
+                  >
+                    <Play size={20} fill="black" className="ml-0.5" />
+                  </motion.div>
+                </div>
               </div>
             </motion.div>
           ))}
         </div>
       </div>
+
+      <AnimatePresence>
+        {activeVideo && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 sm:p-8"
+            onClick={() => setActiveVideo(null)}
+          >
+            <button 
+              className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all z-30"
+              onClick={() => setActiveVideo(null)}
+            >
+              <X size={24} />
+            </button>
+
+            <motion.div 
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              className="relative max-w-full max-h-[85vh] rounded-2xl overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <video 
+                src={activeVideo} 
+                controls 
+                autoPlay
+                playsInline
+                className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-2xl"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };
 
 // ============================================
-// OUTRO SECTION
+// OUTRO SECTION (A tua secção original restaurada!)
 // ============================================
 const OutroSection = () => {
   return (
-    <section className="relative min-h-[60vh] flex items-center bg-white py-16">
+    <section className="relative min-h-[60vh] sm:min-h-[80vh] flex items-center bg-gray-50 border-t border-black/5 py-16">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 w-full text-center">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -724,21 +769,21 @@ const OutroSection = () => {
           viewport={{ once: true }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as const }}
         >
-          <p className="text-xs font-bold text-black/30 uppercase tracking-[0.3em] mb-8">
-            Explorar mais
+          <p className="text-xs sm:text-sm text-black/40 uppercase tracking-[0.3em] mb-6 sm:mb-8 font-bold">
+            Próximo projeto
           </p>
 
           <Link to="/trabalhos" className="block w-full">
             <Magnetic>
-                <div className="group max-w-4xl mx-auto cursor-pointer px-2">
-                  <h3 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-black mb-8 group-hover:text-[#2c9ed6] transition-colors tracking-tighter leading-tight">
-                      Ver Portfólio
-                  </h3>
-                  <div className="inline-flex items-center gap-2 text-black font-bold uppercase tracking-wider text-xs sm:text-sm mt-2 border-b-2 border-black pb-1">
-                      Explorar Projetos
-                      <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" size={16} />
-                  </div>
+              <div className="group max-w-4xl mx-auto cursor-pointer px-2">
+                <h3 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-black mb-4 group-hover:text-[#4BC2F0] transition-colors tracking-tighter leading-tight">
+                  Ver todos os projetos
+                </h3>
+                <div className="inline-flex items-center gap-2 text-[#4BC2F0] font-bold uppercase tracking-wider text-xs sm:text-sm mt-2 sm:mt-4 border-b-2 border-[#4BC2F0] pb-1">
+                  Explorar portfólio
+                  <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" size={16} />
                 </div>
+              </div>
             </Magnetic>
           </Link>
         </motion.div>

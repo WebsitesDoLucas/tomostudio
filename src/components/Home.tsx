@@ -255,55 +255,7 @@ const ChapterIndicator = () => {
   );
 };
 
-// ============================================
-// LOADER INTRO
-// ============================================
-const LoaderIntro = ({ onComplete }: { onComplete: () => void }) => {
-  const [count, setCount] = useState(0);
 
-  useEffect(() => {
-    // Usamos um crescimento linear previsível para não sufocar a thread principal do iOS
-    const startTime = Date.now();
-    const duration = 1200; // 1.2 segundos fixos de loading para dar tempo ao browser
-
-    const updateCounter = () => {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min((elapsed / duration) * 100, 100);
-      
-      setCount(progress);
-
-      if (progress < 100) {
-        requestAnimationFrame(updateCounter); // Usa o sincronismo nativo do ecrã (60/120Hz) em vez de setInterval
-      } else {
-        setTimeout(onComplete, 200);
-      }
-    };
-
-    requestAnimationFrame(updateCounter);
-  }, [onComplete]);
-
-  return (
-    <motion.div
-      className="fixed inset-0 z-[100] bg-white flex items-center justify-center"
-      exit={{ y: '-100%' }}
-      transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
-    >
-      <div className="text-center">
-        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="mb-8">
-          <img src={LogoCompleto} alt="tomo studio" className="h-16 mx-auto" />
-        </motion.div>
-        <div className="flex items-center gap-3">
-          <div className="w-32 h-px bg-black/10 overflow-hidden rounded-full">
-            <div className="h-full bg-gradient-to-r from-tomo-blue to-tomo-pink transition-all duration-75" style={{ width: `${count}%` }} />
-          </div>
-          <span className="text-sm font-mono text-black/40 tabular-nums w-12 text-right">
-            {Math.floor(count)}%
-          </span>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
 
 // ============================================
 // TRANSITION REVEAL
@@ -339,12 +291,10 @@ const TransitionReveal = ({
 };
 
 // ============================================
-// HERO SECTION
+// HERO SECTION (Instant Mobile Load)
 // ============================================
 const HeroSection = () => {
   const containerRef = useRef<HTMLElement>(null);
-  const [showContent, setShowContent] = useState(false);
-
   const tomoNavy = "#020224";
   
   const mouseX = useMotionValue(0);
@@ -360,138 +310,127 @@ const HeroSection = () => {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const { width, height } = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX / width - 0.5;
-    const y = e.clientY / height - 0.5;
-    mouseX.set(x);
-    mouseY.set(y);
+    mouseX.set(e.clientX / width - 0.5);
+    mouseY.set(e.clientY / height - 0.5);
   };
 
   return (
-    <>
-      <AnimatePresence>
-        {!showContent && <LoaderIntro onComplete={() => setShowContent(true)} />}
-      </AnimatePresence>
-
-      <section 
-        ref={containerRef} 
-        id="intro"
-        onMouseMove={handleMouseMove} 
-        className="relative h-screen min-h-[700px] w-full bg-white flex flex-col items-center justify-center px-6 overflow-hidden"
+    <section 
+      ref={containerRef} 
+      id="intro"
+      onMouseMove={handleMouseMove} 
+      className="relative h-screen min-h-[700px] w-full bg-white flex flex-col items-center justify-center px-6 overflow-hidden"
+    >
+      <motion.div 
+        className="absolute inset-0 pointer-events-none"
+        style={{ x: xBack, y: yBack }}
       >
+        <div className="absolute top-[10%] left-[10%] w-[40vw] h-[40vw] rounded-full blur-[100px] opacity-20 bg-[#0099FF]" />
+        <div className="absolute bottom-[10%] right-[10%] w-[50vw] h-[50vw] rounded-full blur-[100px] opacity-10 bg-[#020224]" />
+      </motion.div>
+      
+      <div className="absolute inset-0 opacity-[0.35] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.webp')]" />
+
+      <div className="relative z-10 flex flex-col items-center text-center transform-gpu">
+        {/* Animações agora iniciam-se sozinhas (true) assim que a página abre */}
         <motion.div 
-          className="absolute inset-0 pointer-events-none"
-          style={{ x: xBack, y: yBack }}
+          initial={{ opacity: 0, y: 15 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.6 }} 
+          className="mb-4 md:mb-6"
         >
-           <div className="absolute top-[10%] left-[10%] w-[40vw] h-[40vw] rounded-full blur-[100px] opacity-20 bg-[#0099FF]" />
-           <div className="absolute bottom-[10%] right-[10%] w-[50vw] h-[50vw] rounded-full blur-[100px] opacity-10 bg-[#020224]" />
+          <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase opacity-40" style={{ color: tomoNavy }}>
+            Estúdio de Design & Estratégia
+          </span>
         </motion.div>
-        
-        <div className="absolute inset-0 opacity-[0.35] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.webp')]" />
 
-        <div className="relative z-10 flex flex-col items-center text-center">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={showContent ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.3 }}
-            className="mb-4 md:mb-6"
-          >
-            <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase opacity-40" style={{ color: tomoNavy }}>
-              Estúdio de Design & Estratégia
-            </span>
-          </motion.div>
-
-          <div className="flex flex-col items-center leading-[0.85]">
-             <div className="overflow-hidden p-2">
-               <motion.h1
-                 initial={{ y: "110%", rotate: 2 }}
-                 animate={showContent ? { y: 0, rotate: 0 } : {}}
-                 transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                 className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
-                 style={{ color: tomoNavy }}
-               >
-                 CRIAMOS
-               </motion.h1>
-             </div>
-
-<div className="overflow-hidden flex items-center justify-center gap-2 md:gap-6 mt-[-2vw] lg:mt-[-1.5vw] p-2 pr-6">
-  <motion.h1
-    initial={{ y: "110%", rotate: 2 }}
-    animate={showContent ? { y: 0, rotate: 0 } : {}}
-    transition={{ duration: 1.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-    className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
-    style={{ color: tomoNavy }}
-  >
-    CONTIGO
-  </motion.h1>
-
-  {/* Contentor com tamanho ajustado e padding de segurança (p-4) para o movimento magnético */}
-  <motion.div 
-    style={{ x: xLogo, y: yLogo }} 
-    className="relative w-[14vw] h-[14vw] md:w-[10vw] md:h-[10vw] lg:w-[9vw] lg:h-[9vw] p-4 mb-[2vw] perspective-1000 flex items-center justify-center"
-  >
-    <motion.img 
-      src={logowebp} 
-      alt="Tomo Logo" 
-      initial={{ scale: 0, rotate: -90, opacity: 0 }}
-      animate={showContent ? { scale: 0.9, rotate: 0, opacity: 1 } : {}}
-      whileInView={{ 
-        y: [0, -6, 0], // reduzido ligeiramente de -10 para -6 para não cortar no topo
-        rotate: [0, 5, 0]
-      }}
-      transition={{ 
-        scale: { type: "spring", duration: 1.5, delay: 0.5 },
-        opacity: { duration: 0.5, delay: 0.5 },
-        y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 2 },
-        rotate: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
-      }}
-      className="w-full h-full object-contain drop-shadow-2xl"
-    />
-  </motion.div>
-</div>
+        <div className="flex flex-col items-center leading-[0.85]">
+          <div className="overflow-hidden p-2">
+            <motion.h1
+              initial={{ y: "110%", rotate: 2 }}
+              animate={{ y: 0, rotate: 0 }}
+              transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+              className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
+              style={{ color: tomoNavy }}
+            >
+              CRIAMOS
+            </motion.h1>
           </div>
 
-          <motion.div
-             initial={{ opacity: 0 }}
-             animate={showContent ? { opacity: 1 } : {}}
-             transition={{ delay: 1 }}
-          >
-            <p className="mt-6 text-lg md:text-xl font-medium italic opacity-60" style={{ color: tomoNavy }}>
-              não apenas para ti
-            </p>
-          </motion.div>
+          <div className="overflow-hidden flex items-center justify-center gap-2 md:gap-6 mt-[-2vw] lg:mt-[-1.5vw] p-2 pr-6">
+            <motion.h1
+              initial={{ y: "110%", rotate: 2 }}
+              animate={{ y: 0, rotate: 0 }}
+              transition={{ duration: 1.0, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+              className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
+              style={{ color: tomoNavy }}
+            >
+              CONTIGO
+            </motion.h1>
 
-          <motion.div 
-             initial={{ opacity: 0, y: 20 }}
-             animate={showContent ? { opacity: 1, y: 0 } : {}}
-             transition={{ delay: 1.2 }}
-             className="mt-10"
-          >
-             <motion.a 
-               href="#contacto"
-               whileHover={{ scale: 1.05 }}
-               whileTap={{ scale: 0.95 }}
-               className="group flex items-center gap-3 px-8 py-4 rounded-full text-white font-bold text-sm shadow-xl shadow-blue-900/20 hover:shadow-blue-900/30 transition-all bg-[#020224]"
-             >
-               Iniciar Projeto
-               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-             </motion.a>
-          </motion.div>
+            <motion.div 
+              style={{ x: xLogo, y: yLogo }} 
+              className="relative w-[14vw] h-[14vw] md:w-[10vw] md:h-[10vw] lg:w-[9vw] lg:h-[9vw] p-4 mb-[2vw] perspective-1000 flex items-center justify-center"
+            >
+              <motion.img 
+                src={logowebp} 
+                alt="Tomo Logo" 
+                initial={{ scale: 0, rotate: -90, opacity: 0 }}
+                animate={{ scale: 0.9, rotate: 0, opacity: 1 }}
+                whileInView={{ y: [0, -6, 0], rotate: [0, 5, 0] }}
+                transition={{ 
+                  scale: { type: "spring", duration: 1.2, delay: 0.1 },
+                  opacity: { duration: 0.4, delay: 0.1 },
+                  y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.2 },
+                  rotate: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.1 }
+                }}
+                className="w-full h-full object-contain drop-shadow-2xl"
+              />
+            </motion.div>
+          </div>
         </div>
 
-        <motion.div
-           initial={{ opacity: 0 }}
-           animate={showContent ? { opacity: 1 } : {}}
-           transition={{ delay: 1.5 }}
-           className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30"
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.25, duration: 0.6 }}
         >
-          <motion.div 
-             animate={{ height: [0, 40, 0], opacity: [0, 1, 0] }}
-             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-             className="w-[1px] bg-[#020224]"
-          />
+          <p className="mt-4 text-lg md:text-xl font-medium italic opacity-60" style={{ color: tomoNavy }}>
+            não apenas para ti
+          </p>
         </motion.div>
-      </section>
-    </>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.4, duration: 0.6 }} 
+          className="mt-8"
+        >
+          <motion.a 
+            href="#contacto"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="group flex items-center gap-3 px-8 py-4 rounded-full text-white font-bold text-sm shadow-xl shadow-blue-900/20 hover:shadow-blue-900/30 transition-all bg-[#020224]"
+          >
+            Iniciar Projeto
+            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+          </motion.a>
+        </motion.div>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30"
+      >
+        <motion.div 
+          animate={{ height: [0, 40, 0], opacity: [0, 1, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="w-[1px] bg-[#020224]"
+        />
+      </motion.div>
+    </section>
   );
 };
 
