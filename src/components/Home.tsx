@@ -27,6 +27,7 @@ import { useRef, useState, useEffect, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation';
 
+
 // Importações de Imagens
 import fotocasal from '../assets/fotocasal.webp';
 import LogoCompleto from '../assets/LogoCompleto.webp';
@@ -39,30 +40,39 @@ import AveimédicaImg from '../assets/aveimedica/FACHADA1.webp';
 // ============================================
 const Magnetic = ({ children }: { children: React.ReactNode }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const position = { x: useMotionValue(0), y: useMotionValue(0) };
+  
+  // Usar MotionValues nativos em vez de state
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  // Criar uma mola física para a transição ser orgânica e acelerada por hardware
+  const springConfig = { damping: 15, stiffness: 150, mass: 0.1 };
+  const springX = useSpring(x, springConfig);
+  const springY = useSpring(y, springConfig);
 
   const handleMouse = (e: React.MouseEvent) => {
     const { clientX, clientY } = e;
-    const { height, width, left, top } = ref.current?.getBoundingClientRect() || { height: 0, width: 0, left: 0, top: 0 };
+    if (!ref.current) return;
+    const { height, width, left, top } = ref.current.getBoundingClientRect();
     const middleX = clientX - (left + width / 2);
     const middleY = clientY - (top + height / 2);
-    position.x.set(middleX * 0.1); 
-    position.y.set(middleY * 0.1);
+    x.set(middleX * 0.15); // Força do íman
+    y.set(middleY * 0.15);
   };
 
   const reset = () => {
-    position.x.set(0);
-    position.y.set(0);
+    x.set(0);
+    y.set(0);
   };
 
-  const { x, y } = position;
   return (
     <motion.div
       ref={ref}
       onMouseMove={handleMouse}
       onMouseLeave={reset}
-      style={{ x, y }}
-      className="inline-block"
+      style={{ x: springX, y: springY }}
+      // Forçar aceleração de GPU
+      className="inline-block transform-gpu" 
     >
       {children}
     </motion.div>
@@ -402,40 +412,41 @@ const HeroSection = () => {
                </motion.h1>
              </div>
 
-             <div className="overflow-hidden flex items-center justify-center gap-2 md:gap-6 mt-[-2vw] lg:mt-[-1.5vw] p-2 pr-6">
-               <motion.h1
-                 initial={{ y: "110%", rotate: 2 }}
-                 animate={showContent ? { y: 0, rotate: 0 } : {}}
-                 transition={{ duration: 1.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                 className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
-                 style={{ color: tomoNavy }}
-               >
-                 CONTIGO
-               </motion.h1>
+<div className="overflow-hidden flex items-center justify-center gap-2 md:gap-6 mt-[-2vw] lg:mt-[-1.5vw] p-2 pr-6">
+  <motion.h1
+    initial={{ y: "110%", rotate: 2 }}
+    animate={showContent ? { y: 0, rotate: 0 } : {}}
+    transition={{ duration: 1.2, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+    className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
+    style={{ color: tomoNavy }}
+  >
+    CONTIGO
+  </motion.h1>
 
-               <motion.div 
-                 style={{ x: xLogo, y: yLogo }}
-                 className="relative w-[10vw] h-[10vw] md:w-[7vw] md:h-[7vw] lg:w-[6vw] lg:h-[6vw] mb-[2vw] perspective-1000"
-               >
-                 <motion.img 
-                   src={logowebp} 
-                   alt="Tomo Logo" 
-                   initial={{ scale: 0, rotate: -90, opacity: 0 }}
-                   animate={showContent ? { scale: 1, rotate: 0, opacity: 1 } : {}}
-                   whileInView={{ 
-                     y: [0, -10, 0],
-                     rotate: [0, 5, 0]
-                   }}
-                   transition={{ 
-                     scale: { type: "spring", duration: 1.5, delay: 0.5 },
-                     opacity: { duration: 0.5, delay: 0.5 },
-                     y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 2 },
-                     rotate: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
-                   }}
-                   className="w-full h-full object-contain drop-shadow-2xl"
-                 />
-               </motion.div>
-             </div>
+  {/* Contentor com tamanho ajustado e padding de segurança (p-4) para o movimento magnético */}
+  <motion.div 
+    style={{ x: xLogo, y: yLogo }} 
+    className="relative w-[14vw] h-[14vw] md:w-[10vw] md:h-[10vw] lg:w-[9vw] lg:h-[9vw] p-4 mb-[2vw] perspective-1000 flex items-center justify-center"
+  >
+    <motion.img 
+      src={logowebp} 
+      alt="Tomo Logo" 
+      initial={{ scale: 0, rotate: -90, opacity: 0 }}
+      animate={showContent ? { scale: 0.9, rotate: 0, opacity: 1 } : {}}
+      whileInView={{ 
+        y: [0, -6, 0], // reduzido ligeiramente de -10 para -6 para não cortar no topo
+        rotate: [0, 5, 0]
+      }}
+      transition={{ 
+        scale: { type: "spring", duration: 1.5, delay: 0.5 },
+        opacity: { duration: 0.5, delay: 0.5 },
+        y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 2 },
+        rotate: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }
+      }}
+      className="w-full h-full object-contain drop-shadow-2xl"
+    />
+  </motion.div>
+</div>
           </div>
 
           <motion.div
@@ -444,7 +455,7 @@ const HeroSection = () => {
              transition={{ delay: 1 }}
           >
             <p className="mt-6 text-lg md:text-xl font-medium italic opacity-60" style={{ color: tomoNavy }}>
-               ( não apenas para ti )
+              não apenas para ti
             </p>
           </motion.div>
 
@@ -581,21 +592,23 @@ const ServicesSection = () => {
 };
 
 // ============================================
-// WORKS SECTION
+// WORKS SECTION (Zero Lag Parallax & TS Corrigido)
 // ============================================
 const WorksSection = () => {
   const containerRef = useRef(null);
+  
+  // OTIMIZAÇÃO 1: Reduzimos a zona de gatilho do parallax para aliviar a GPU
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start end', 'end start'],
   });
 
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.9, 1, 0.9]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0.5]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1, 0.95]);
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
-  // Efeito Parallax Interno das Imagens
-  const imageY1 = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
-  const imageY2 = useTransform(scrollYProgress, [0, 1], ["-10%", "20%"]);
+  // Efeito Parallax Interno (Mais subtil para menos quebra de pixels)
+  const imageY1 = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
+  const imageY2 = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
 
   const projects = [
     {
@@ -625,10 +638,10 @@ const WorksSection = () => {
   ];
 
   return (
-    <section id="trabalhos" ref={containerRef} className="relative py-16 lg:py-24 bg-white">
+    <section id="trabalhos" ref={containerRef} className="relative py-16 lg:py-24 bg-white overflow-hidden">
       <motion.div
         style={{ scale, opacity }}
-        className="max-w-[1400px] mx-auto px-6 lg:px-12"
+        className="max-w-[1400px] mx-auto px-6 lg:px-12 transform-gpu"
       >
         <div className="mb-16 lg:mb-24">
             <TransitionReveal>
@@ -661,15 +674,18 @@ const WorksSection = () => {
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                     className="relative"
                   >
-                    <div className={`relative aspect-[4/3] rounded-[2rem] overflow-hidden shadow-2xl ${
+                    <div className={`relative aspect-[4/3] rounded-[2rem] overflow-hidden shadow-2xl bg-gray-50 transform-gpu ${
                         project.color === 'blue' ? 'shadow-blue-900/10' : 'shadow-pink-900/10'
                       }`}
                     >
+                      {/* OTIMIZAÇÃO 2: decoding="async" adicionado e fetchPriority corrigido (CamelCase) */}
                       <motion.img 
-                        style={{ y: project.parallax, scale: 1.25 }}
+                        style={{ y: project.parallax, scale: 1.15 }}
                         src={project.image} 
                         alt={project.title} 
-                        className="w-full h-full object-cover transition-transform duration-700"
+                        decoding="async" 
+                        fetchPriority={index === 0 ? "high" : "auto"} 
+                        className="w-full h-full object-cover transition-transform duration-700 will-change-transform"
                       />
                       <div className="absolute inset-0 bg-black/0 hover:bg-black/5 transition-colors duration-500 pointer-events-none" />
                     </div>
@@ -728,13 +744,13 @@ const WorksSection = () => {
           className="mt-24 lg:mt-32 flex justify-center"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "500px" }} // OTIMIZAÇÃO 3: Pré-carrega o botão cedo
           transition={{ duration: 1 }}
         >
           <Link to="/trabalhos">
             <Magnetic>
               <motion.button
-                className="group relative flex items-center gap-4 px-10 py-5 bg-white border-2 border-black/10 text-black font-bold text-base rounded-full overflow-hidden hover:border-black/30 transition-all shadow-sm"
+                className="group relative flex items-center gap-4 px-10 py-5 bg-white border-2 border-black/10 text-black font-bold text-base rounded-full overflow-hidden hover:border-black/30 transition-all shadow-sm transform-gpu"
                 whileHover={{ scale: 1.05, y: -4 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -876,16 +892,24 @@ const ProcessJourney = () => {
 // ============================================
 const AboutSection = () => {
   const containerRef = useRef(null);
+  
+  // Deteta se o ecrã atual é um dispositivo móvel
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile, { passive: true });
+    return () => removeEventListener('resize', checkMobile);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start end', 'end start']
   });
 
-  // Animações aplicadas APENAS à imagem (dentro do contentor)
-  const imageY = useTransform(scrollYProgress, [0, 1], ["-15%", "15%"]);
-  const imageScale = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.05, 1.15]);
-  
-  // Bolha de cor decorativa que se move atrás da foto
+  // Parallax suave (5% no mobile, 15% no desktop)
+  const imageY = useTransform(scrollYProgress, [0, 1], isMobile ? ["-5%", "5%"] : ["-15%", "15%"]);
+  const imageScale = useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.04, 1.1]);
   const blobY = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
 
   return (
@@ -894,17 +918,11 @@ const AboutSection = () => {
         <TransitionReveal>
           <div className="mb-16 lg:mb-20">
             <div className="inline-block px-6 py-2 border border-black/10 rounded-full mb-6">
-              <span className="text-xs tracking-[0.3em] text-black/40 uppercase font-medium">
-                Capítulo V
-              </span>
+              <span className="text-xs tracking-[0.3em] text-black/40 uppercase font-medium">Capítulo V</span>
             </div>
-
-            <h2 className="text-5xl lg:text-6xl font-bold text-black mb-6 tracking-tight">
-              A história da tomo
-            </h2>
+            <h2 className="text-5xl lg:text-6xl font-bold text-black mb-6 tracking-tight">A história da tomo</h2>
             <p className="text-lg lg:text-xl text-black/60 max-w-3xl">
-              De colegas de turma a parceiros criativos numa missão: transformar a forma como os
-              negócios portugueses comunicam através do design.
+              De colegas de turma a parceiros criativos numa missão: transformar a forma como os negócios portugueses comunicam através do design.
             </p>
           </div>
         </TransitionReveal>
@@ -914,44 +932,34 @@ const AboutSection = () => {
             <div className="space-y-6 text-base lg:text-lg text-black/60 leading-relaxed">
               <p>
                 Somos a <strong className="text-black font-bold">Marta</strong> e o{' '}
-                <strong className="text-black font-bold">Lucas</strong>, um casal que se
-                conheceu na mesma turma de Tecnologia e Design Multimédia.
+                <strong className="text-black font-bold">Lucas</strong>, um casal que se conheceu na mesma turma de Tecnologia e Design Multimédia.
               </p>
               <p>
-                Desde o início que partilhamos a mesma obsessão: perceber como a identidade visual
-                pode fazer um negócio ser levado mais a sério e chegar mais longe.
+                Desde o início que partilhamos a mesma obsessão: perceber como a identidade visual pode fazer um negócio ser levado mais a sério e chegar mais longe.
               </p>
               <p>
-                Trabalhámos com marcas locais e nacionais, mas reparámos numa coisa: em Viseu e em
-                muito de Portugal, há negócios incríveis com identidades desatualizadas. E isso
-                custa-lhes clientes e credibilidade.
+                Trabalhámos com marcas locais e nacionais, mas reparámos numa coisa: em Viseu e em muito de Portugal, há negócios incríveis com identidades desatualizadas. E isso custa-lhes clientes e credibilidade.
               </p>
               <p className="text-lg lg:text-xl text-black font-medium pt-4">
-                A tomo nasceu para mudar isso. Queremos ser o parceiro criativo que te ajuda a ter
-                uma marca que te representa de verdade.
+                A tomo nasceu para mudar isso. Queremos ser o parceiro criativo que te ajuda a ter uma marca que te representa de verdade.
               </p>
             </div>
           </TransitionReveal>
 
           <div className="relative h-full flex items-center justify-center">
             <TransitionReveal direction="right">
-              {/* Contentor com o tamanho fixo (aspect-[4/3] e overflow-hidden) */}
               <div className="aspect-[4/3] w-full rounded-[2rem] overflow-hidden border border-black/5 shadow-xl relative z-10 bg-gray-100">
-                {/* Imagem animada no interior */}
                 <motion.img
                   style={{ y: imageY, scale: imageScale }}
-                  src={fotocasal}
+                  // IMPORTANTE: Deves substituir 'fotocasal' pela nova imagem re-enquadrada (image_0.png)
+                  src={fotocasal} 
                   alt="Marta e Lucas - tomo studio"
-                  className="w-full h-full object-cover origin-center"
+                  // Corrigido para 'object-center' para confiar no novo enquadramento da foto re-enquadrada
+                  className="w-full h-full object-cover origin-center object-center will-change-transform"
                 />
               </div>
             </TransitionReveal>
-
-            {/* Bolha animada de fundo */}
-            <motion.div 
-              style={{ y: blobY }}
-              className="absolute -bottom-10 -right-10 w-72 h-72 bg-tomo-pink/15 rounded-full blur-3xl -z-10" 
-            />
+            <motion.div style={{ y: blobY }} className="absolute -bottom-10 -right-10 w-72 h-72 bg-tomo-pink/15 rounded-full blur-3xl -z-10" />
           </div>
         </div>
       </div>
@@ -1216,7 +1224,7 @@ export const Footer = () => {
     { label: 'Contacto', id: 'contacto' }
   ];
 
-  return (
+return (
     <footer className="relative py-12 bg-black text-white">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-10">
@@ -1226,7 +1234,9 @@ export const Footer = () => {
             <img 
               src={LogoCompleto} 
               alt="Tomo Studio" 
-              className="h-8 w-auto mb-4 invert brightness-0 saturate-100" 
+              loading="lazy"
+              decoding="async"
+              className="h-8 w-auto mb-4 object-contain brightness-0 invert opacity-90 transition-opacity hover:opacity-100" 
             />
           </div>
 

@@ -91,3 +91,15 @@
     background: #0370d1;
   }
 }
+
+/* Otimização Premium de Performance (GPU Acceleration) */
+.will-change-transform {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.transform-gpu {
+  transform: translateZ(0);
+}

@@ -5,9 +5,10 @@ import {
   useSpring, 
   useMotionValue,
   AnimatePresence,
+  useInView,
   Variants
 } from 'framer-motion';
-import { ArrowUpRight, Check } from 'lucide-react';
+import { ArrowUpRight, Check, Download } from 'lucide-react';
 import { useRef, useState, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation';
@@ -55,7 +56,7 @@ const Magnetic = ({ children }: { children: React.ReactNode }) => {
       onMouseMove={handleMouse}
       onMouseLeave={reset}
       style={{ x, y }}
-      className="will-change-transform"
+      className="will-change-transform inline-block"
     >
       {children}
     </motion.div>
@@ -67,11 +68,7 @@ const Magnetic = ({ children }: { children: React.ReactNode }) => {
 // ============================================
 const ScrollProgress = () => {
   const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   return (
     <motion.div
@@ -80,6 +77,21 @@ const ScrollProgress = () => {
     />
   );
 };
+
+// ============================================
+// ANIMATION WRAPPER (Reforçado para Scroll)
+// ============================================
+const FadeIn = ({ children, delay = 0, yOffset = 40 }: { children: React.ReactNode, delay?: number, yOffset?: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: yOffset }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-50px" }}
+    transition={{ duration: 1, delay, ease: [0.16, 1, 0.3, 1] as const }}
+    className="will-change-transform"
+  >
+    {children}
+  </motion.div>
+);
 
 // ============================================
 // HERO SECTION
@@ -92,72 +104,112 @@ const HeroSection = () => {
   });
 
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const yText = useTransform(scrollYProgress, [0, 1], [0, 80]); 
+  const yText = useTransform(scrollYProgress, [0, 1], [0, 120]);
+
+  const titleLines = [
+    "Concurso Nacional",
+    "Poliempreende Rebrand",
+  ];
 
   return (
-    <section 
-      ref={containerRef} 
-      className="relative flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-gray-50 via-white to-white pt-28 pb-16 sm:pt-36 sm:pb-20 lg:pt-48 lg:pb-32"
-    >
-      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
-
-      <motion.div 
-        style={{ opacity }}
-        className="relative z-10 w-full px-4 sm:px-6 lg:px-12"
+    <section ref={containerRef} className="relative pt-32 pb-16 lg:pt-48 lg:pb-24 bg-white overflow-hidden flex flex-col items-center min-h-[90vh]">
+      <div 
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)'
+        }}
       >
-        <div className="text-center max-w-[1600px] mx-auto">
-          
-          <motion.div style={{ y: yText }} className="will-change-transform">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#2c9ed6]/10 text-[#3f75ed] text-xs sm:text-sm font-bold uppercase tracking-wider mb-6 sm:mb-8"
+        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
+        
+        <div className="absolute top-0 right-0 w-full lg:w-[60%] h-[600px] flex items-center justify-center lg:justify-end lg:pr-[10%]">
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.15, 1],
+              x: ["-2rem", "1rem", "-2rem"],
+              y: ["-2rem", "1rem", "-2rem"],
+              rotate: [0, 45, 0]
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] bg-[#2c9ed6]/20 rounded-full blur-[100px] lg:blur-[120px]" 
+          />
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.2, 1],
+              x: ["2rem", "-1rem", "2rem"],
+              y: ["2rem", "-2rem", "2rem"],
+              rotate: [0, -45, 0]
+            }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute w-[45vw] h-[45vw] max-w-[500px] max-h-[500px] bg-[#3f75ed]/15 rounded-full blur-[100px] lg:blur-[120px]" 
+          />
+        </div>
+      </div>
+      
+      <motion.div 
+        style={{ opacity, y: yText }}
+        className="max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10 w-full will-change-transform"
+      >
+        <div className="max-w-5xl flex flex-col gap-1 md:gap-3 mb-6 md:mb-8">
+          {titleLines.map((line, index) => (
+            <div key={index} className="overflow-hidden pb-2">
+              <motion.h1
+                initial={{ y: "110%", rotate: 2, opacity: 0 }}
+                animate={{ y: "0%", rotate: 0, opacity: 1 }}
+                transition={{ duration: 1.2, delay: 0.1 + (index * 0.15), ease: [0.16, 1, 0.3, 1] as const }}
+                className="text-5xl sm:text-6xl md:text-8xl font-bold text-black tracking-tight leading-[1] drop-shadow-sm"
               >
-                Concurso · Proposta de Design
-              </motion.div>
-
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.8 }}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black max-w-5xl mx-auto leading-tight mb-8 sm:mb-12 tracking-tight break-words"
-              >
-                Uma identidade visual que inspira a próxima geração de empreendedores
-              </motion.h2>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="inline-flex flex-col sm:flex-row justify-center gap-x-12 gap-y-6 text-sm bg-white/80 backdrop-blur-sm border border-black/5 rounded-2xl sm:rounded-3xl px-6 py-6 sm:px-12 sm:py-8 shadow-sm w-full sm:w-auto text-center"
-          >
-            <div>
-              <div className="text-xs text-black/40 uppercase tracking-wider mb-1 font-bold">Concurso</div>
-              <div className="text-black font-bold text-base sm:text-lg">Instituto Politécnico de Viseu</div>
+                {line}
+              </motion.h1>
             </div>
-            <div className="hidden sm:block w-px bg-black/10 self-stretch" />
-            <div>
-              <div className="text-xs text-black/40 uppercase tracking-wider mb-1 font-bold">Serviços</div>
-              <div className="text-black font-bold text-base sm:text-lg">Identidade Visual & Branding</div>
-            </div>
-          </motion.div>
+          ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full pt-12 hidden md:block"
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mt-16 md:mt-24 pt-8 border-t border-black/10 relative"
         >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="flex flex-col items-center gap-3"
-          >
-            <span className="text-[10px] text-black/3 ArrowUpRight uppercase tracking-[0.3em]">Scroll</span>
-            <div className="w-px h-16 bg-gradient-to-b from-black/20 to-transparent" />
-          </motion.div>
+          <motion.div 
+            className="absolute top-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-black/30 to-transparent"
+            initial={{ x: "-100%", width: "50%" }}
+            animate={{ x: "200%" }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear", delay: 2 }}
+          />
+
+          {[
+            { title: "Cliente", content: <p className="text-base font-medium text-black">Inst. Politécnico Viseu</p> },
+            { title: "Tipologia", content: <p className="text-base font-medium text-black">Concurso / Pitch</p> },
+            { title: "Serviços", content: <ul className="text-base font-medium text-black space-y-1"><li>Rebranding</li><li>Identidade Visual</li><li>Aplicações Gráficas</li></ul> },
+            { title: "Rede", content: <p className="text-base font-medium text-black border-b border-black/20 pb-0.5">poliempreende.com</p> }
+          ].map((item, i) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8 + (i * 0.1), ease: [0.16, 1, 0.3, 1] as const }}
+            >
+              <h4 className="text-xs font-bold text-black/40 uppercase tracking-widest mb-2">{item.title}</h4>
+              {item.content}
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5 }}
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full pt-12 hidden md:block"
+      >
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center gap-3"
+        >
+          <span className="text-[10px] text-black/30 uppercase tracking-[0.3em] font-bold">Scroll</span>
+          <div className="w-px h-16 bg-gradient-to-b from-black/20 to-transparent" />
         </motion.div>
       </motion.div>
     </section>
@@ -165,171 +217,178 @@ const HeroSection = () => {
 };
 
 // ============================================
-// CONTEXT SECTION
+// SYSTEM SUB-COMPONENT: AWWWARDS FLUID ROW
 // ============================================
-const ContextSection = () => {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
+const ConceptRow = ({ item, index }: { item: any, index: number }) => {
+  const rowRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
+  
+  const isScrolledView = useInView(rowRef, { margin: "-30% 0px -30% 0px" });
+  const isActive = isHovered || isScrolledView;
+  const isDarkBlue = item.color === 'dark';
 
-  const y = useTransform(scrollYProgress, [0, 1], [60, -60]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const easeGolden = [0.76, 0, 0.24, 1] as const;
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center py-16 sm:py-24 lg:py-32 bg-white">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        <motion.div 
-          style={{ opacity }}
-          className="grid lg:grid-cols-2 gap-10 sm:gap-16 lg:gap-20 items-center w-full"
-        >
-          <motion.div
-            style={{ y }}
-            className="relative aspect-square w-full max-w-[450px] mx-auto lg:max-w-none flex items-center justify-center will-change-transform"
-          >
-            <Magnetic>
-                <div className="relative w-full h-full flex items-center justify-center rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
-                    <div className="absolute inset-0 bg-black/5 z-10 mix-blend-multiply" />
-                    <img 
-                      src={billboardImg} 
-                      alt="Poliempreende Billboard"
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
-                    />
-                </div>
-            </Magnetic>
-          </motion.div>
+    <motion.div 
+      ref={rowRef}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 1, delay: index * 0.1, ease: easeGolden }}
+      className="border-b border-black/10 first:border-t group relative overflow-hidden cursor-pointer will-change-transform"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <motion.div 
+        className="absolute inset-0 bg-gray-50 origin-bottom z-0"
+        initial={false}
+        animate={{ scaleY: isActive ? 1 : 0 }}
+        transition={{ duration: 0.6, ease: easeGolden }}
+      />
 
-          <div className="text-left">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+      <div className="relative z-10 px-6 lg:px-12 py-10 lg:py-14 w-full flex flex-col">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-6 lg:gap-16">
+            <motion.span 
+              animate={{ color: isActive ? (isDarkBlue ? '#3F75ED' : '#2C9ED6') : 'rgba(0,0,0,0.2)' }}
+              transition={{ duration: 0.4 }}
+              className="font-mono text-sm font-bold"
             >
-              <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-black leading-tight mb-6 sm:mb-8 tracking-tight">
-                O maior concurso de empreendedorismo estudantil
-              </h2>
-              <div className="space-y-4 sm:space-y-6 text-base sm:text-lg text-black/70 leading-relaxed">
-                <p>
-                  O Poliempreende é a maior rede nacional de promoção do empreendedorismo no ensino superior politécnico português, focado em transformar ideias inovadoras em negócios reais com impacto sustentável.
-                </p>
-                <p>
-                  Este projeto foi desenvolvido pelo nosso estúdio como uma proposta integrada para o concurso oficial de renovação da marca. 
-                </p>
-              </div>
-            </motion.div>
+              ( {item.number} )
+            </motion.span>
+            
+            <motion.h3 
+              animate={{ x: isActive ? 24 : 0 }}
+              transition={{ duration: 0.6, ease: easeGolden }}
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tighter text-black"
+            >
+              {item.title}
+            </motion.h3>
+          </div>
+        </div>
+
+        <motion.div
+          initial={false}
+          animate={{ height: isActive ? 'auto' : 0, opacity: isActive ? 1 : 0 }}
+          transition={{ 
+            height: { duration: 0.6, ease: easeGolden },
+            opacity: { duration: 0.4, ease: "linear", delay: isActive ? 0.1 : 0 }
+          }}
+          className="overflow-hidden"
+        >
+          <div className="pt-8 lg:pt-12 pl-14 lg:pl-[120px] grid lg:grid-cols-12 gap-8 pb-2">
+            <div className="lg:col-span-7">
+              <p className="text-lg lg:text-xl text-black/60 font-medium leading-relaxed">
+                {item.description}
+              </p>
+            </div>
+            <div className="lg:col-span-5 flex flex-wrap content-start gap-3">
+              {item.features.map((feature: string, i: number) => (
+                <motion.span 
+                  key={feature} 
+                  initial={false}
+                  animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 10 }}
+                  transition={{ duration: 0.4, delay: isActive ? 0.2 + (i * 0.05) : 0, ease: easeGolden }}
+                  className="px-4 py-2 rounded-full text-xs font-bold border border-black/10 text-black/50 bg-white/50"
+                >
+                  {feature}
+                </motion.span>
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>
-    </section>
+    </motion.div>
   );
 };
 
 // ============================================
-// CHALLENGE SECTION
+// CONCEPT SECTION
 // ============================================
-const ChallengeSection = () => {
-  const ref = useRef(null);
+const ConceptSection = () => {
+  const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
-    target: ref,
+    target: containerRef,
     offset: ["start end", "end start"]
   });
-
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.9, 1, 0.9]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const yImage = useTransform(scrollYProgress, [0, 1], [40, -40]);
 
   const conceptData = [
     {
       number: '01',
       title: 'A Engrenagem',
-      description: 'O núcleo do símbolo parte de uma engrenagem geométrica de seis pontas, representando a engrenagem mecânica do avanço e do trabalho estruturado.',
-      features: ['Rede cooperativa', 'Sincronização de ideias', 'Rigor institucional'],
-      color: 'blue'
+      color: 'dark',
+      description: 'O núcleo do símbolo parte de uma engrenagem geométrica de seis pontas, representando a engrenagem mecânica do avanço, a interligação das diferentes escolas e o trabalho metódico.',
+      features: ['Rede cooperativa', 'Sincronização', 'Rigor institucional']
     },
     {
       number: '02',
-      title: 'A Rede de Pessoas',
-      description: 'Círculos dispostos nas extremidades representam seis figuras humanas interligadas, uma metáfora visual clara para a comunidade ativa do programa.',
-      features: ['Estudantes e mentores', 'Colaboração aberta', 'Trabalho de equipa'],
-      color: 'pink'
+      title: 'A Rede Humana',
+      color: 'light',
+      description: 'Os círculos dispostos nas extremidades funcionam como uma abstração de seis figuras humanas interligadas, traduzindo o lado de partilha e comunidade viva do programa Poliempreende.',
+      features: ['Comunidade estudantil', 'Colaboração aberta', 'Trabalho de equipa']
     },
     {
       number: '03',
       title: 'O Movimento',
-      description: 'A disposição e a curvatura circular da marca transmitem a ideia de evolução contínua, continuidade cíclica e acessibilidade de mercado.',
-      features: ['Fluidez e progresso', 'Ação sustentável', 'Modernidade digital'],
-      color: 'blue'
+      color: 'dark',
+      description: 'A disposição e a curvatura circular não têm um ponto final rígido. Transmitem a sensação de evolução constante, progresso sustentável e flexibilidade na adaptação ao mercado.',
+      features: ['Fluidez de ideias', 'Ação sustentável', 'Progressão contínua']
     }
-  ] as const;
+  ];
 
   return (
-    <section ref={ref} className="relative py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-white via-black/[0.02] to-white">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        <motion.div style={{ scale, opacity }} className="w-full flex flex-col items-center will-change-transform">
-          
-          <div className="text-center mb-8 sm:mb-16">
-            <div className="inline-block px-5 py-1.5 border border-black/10 rounded-full mb-4 sm:mb-6">
-              <span className="text-[10px] sm:text-xs tracking-[0.3em] text-black/40 uppercase font-medium">
-                Conceito Visual
-              </span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-black mb-4 tracking-tight">
-              Como criar uma marca que inspire ação?
-            </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-black/60 max-w-2xl mx-auto">
-              A desconstrução geométrica do símbolo baseada nos conceitos de colaboração e comunidade.
-            </p>
-          </div>
+    <section ref={containerRef} className="relative py-24 lg:py-36 bg-gray-50 border-t border-black/5 overflow-hidden flex flex-col items-center">
+      
+      <div className="max-w-[1000px] mx-auto px-6 w-full text-center flex flex-col items-center mb-16 lg:mb-24">
+        <FadeIn yOffset={50}>
+          <span className="text-[10px] tracking-[0.3em] font-bold text-[#2c9ed6] uppercase block mb-6">
+            // Maior rede de empreendedorismo
+          </span>
+        </FadeIn>
+        <FadeIn delay={0.1} yOffset={50}>
+          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-black tracking-tighter leading-[1.05] max-w-4xl mb-12 sm:mb-16">
+            Uma marca focada na ação de transformar ideias em impacto.
+          </h2>
+        </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch w-full text-left">
-            {conceptData.map((service) => {
-              const isBlue = service.color === 'blue';
-              const hoverBorder = isBlue ? 'hover:border-[#2c9ed6]/50' : 'hover:border-tomo-pink/50';
-              const hoverShadow = isBlue ? 'hover:shadow-[#2c9ed6]/10' : 'hover:shadow-tomo-pink/10';
-
-              return (
-                <motion.div
-                  key={service.number}
-                  whileHover={{ y: -6, scale: 1.01 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
-                  className="h-full flex"
-                >
-                  <div
-                    className={`flex flex-col w-full p-6 sm:p-8 bg-white border-2 border-black/5 rounded-2xl sm:rounded-3xl transition-all duration-300 shadow-sm hover:shadow-xl ${hoverBorder} ${hoverShadow}`}
-                  >
-                    <div className="text-xs font-mono text-black/40 mb-4 sm:mb-6">{service.number}</div>
-                    <h3 className="text-xl sm:text-2xl font-bold text-black mb-3 tracking-tight">
-                      {service.title}
-                    </h3>
-                    <p className="text-sm sm:text-base text-black/60 leading-relaxed mb-6 flex-grow">
-                      {service.description}
-                    </p>
-
-                    <ul className="space-y-2 mt-auto">
-                      {service.features.map(feature => (
-                        <li
-                          key={feature}
-                          className="flex items-center gap-3 text-xs sm:text-sm text-black/60"
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                              isBlue ? 'bg-[#2c9ed6]' : 'bg-tomo-pink'
-                            }`}
-                          />
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-
+        <motion.div style={{ y: yImage }} className="w-full max-w-[380px] aspect-square flex items-center justify-center my-6 relative z-10 will-change-transform">
+          <Magnetic>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 50 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }}
+              className="w-full h-full bg-white rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.04)] border border-black/5 p-12 flex items-center justify-center will-change-transform"
+            >
+              <img 
+                src={logoImg} 
+                alt="Poliempreende Símbolo" 
+                className="w-full h-full object-contain mix-blend-multiply"
+              />
+            </motion.div>
+          </Magnetic>
         </motion.div>
+      </div>
+
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 w-full bg-white pt-16 lg:pt-24 pb-12 lg:pb-16 rounded-[3rem] border border-black/[0.03] shadow-sm relative z-20 -mt-10 lg:-mt-20">
+        <div className="max-w-3xl mb-12 lg:mb-16">
+          <FadeIn>
+            <span className="text-xs font-mono font-bold text-black/40 block mb-3">Anatomia do Símbolo</span>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-xl sm:text-2xl text-black/50 font-medium tracking-tight">
+              A desconstrução geométrica do símbolo assente nos valores de colaboração, estrutura e modernidade digital.
+            </p>
+          </FadeIn>
+        </div>
+
+        <div className="flex flex-col relative">
+          {conceptData.map((item, index) => (
+            <ConceptRow key={item.number} item={item} index={index} />
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -342,95 +401,84 @@ const BeforeAfterSection = () => {
   const [showAfter, setShowAfter] = useState(true);
 
   return (
-    <section className="relative py-16 sm:py-24 lg:py-32 bg-white overflow-hidden border-b border-black/5">
+    <section className="relative py-24 sm:py-32 bg-white overflow-hidden border-t border-black/5">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12">
         
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-10 sm:mb-12"
-        >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 sm:mb-6 tracking-tight">
-            A Evolução da Marca
-          </h2>
-          <p className="text-base sm:text-xl text-black/60 max-w-2xl mx-auto">
-            A diferença entre uma marca antiga e uma identidade com propósito.
-          </p>
-        </motion.div>
+        <div className="text-center mb-10 sm:mb-16">
+          <FadeIn yOffset={30}>
+            <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-black mb-6 tracking-tight">
+              A Evolução
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1} yOffset={30}>
+            <p className="text-base sm:text-xl text-black/50 max-w-2xl mx-auto font-medium">
+              Da desatualização corporativa para uma identidade enérgica, otimizada para o meio digital e para o público jovem.
+            </p>
+          </FadeIn>
+        </div>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.1 }}
-          className="flex justify-center mb-8 sm:mb-12"
-        >
-          <div className="bg-gray-100 p-1.5 rounded-full inline-flex relative shadow-inner">
-            <motion.div
-              className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white rounded-full shadow-sm will-change-transform"
-              initial={false}
-              animate={{ 
-                x: showAfter ? '100%' : '0%' 
-              }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            />
-            
-            <button 
-              onClick={() => setShowAfter(false)} 
-              className={`relative z-10 px-6 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors rounded-full ${!showAfter ? 'text-black' : 'text-black/40 hover:text-black/60'}`}
-            >
-              Antes
-            </button>
-            <button 
-              onClick={() => setShowAfter(true)} 
-              className={`relative z-10 px-6 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors rounded-full ${showAfter ? 'text-[#2c9ed6]' : 'text-black/40 hover:text-black/60'}`}
-            >
-              Depois
-            </button>
+        <FadeIn delay={0.2} yOffset={20}>
+          <div className="flex justify-center mb-10 lg:mb-16">
+            <div className="bg-gray-50 p-1.5 rounded-full inline-flex relative shadow-inner border border-black/5">
+              <motion.div
+                className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white rounded-full shadow-sm will-change-transform border border-black/[0.03]"
+                initial={false}
+                animate={{ x: showAfter ? '100%' : '0%' }}
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              />
+              
+              <button 
+                onClick={() => setShowAfter(false)} 
+                className={`relative z-10 px-8 py-3 text-sm font-bold transition-colors rounded-full ${!showAfter ? 'text-black' : 'text-black/40 hover:text-black/60'}`}
+              >
+                Antes
+              </button>
+              <button 
+                onClick={() => setShowAfter(true)} 
+                className={`relative z-10 px-8 py-3 text-sm font-bold transition-colors rounded-full ${showAfter ? 'text-[#3f75ed]' : 'text-black/40 hover:text-black/60'}`}
+              >
+                Depois
+              </button>
+            </div>
           </div>
-        </motion.div>
+        </FadeIn>
 
         <motion.div 
-          initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative max-w-4xl mx-auto aspect-[4/3] md:aspect-[16/9] rounded-2xl sm:rounded-[2rem] border border-black/5 shadow-2xl overflow-hidden bg-gray-50 flex items-center justify-center p-4 sm:p-8 md:p-16 will-change-transform"
+          initial={{ opacity: 0, y: 50, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
+          className="relative max-w-5xl mx-auto aspect-[4/3] md:aspect-[16/9] rounded-[2rem] sm:rounded-[3rem] border border-black/5 shadow-[0_30px_100px_rgba(0,0,0,0.06)] overflow-hidden bg-white flex items-center justify-center p-8 sm:p-16 will-change-transform"
         >
           <AnimatePresence mode="wait">
             {!showAfter ? (
               <motion.div
                 key="antes"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.02 }}
-                transition={{ duration: 0.4 }}
-                className="w-full h-full flex items-center justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="w-full h-full flex items-center justify-center bg-gray-50/50 rounded-2xl"
               >
                 <img 
                   src={antesImg} 
-                  alt="Marca Antiga Poliempreende" 
-                  loading="lazy"
-                  decoding="async"
-                  className="w-[90%] h-[90%] sm:w-[85%] sm:h-[85%] object-contain mix-blend-multiply opacity-80" 
+                  alt="Marca Antiga" 
+                  className="w-[85%] h-[85%] object-contain mix-blend-multiply opacity-70" 
                 />
               </motion.div>
             ) : (
               <motion.div
                 key="depois"
-                initial={{ opacity: 0, scale: 0.98 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.02 }}
-                transition={{ duration: 0.4 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] as const }}
                 className="w-full h-full flex items-center justify-center"
               >
                 <img 
                   src={logoImg} 
-                  alt="Nova Marca Poliempreende" 
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-contain scale-[1.2] sm:scale-[1.5] md:scale-[1.8] mix-blend-multiply" 
+                  alt="Nova Marca" 
+                  className="w-full h-full object-contain scale-[1.2] sm:scale-[1.6] mix-blend-multiply" 
                 />
               </motion.div>
             )}
@@ -446,7 +494,6 @@ const BeforeAfterSection = () => {
 // COLOR SYSTEM 
 // ============================================
 const ColorSystemSection = () => {
-  const ref = useRef(null);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const colors = [
@@ -456,23 +503,6 @@ const ColorSystemSection = () => {
     { name: 'Graphite Ink', hex: '#1C1C1C', bg: 'bg-[#1c1c1c]' },
   ];
 
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { 
-        type: "spring" as const, 
-        stiffness: 100 
-      } 
-    }
-  };
-
   const handleCopy = (hex: string, index: number) => {
     navigator.clipboard.writeText(hex);
     setCopiedIndex(index);
@@ -480,36 +510,35 @@ const ColorSystemSection = () => {
   };
 
   return (
-    <section ref={ref} className="relative py-16 sm:py-24 lg:py-32 bg-white">
+    <section className="relative py-16 sm:py-24 lg:py-32 bg-gray-50 border-t border-black/5">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12 sm:mb-20"
-        >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
-            Paleta que comunica
-          </h2>
-          <p className="text-base sm:text-xl text-black/60 max-w-2xl mx-auto">
-            Uma paleta estruturada combinando tons digitais tecnológicos vibrantes com a energia e proximidade dos neutros quentes.
-          </p>
-        </motion.div>
+        <div className="text-center mb-12 sm:mb-20">
+          <FadeIn>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
+              A Nossa Paleta
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-base sm:text-xl text-black/50 max-w-2xl mx-auto font-medium">
+              Tons digitais tecnológicos vibrantes combinados com a energia dos neutros quentes para comunicação impactante.
+            </p>
+          </FadeIn>
+        </div>
 
-        <motion.div 
-          className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 w-full"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-        >
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 w-full">
           {colors.map((color, i) => (
-            <motion.div key={color.name} variants={itemVariants} className="will-change-transform">
+            <motion.div 
+              key={color.name}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.8, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] as const }}
+            >
               <div 
                  className="group cursor-pointer relative"
                  onClick={() => handleCopy(color.hex, i)}
               >
-                <div className={`${color.bg} aspect-square rounded-2xl sm:rounded-3xl mb-4 shadow-md border border-black/5 relative overflow-hidden transition-transform duration-300 group-hover:-translate-y-1.5`}>
+                <div className={`${color.bg} aspect-square rounded-2xl sm:rounded-[2rem] mb-4 shadow-md border border-black/5 relative overflow-hidden transition-transform duration-300 group-hover:-translate-y-1.5`}>
                     {copiedIndex === i && (
                         <div className="absolute inset-0 bg-black/20 flex items-center justify-center backdrop-blur-sm">
                             <div className="bg-white p-2 rounded-full shadow-sm">
@@ -520,88 +549,101 @@ const ColorSystemSection = () => {
                 </div>
                 <h4 className="font-bold text-black text-sm sm:text-lg mb-0.5">{color.name}</h4>
                 <div className="flex items-center gap-2">
-                    <p className="text-[11px] sm:text-sm text-black/40 font-mono bg-gray-50 px-1.5 py-0.5 rounded border border-black/[0.03]">{color.hex}</p>
+                    <p className="text-[11px] sm:text-sm text-black/40 font-mono bg-white px-1.5 py-0.5 rounded border border-black/[0.03]">{color.hex}</p>
                     {copiedIndex === i && <span className="text-[10px] sm:text-xs text-green-500 font-bold">Copiado!</span>}
                 </div>
               </div>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );
 };
 
 // ============================================
-// APPLICATIONS SECTION
+// APPLICATIONS SECTION (Performance Optimized)
 // ============================================
 const ApplicationsSection = () => {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  const yFast = useTransform(scrollYProgress, [0, 1], [0, -60]);
-  const ySlow = useTransform(scrollYProgress, [0, 1], [0, -15]);
-
-  // Desativar efeito parallax vertical no mobile para evitar saltos visuais
-  const [isMobile, setIsMobile] = useState(false);
-  useLayoutEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
   const applications = [
-    { name: 'Plataforma Website', img: websiteImg, colSpan: 'col-span-1' },
-    { name: 'Stand Promocional', img: standImg, colSpan: 'col-span-1' },
-    { name: 'Cartazes e Posters', img: posterImg, colSpan: 'col-span-1' },
-    { name: 'Social Media Grid', img: socialImg, colSpan: 'col-span-1' },
-    { name: 'T-Shirt Oficial', img: tshirtImg, colSpan: 'col-span-1' },
-    { name: 'Tote Bag Mockup', img: toteImg, colSpan: 'col-span-1' },
+    { name: 'Billboard Outdoor', img: billboardImg },
+    { name: 'Plataforma Website', img: websiteImg },
+    { name: 'Stand Promocional', img: standImg },
+    { name: 'Cartazes e Posters', img: posterImg },
+    { name: 'Social Media Grid', img: socialImg },
+    { name: 'Merchandise Textil', img: tshirtImg }
   ];
 
+  // Variáveis para a Animação em Cascata (Stagger)
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15, // Atraso entre a entrada de cada imagem
+      }
+    }
+  };
+
+  // Efeito de entrada de cada imagem (suave, linear e sem bounce)
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 60, scale: 0.95 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+    }
+  };
+
   return (
-    <section ref={ref} className="relative py-16 sm:py-24 lg:py-32 bg-gray-50 overflow-hidden">
+    <section className="relative py-24 lg:py-32 bg-white overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        <div className="text-center mb-12 sm:mb-20">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
-            Identidade em ação
-          </h2>
-          <p className="text-base sm:text-xl text-black/60 max-w-2xl mx-auto">
-            Garantindo uma experiência de marca unificada e altamente coerente através de suportes físicos e digitais.
-          </p>
+        
+        <div className="text-center mb-16 sm:mb-24">
+          <FadeIn>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black mb-6 tracking-tighter">
+              Identidade em ação.
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-lg sm:text-xl text-black/50 max-w-2xl mx-auto font-medium">
+              Garantindo uma experiência unificada, escalável e imersiva através de todos os pontos de contacto da marca.
+            </p>
+          </FadeIn>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 auto-rows-[250px] sm:auto-rows-[300px] w-full">
-          {applications.map((app, i) => (
+        {/* Grelha com a Revelação em Cascata */}
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
+          {applications.map((app) => (
             <motion.div
               key={app.name}
-              style={{ y: isMobile ? 0 : (i % 2 === 0 ? ySlow : yFast) }}
-              className={`${app.colSpan} will-change-transform`}
+              variants={itemVariants}
+              className="will-change-transform"
             >
-              <div
-                className="relative h-full rounded-2xl sm:rounded-3xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 border border-black/5"
-              >
+              <div className="relative aspect-[4/5] rounded-3xl overflow-hidden group cursor-pointer border border-black/[0.03] shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-shadow duration-700">
                 <img 
                   src={app.img} 
                   alt={app.name} 
                   loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[0.16,1,0.3,1] group-hover:scale-[1.05] will-change-transform"
                 />
-                <div className="absolute inset-0 bg-black/5 sm:bg-black/0 group-hover:bg-black/10 transition-colors" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 
-                {/* Legendas sempre visíveis no mobile para melhor UX tátil */}
-                <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 bg-white/95 backdrop-blur-md px-3 py-1.5 sm:px-4 sm:py-2 rounded-full opacity-100 sm:opacity-0 group-hover:opacity-100 transition-all transform translate-y-0 sm:translate-y-2 group-hover:translate-y-0 shadow-sm">
-                   <span className="text-[10px] sm:text-xs font-bold text-black uppercase tracking-wide">{app.name}</span>
+                <div className="absolute bottom-6 left-6 right-6 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-[0.16,1,0.3,1]">
+                   <span className="text-xs font-bold text-white bg-black/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 uppercase tracking-widest">{app.name}</span>
                 </div>
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
+
       </div>
     </section>
   );
@@ -612,34 +654,33 @@ const ApplicationsSection = () => {
 // ============================================
 const VideoSection = () => {
   return (
-    <section className="relative py-16 sm:py-24 lg:py-32 bg-white">
+    <section className="relative py-16 sm:py-24 lg:py-32 bg-gray-50 border-y border-black/5">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        <div className="text-center mb-10 sm:mb-16">
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-black mb-4 tracking-tight">
-            Marca em movimento
-          </h2>
+        <div className="text-center mb-16 lg:mb-20">
+          <FadeIn>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black tracking-tight">
+              Marca em movimento
+            </h2>
+          </FadeIn>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-5xl mx-auto w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto w-full">
           {[video1, video2].map((src, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="relative group will-change-transform"
+              initial={{ opacity: 0, y: 50, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 1, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] as const }}
             >
-              <div className="relative aspect-square rounded-2xl sm:rounded-3xl p-[1px] bg-gradient-to-br from-[#2c9ed6]/30 via-transparent to-[#3f75ed]/30 shadow-xl sm:shadow-2xl">
-                <div className="w-full h-full bg-gray-100 rounded-[calc(1rem-1px)] sm:rounded-[calc(1.5rem-1px)] overflow-hidden">
-                  <video 
-                    src={src} 
-                    controls 
-                    playsInline 
-                    preload="metadata"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+              <div className="relative aspect-[9/16] md:aspect-square rounded-[2rem] sm:rounded-[2.5rem] bg-white border border-black/5 shadow-[0_20px_60px_rgba(0,0,0,0.04)] overflow-hidden">
+                <video 
+                  src={src} 
+                  controls 
+                  playsInline 
+                  preload="metadata"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </motion.div>
           ))}
@@ -654,26 +695,27 @@ const VideoSection = () => {
 // ============================================
 const OutroSection = () => {
   return (
-    <section className="relative min-h-[60vh] sm:min-h-[80vh] flex items-center bg-gray-50 border-t border-black/5 py-16">
+    <section className="relative min-h-[60vh] flex items-center bg-white py-16">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 w-full text-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as const }}
         >
-          <p className="text-xs sm:text-sm text-black/40 uppercase tracking-[0.3em] mb-6 sm:mb-8 font-bold">
-            Próximo projeto
+          <p className="text-xs font-bold text-black/30 uppercase tracking-[0.3em] mb-8">
+            Explorar mais
           </p>
 
           <Link to="/trabalhos" className="block w-full">
             <Magnetic>
                 <div className="group max-w-4xl mx-auto cursor-pointer px-2">
-                  <h3 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-black mb-4 group-hover:text-[#2c9ed6] transition-colors tracking-tight break-words leading-tight">
-                      Ver todos os projetos
+                  <h3 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-black mb-8 group-hover:text-[#2c9ed6] transition-colors tracking-tighter leading-tight">
+                      Ver Portfólio
                   </h3>
-                  <div className="inline-flex items-center gap-2 text-[#2c9ed6] font-bold uppercase tracking-wider text-xs sm:text-sm mt-2 sm:mt-4 border-b-2 border-[#2c9ed6] pb-1">
-                      Explorar portfólio
-                      <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" size={14} />
+                  <div className="inline-flex items-center gap-2 text-black font-bold uppercase tracking-wider text-xs sm:text-sm mt-2 border-b-2 border-black pb-1">
+                      Explorar Projetos
+                      <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" size={16} />
                   </div>
                 </div>
             </Magnetic>
@@ -697,8 +739,7 @@ export const Poliempreende = () => {
       <Navigation />
       <ScrollProgress />
       <HeroSection />
-      <ContextSection />
-      <ChallengeSection />
+      <ConceptSection />
       <BeforeAfterSection />
       <ColorSystemSection />
       <ApplicationsSection />

@@ -3,7 +3,9 @@ import {
   useScroll, 
   useTransform, 
   useSpring, 
-  useMotionValue 
+  useMotionValue,
+  useInView,
+  Variants
 } from 'framer-motion';
 import { ArrowUpRight, Check, Download } from 'lucide-react';
 import { useRef, useState, useLayoutEffect } from 'react';
@@ -23,7 +25,7 @@ import instagramImg from '../assets/idipv/Publicações de instagram.webp';
 import rollupsImg from '../assets/idipv/Rollups.webp';
 import zoomImg from '../assets/idipv/zoom (2).webp';
 
-// Importação do PDF para o Vite o processar corretamente
+// Importação do PDF
 import manualPdf from '../assets/idipv/ManualdeIdentidadeIDIPV.pdf';
 
 // ============================================
@@ -54,7 +56,7 @@ const Magnetic = ({ children }: { children: React.ReactNode }) => {
       onMouseMove={handleMouse}
       onMouseLeave={reset}
       style={{ x, y }}
-      className="will-change-transform"
+      className="will-change-transform inline-block"
     >
       {children}
     </motion.div>
@@ -66,11 +68,7 @@ const Magnetic = ({ children }: { children: React.ReactNode }) => {
 // ============================================
 const ScrollProgress = () => {
   const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   return (
     <motion.div
@@ -79,6 +77,21 @@ const ScrollProgress = () => {
     />
   );
 };
+
+// ============================================
+// ANIMATION WRAPPER
+// ============================================
+const FadeIn = ({ children, delay = 0, yOffset = 40 }: { children: React.ReactNode, delay?: number, yOffset?: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: yOffset }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-50px" }}
+    transition={{ duration: 1, delay, ease: [0.16, 1, 0.3, 1] as const }}
+    className="will-change-transform"
+  >
+    {children}
+  </motion.div>
+);
 
 // ============================================
 // HERO SECTION
@@ -91,227 +104,298 @@ const HeroSection = () => {
   });
 
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const yText = useTransform(scrollYProgress, [0, 1], [0, 80]); 
+  const yText = useTransform(scrollYProgress, [0, 1], [0, 120]);
+
+  const titleLines = [
+    "Onde o conhecimento",
+    "encontra o futuro",
+    "através do design."
+  ];
 
   return (
-    <section 
-      ref={containerRef} 
-      className="relative flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-gray-50 via-white to-white pt-28 pb-16 sm:pt-36 sm:pb-20 lg:pt-48 lg:pb-32"
-    >
-      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_1px]" />
-
-      <motion.div 
-        style={{ opacity }}
-        className="relative z-10 w-full px-4 sm:px-6 lg:px-12"
+    <section ref={containerRef} className="relative pt-32 pb-16 lg:pt-48 lg:pb-24 bg-white overflow-hidden flex flex-col items-center min-h-[90vh]">
+      <div 
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)'
+        }}
       >
-        <div className="text-center max-w-[1600px] mx-auto">
-          <motion.div style={{ y: yText }} className="will-change-transform">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#0055FF]/10 text-[#0055FF] text-xs sm:text-sm font-bold uppercase tracking-wider mb-6 sm:mb-8"
-              >
-                Case Study · 2024
-              </motion.div>
-
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.8 }}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#020224] max-w-5xl mx-auto leading-tight mb-8 sm:mb-12 tracking-tight break-words"
-              >
-                Onde o conhecimento encontra o futuro: Uma assinatura de vanguarda
-              </motion.h2>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8 }}
-            className="inline-flex flex-col sm:flex-row justify-center gap-x-12 gap-y-6 text-sm bg-white/80 backdrop-blur-sm border border-black/5 rounded-2xl sm:rounded-3xl px-6 py-6 sm:px-12 sm:py-8 shadow-sm w-full sm:w-auto text-center will-change-transform"
-          >
-            <div>
-              <div className="text-xs text-black/40 uppercase tracking-wider mb-1 font-bold">Cliente</div>
-              <div className="text-black font-bold text-base sm:text-lg">Instituto Politécnico de Viseu</div>
-            </div>
-            <div className="hidden sm:block w-px bg-black/10 self-stretch" />
-            <div>
-              <div className="text-xs text-black/40 uppercase tracking-wider mb-1 font-bold">Serviços</div>
-              <div className="text-black font-bold text-base sm:text-lg">Naming, Branding & Digital</div>
-            </div>
-          </motion.div>
+        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
+        
+        <div className="absolute top-0 right-0 w-full lg:w-[60%] h-[600px] flex items-center justify-center lg:justify-end lg:pr-[10%]">
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.15, 1],
+              x: ["-2rem", "1rem", "-2rem"],
+              y: ["-2rem", "1rem", "-2rem"],
+              rotate: [0, 45, 0]
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] bg-[#0055FF]/15 rounded-full blur-[100px] lg:blur-[120px]" 
+          />
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.2, 1],
+              x: ["2rem", "-1rem", "2rem"],
+              y: ["2rem", "-2rem", "2rem"],
+              rotate: [0, -45, 0]
+            }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute w-[45vw] h-[45vw] max-w-[500px] max-h-[500px] bg-[#1E007F]/10 rounded-full blur-[100px] lg:blur-[120px]" 
+          />
         </div>
+      </div>
+      
+      <motion.div 
+        style={{ opacity, y: yText }}
+        className="max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10 w-full will-change-transform"
+      >
+        <div className="max-w-5xl flex flex-col gap-1 md:gap-3 mb-6 md:mb-8">
+          {titleLines.map((line, index) => (
+            <div key={index} className="overflow-hidden pb-2">
+              <motion.h1
+                initial={{ y: "110%", rotate: 2, opacity: 0 }}
+                animate={{ y: "0%", rotate: 0, opacity: 1 }}
+                transition={{ duration: 1.2, delay: 0.1 + (index * 0.15), ease: [0.16, 1, 0.3, 1] as const }}
+                className="text-5xl sm:text-6xl md:text-8xl font-bold text-black tracking-tight leading-[1] drop-shadow-sm"
+              >
+                {line}
+              </motion.h1>
+            </div>
+          ))}
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mt-16 md:mt-24 pt-8 border-t border-black/10 relative"
+        >
+          <motion.div 
+            className="absolute top-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-black/30 to-transparent"
+            initial={{ x: "-100%", width: "50%" }}
+            animate={{ x: "200%" }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear", delay: 2 }}
+          />
+
+          {[
+            { title: "Cliente", content: <p className="text-base font-medium text-black">Inst. Politécnico Viseu</p> },
+            { title: "Tipologia", content: <p className="text-base font-medium text-black">Case Study</p> },
+            { title: "Serviços", content: <ul className="text-base font-medium text-black space-y-1"><li>Naming & Branding</li><li>Identidade Visual</li><li>Aplicações Digitais</li></ul> },
+            { title: "Ano", content: <p className="text-base font-medium text-black border-b border-black/20 pb-0.5">2024</p> }
+          ].map((item, i) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8 + (i * 0.1), ease: [0.16, 1, 0.3, 1] as const }}
+            >
+              <h4 className="text-xs font-bold text-black/40 uppercase tracking-widest mb-2">{item.title}</h4>
+              {item.content}
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5 }}
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full pt-12 hidden md:block"
+      >
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center gap-3"
+        >
+          <span className="text-[10px] text-black/30 uppercase tracking-[0.3em] font-bold">Scroll</span>
+          <div className="w-px h-16 bg-gradient-to-b from-black/20 to-transparent" />
+        </motion.div>
       </motion.div>
     </section>
   );
 };
 
 // ============================================
-// CONTEXT SECTION
+// SYSTEM SUB-COMPONENT: AWWWARDS FLUID ROW
 // ============================================
-const ContextSection = () => {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
+const ConceptRow = ({ item, index }: { item: any, index: number }) => {
+  const rowRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
+  
+  const isScrolledView = useInView(rowRef, { margin: "-30% 0px -30% 0px" });
+  const isActive = isHovered || isScrolledView;
+  const isLightBlue = item.color === 'light';
 
-  const y = useTransform(scrollYProgress, [0, 1], [60, -60]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const easeGolden = [0.76, 0, 0.24, 1] as const;
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center py-16 sm:py-24 lg:py-32 bg-white">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        <motion.div 
-          style={{ opacity }}
-          className="grid lg:grid-cols-2 gap-10 sm:gap-16 lg:gap-20 items-center w-full"
-        >
-          <motion.div
-            style={{ y }}
-            className="relative aspect-square w-full max-w-[450px] mx-auto lg:max-w-none flex items-center justify-center will-change-transform"
-          >
-            <Magnetic>
-                <div className="relative w-full h-full flex items-center justify-center rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
-                    <div className="absolute inset-0 bg-black/5 z-10 mix-blend-multiply" />
-                    <img 
-                      src={outdoorImg} 
-                      alt="IDIPV Outdoor Preview"
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
-                    />
-                </div>
-            </Magnetic>
-          </motion.div>
+    <motion.div 
+      ref={rowRef}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 1, delay: index * 0.1, ease: easeGolden }}
+      className="border-b border-black/10 first:border-t group relative overflow-hidden cursor-pointer will-change-transform"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <motion.div 
+        className="absolute inset-0 bg-gray-50 origin-bottom z-0"
+        initial={false}
+        animate={{ scaleY: isActive ? 1 : 0 }}
+        transition={{ duration: 0.6, ease: easeGolden }}
+      />
 
-          <div className="text-left">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+      <div className="relative z-10 px-6 lg:px-12 py-10 lg:py-14 w-full flex flex-col">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-6 lg:gap-16">
+            <motion.span 
+              animate={{ color: isActive ? (isLightBlue ? '#0055FF' : '#1E007F') : 'rgba(0,0,0,0.2)' }}
+              transition={{ duration: 0.4 }}
+              className="font-mono text-sm font-bold"
             >
-              <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-black leading-tight mb-6 sm:mb-8 tracking-tight">
-                O motor da transferência tecnológica
-              </h2>
-              <div className="space-y-4 sm:space-y-6 text-base sm:text-lg text-black/70 leading-relaxed">
-                <p>
-                  O IDIPV atua como a ponte essencial aproximando o conhecimento científico e tecnológico desenvolvido no Politécnico de Viseu do tecido empresarial regional.
-                </p>
-                <p>
-                  O nosso desafio passou por estruturar um ecossistema gráfico moderno e flexível capaz de traduzir a ciência aplicada com o máximo rigor técnico e autoridade visual.
-                </p>
-              </div>
-            </motion.div>
+              ( {item.number} )
+            </motion.span>
+            
+            <motion.h3 
+              animate={{ x: isActive ? 24 : 0 }}
+              transition={{ duration: 0.6, ease: easeGolden }}
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tighter text-black"
+            >
+              {item.title}
+            </motion.h3>
+          </div>
+        </div>
+
+        <motion.div
+          initial={false}
+          animate={{ height: isActive ? 'auto' : 0, opacity: isActive ? 1 : 0 }}
+          transition={{ 
+            height: { duration: 0.6, ease: easeGolden },
+            opacity: { duration: 0.4, ease: "linear", delay: isActive ? 0.1 : 0 }
+          }}
+          className="overflow-hidden"
+        >
+          <div className="pt-8 lg:pt-12 pl-14 lg:pl-[120px] grid lg:grid-cols-12 gap-8 pb-2">
+            <div className="lg:col-span-7">
+              <p className="text-lg lg:text-xl text-black/60 font-medium leading-relaxed">
+                {item.description}
+              </p>
+            </div>
+            <div className="lg:col-span-5 flex flex-wrap content-start gap-3">
+              {item.features.map((feature: string, i: number) => (
+                <motion.span 
+                  key={feature} 
+                  initial={false}
+                  animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 10 }}
+                  transition={{ duration: 0.4, delay: isActive ? 0.2 + (i * 0.05) : 0, ease: easeGolden }}
+                  className="px-4 py-2 rounded-full text-xs font-bold border border-black/10 text-black/50 bg-white/50"
+                >
+                  {feature}
+                </motion.span>
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>
-    </section>
+    </motion.div>
   );
 };
 
 // ============================================
-// CHALLENGE SECTION (Cards Minimalistas Oficiais)
+// CONCEPT SECTION
 // ============================================
-const ChallengeSection = () => {
-  const ref = useRef(null);
+const ConceptSection = () => {
+  const containerRef = useRef(null);
+  
   const { scrollYProgress } = useScroll({
-    target: ref,
+    target: containerRef,
     offset: ["start end", "end start"]
   });
-
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.9, 1, 0.9]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const yImage = useTransform(scrollYProgress, [0, 1], [40, -40]);
 
   const conceptData = [
     {
       number: '01',
-      title: 'Investigação',
-      description: 'Representado pela letra "i", reflete o pilar académico fundamental do saber científico, da descoberta e da inovação constante.',
-      features: ['Saber académico', 'Inovação focada', 'Rigor científico'],
-      color: 'blue'
+      title: 'A Investigação',
+      color: 'dark',
+      description: 'Representado pela anatomia da letra "i", reflete o pilar académico fundamental: o saber científico sólido, a descoberta metódica e a inovação constante.',
+      features: ['Saber académico', 'Inovação focada', 'Rigor científico']
     },
     {
       number: '02',
-      title: 'Desenvolvimento',
-      description: 'Materializado na anatomia da letra "d", projeta a transição fluida do conhecimento do laboratório diretamente para o tecido empresarial.',
-      features: ['Ciência aplicada', 'Evolução ativa', 'Soluções de mercado'],
-      color: 'pink'
+      title: 'O Desenvolvimento',
+      color: 'light',
+      description: 'Materializado na curvatura da letra "d", projeta a transição fluida do conhecimento do laboratório e da academia diretamente para o tecido empresarial da região.',
+      features: ['Ciência aplicada', 'Evolução ativa', 'Soluções de mercado']
     },
     {
       number: '03',
-      title: 'O Pixel',
-      description: 'O ponto do "i" desenhado como um pixel perfeito afirma a precisão técnica e define o ADN puramente digital da instituição.',
-      features: ['Precisão modular', 'ADN Digital', 'Módulo geométrico'],
-      color: 'blue'
+      title: 'O Pixel Central',
+      color: 'dark',
+      description: 'O ponto do "i", desenhado como um pixel digital perfeito, afirma a precisão técnica inquestionável e define o ADN puramente tecnológico da instituição.',
+      features: ['Precisão modular', 'ADN Digital', 'Módulo geométrico']
     }
-  ] as const;
+  ];
 
   return (
-    <section ref={ref} className="relative py-12 sm:py-16 lg:py-20 bg-gradient-to-b from-white via-black/[0.02] to-white">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        <motion.div style={{ scale, opacity }} className="w-full flex flex-col items-center will-change-transform">
-          
-          <div className="text-center mb-8 sm:mb-16">
-            <div className="inline-block px-5 py-1.5 border border-black/10 rounded-full mb-4 sm:mb-6">
-              <span className="text-[10px] sm:text-xs tracking-[0.3em] text-black/40 uppercase font-medium">
-                Conceito Visual
-              </span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-black mb-4 tracking-tight">
-              Como fundir o <span className="text-[#0055FF]">conhecimento</span> e a prática?
-            </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-black/60 max-w-2xl mx-auto">
-              A desconstrução geométrica do símbolo baseada nos conceitos de conectividade e evolução.
-            </p>
-          </div>
+    <section ref={containerRef} className="relative py-24 lg:py-36 bg-gray-50 border-t border-black/5 overflow-hidden flex flex-col items-center">
+      
+      <div className="max-w-[1000px] mx-auto px-6 w-full text-center flex flex-col items-center mb-24 lg:mb-32">
+        <FadeIn yOffset={50}>
+          <span className="text-[10px] tracking-[0.3em] font-bold text-[#0055FF] uppercase block mb-6">
+            // O motor da transferência tecnológica
+          </span>
+        </FadeIn>
+        <FadeIn delay={0.1} yOffset={50}>
+          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-black tracking-tighter leading-[1.05] max-w-4xl mb-6 sm:mb-10">
+            Aproximar o conhecimento e a inovação empresarial.
+          </h2>
+        </FadeIn>
+        <FadeIn delay={0.2}>
+          <p className="text-lg sm:text-xl text-black/50 max-w-2xl mx-auto font-medium mb-12 sm:mb-16">
+            O nosso desafio passou por estruturar um ecossistema gráfico moderno e flexível capaz de traduzir a ciência aplicada com o máximo rigor técnico e autoridade visual.
+          </p>
+        </FadeIn>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 items-stretch w-full text-left">
-            {conceptData.map((service) => {
-              const isBlue = service.color === 'blue';
-              const hoverBorder = isBlue ? 'hover:border-[#0055FF]/50' : 'hover:border-tomo-pink/50';
-              const hoverShadow = isBlue ? 'hover:shadow-[#0055FF]/10' : 'hover:shadow-tomo-pink/10';
-
-              return (
-                <motion.div
-                  key={service.number}
-                  whileHover={{ y: -6, scale: 1.01 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
-                  className="h-full flex"
-                >
-                  <div
-                    className={`flex flex-col w-full p-6 sm:p-8 bg-white border-2 border-black/5 rounded-2xl sm:rounded-3xl transition-all duration-300 shadow-sm hover:shadow-xl ${hoverBorder} ${hoverShadow}`}
-                  >
-                    <div className="text-xs font-mono text-black/40 mb-4 sm:mb-6">{service.number}</div>
-                    <h3 className="text-xl sm:text-2xl font-bold text-black mb-3 tracking-tight">
-                      {service.title}
-                    </h3>
-                    <p className="text-sm sm:text-base text-black/60 leading-relaxed mb-6 flex-grow">
-                      {service.description}
-                    </p>
-
-                    <ul className="space-y-2 mt-auto">
-                      {service.features.map(feature => (
-                        <li
-                          key={feature}
-                          className="flex items-center gap-3 text-xs sm:text-sm text-black/60"
-                        >
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                              isBlue ? 'bg-[#0055FF]' : 'bg-tomo-pink'
-                            }`}
-                          />
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-
+        <motion.div style={{ y: yImage }} className="w-full max-w-[480px] aspect-square flex items-center justify-center my-6 relative z-10 will-change-transform">
+          <Magnetic>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 50 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }}
+              className="w-full h-full bg-white rounded-[2.5rem] shadow-[0_30px_80px_rgba(0,0,0,0.06)] border border-black/5 p-8 flex items-center justify-center will-change-transform"
+            >
+              <img 
+                src={placaVidroImg} 
+                alt="IDIPV Símbolo" 
+                className="w-full h-full object-contain mix-blend-multiply scale-[1.4]"
+              />
+            </motion.div>
+          </Magnetic>
         </motion.div>
+      </div>
+
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 w-full bg-white pt-16 lg:pt-24 pb-12 lg:pb-16 rounded-[3rem] border border-black/[0.03] shadow-sm relative z-20">
+        <div className="max-w-3xl mb-12 lg:mb-16">
+          <FadeIn>
+            <span className="text-xs font-mono font-bold text-black/40 block mb-3">Conceito Visual</span>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-xl sm:text-2xl text-black/50 font-medium tracking-tight">
+              A desconstrução geométrica do símbolo baseada na precisão e progressão tecnológica.
+            </p>
+          </FadeIn>
+        </div>
+
+        <div className="flex flex-col relative">
+          {conceptData.map((item, index) => (
+            <ConceptRow key={item.number} item={item} index={index} />
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -337,38 +421,33 @@ const LogoRevealSection = () => {
           style={{ scale, opacity }}
           className="text-center will-change-transform"
         >
-          <motion.h2
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-10 sm:mb-16 tracking-tight"
-          >
-            A Solução Visual
-          </motion.h2>
+          <FadeIn yOffset={30}>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-10 sm:mb-16 tracking-tight">
+              A Solução Visual
+            </h2>
+          </FadeIn>
 
-          <div className="relative mb-10 sm:mb-20 flex justify-center">
-            <motion.div
-              className="relative aspect-[21/9] w-full max-w-5xl bg-gray-50 rounded-2xl sm:rounded-[2rem] border border-black/5 flex items-center justify-center p-4 sm:p-8 md:p-16 shadow-xs"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <div className="w-[70%] sm:w-[60%] md:w-[45%] relative z-10">
-                <img 
-                  src={logoImg} 
-                  alt="Logo IDIPV" 
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-contain drop-shadow-xl mix-blend-multiply"
-                />
+          <FadeIn delay={0.1} yOffset={30}>
+            <div className="relative mb-10 sm:mb-20 flex justify-center">
+              <div className="relative aspect-[21/9] w-full max-w-5xl bg-gray-50 rounded-2xl sm:rounded-[2rem] border border-black/5 flex items-center justify-center p-4 sm:p-8 md:p-16 shadow-inner">
+                <div className="w-[70%] sm:w-[60%] md:w-[45%] relative z-10">
+                  <img 
+                    src={logoImg} 
+                    alt="Logo IDIPV" 
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-contain drop-shadow-xl mix-blend-multiply"
+                  />
+                </div>
               </div>
-            </motion.div>
-          </div>
+            </div>
+          </FadeIn>
 
-          <p className="text-base sm:text-xl md:text-2xl text-black/70 max-w-3xl mx-auto leading-relaxed px-2">
-            O monograma baseia-se na interseção fluida entre o "i" e o "d". O ponto da letra "i" assume a forma de um pixel perfeito, afirmando a sua precisão e ADN puramente tecnológico.
-          </p>
+          <FadeIn delay={0.2}>
+            <p className="text-base sm:text-xl md:text-2xl text-black/70 max-w-3xl mx-auto leading-relaxed px-2 font-medium">
+              O monograma baseia-se na interseção fluida entre o "i" e o "d". O ponto da letra "i" assume a forma de um pixel perfeito, afirmando a sua precisão e ADN puramente tecnológico.
+            </p>
+          </FadeIn>
         </motion.div>
       </div>
     </section>
@@ -395,37 +474,35 @@ const ColorSystemSection = () => {
   };
 
   return (
-    <section className="relative py-16 sm:py-24 lg:py-32 bg-white">
+    <section className="relative py-16 sm:py-24 lg:py-32 bg-gray-50 border-t border-black/5">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12 sm:mb-20"
-        >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
-            A Cor da Evolução
-          </h2>
-          <p className="text-base sm:text-xl text-black/60 max-w-2xl mx-auto">
-            O <span className="font-bold text-[#1E007F]">Deep Blue</span> assegura a base autoritária e institucional, enquanto o <span className="font-bold text-[#0055FF]">Neon Blue</span> funciona como ponto de luz e inovação.
-          </p>
-        </motion.div>
+        <div className="text-center mb-12 sm:mb-20">
+          <FadeIn>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
+              A Cor da Evolução
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-base sm:text-xl text-black/50 max-w-2xl mx-auto font-medium">
+              O <span className="font-bold text-[#1E007F]">Deep Blue</span> assegura a base autoritária e institucional, enquanto o <span className="font-bold text-[#0055FF]">Neon Blue</span> funciona como ponto de luz e inovação constante.
+            </p>
+          </FadeIn>
+        </div>
 
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 w-full">
           {colors.map((color, i) => (
             <motion.div 
               key={color.name}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="will-change-transform"
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.8, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] as const }}
             >
               <div 
                  className="group cursor-pointer relative"
                  onClick={() => handleCopy(color.hex, i)}
               >
-                <div className={`${color.bg} aspect-square rounded-2xl sm:rounded-3xl mb-4 shadow-md border border-black/5 relative overflow-hidden transition-transform duration-300 group-hover:-translate-y-1.5`}>
+                <div className={`${color.bg} aspect-square rounded-2xl sm:rounded-[2rem] mb-4 shadow-md border border-black/5 relative overflow-hidden transition-transform duration-300 group-hover:-translate-y-1.5`}>
                     {copiedIndex === i && (
                         <div className="absolute inset-0 bg-black/20 flex items-center justify-center backdrop-blur-sm">
                             <div className="bg-white p-2 rounded-full shadow-sm">
@@ -436,7 +513,7 @@ const ColorSystemSection = () => {
                 </div>
                 <h4 className="font-bold text-black text-sm sm:text-lg mb-0.5">{color.name}</h4>
                 <div className="flex items-center gap-2">
-                    <p className="text-[11px] sm:text-sm text-black/40 font-mono bg-gray-50 px-1.5 py-0.5 rounded border border-black/[0.03]">{color.hex}</p>
+                    <p className="text-[11px] sm:text-sm text-black/40 font-mono bg-white px-1.5 py-0.5 rounded border border-black/[0.03]">{color.hex}</p>
                     {copiedIndex === i && <span className="text-[10px] sm:text-xs text-green-500 font-bold">Copiado!</span>}
                 </div>
               </div>
@@ -449,73 +526,86 @@ const ColorSystemSection = () => {
 };
 
 // ============================================
-// APPLICATIONS SECTION
+// APPLICATIONS SECTION (Resolvido o problema do Crop de Informação)
 // ============================================
 const ApplicationsSection = () => {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  const yFast = useTransform(scrollYProgress, [0, 1], [0, -60]);
-  const ySlow = useTransform(scrollYProgress, [0, 1], [0, -15]);
-
-  const [isMobile, setIsMobile] = useState(false);
-  useLayoutEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
+  // MAPEAMENTO COM AS NOVAS IMAGENS (COM MARGENS EXTRAS) E O CÓDIGO ORIGINAL
   const applications = [
-    { name: 'Estacionário Institucional', img: estacionarioImg, colSpan: 'col-span-1' },
-    { name: 'Sinalética em Vidro', img: placaVidroImg, colSpan: 'col-span-1' },
-    { name: 'Roll-ups / Eventos', img: rollupsImg, colSpan: 'col-span-1' },
-    { name: 'Sinalética Exterior (MUPI)', img: mupiImg, colSpan: 'col-span-1' },
-    { name: 'Redes Sociais', img: instagramImg, colSpan: 'col-span-1' },
-    { name: 'Fundos de Videoconferência', img: zoomImg, colSpan: 'col-span-1' },
+    { name: 'Billboard Outdoor', img: outdoorImg, aspect: 'aspect-video md:aspect-[21/9]', colSpan: 'sm:col-span-2 lg:col-span-3' },
+    { name: 'Sinalética Exterior (MUPI)', img: mupiImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
+    { name: 'Sinalética em Vidro', img: placaVidroImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
+    { name: 'Cartazes e Posters', img: posterImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
+    { name: 'Estacionário Institucional', img: estacionarioImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
+    { name: 'Roll-ups / Eventos', img: rollupsImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
+    { name: 'Redes Sociais', img: instagramImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
+    { name: 'Fundo de Videoconferência', img: zoomImg, aspect: 'aspect-video md:aspect-[21/9]', colSpan: 'sm:col-span-2 lg:col-span-3' },
   ];
 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15 }
+    }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 60, scale: 0.95 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+    }
+  };
+
   return (
-    <section ref={ref} className="relative py-16 sm:py-24 lg:py-32 bg-gray-50 overflow-hidden">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 relative z-10 w-full">
-        <div className="text-center mb-12 sm:mb-20">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
-            O Sistema Visual
-          </h2>
-          <p className="text-base sm:text-xl text-black/60 max-w-2xl mx-auto">
-            Uma estrutura de marca que garante a máxima funcionalidade e aplicabilidade em suportes físicos e digitais.
-          </p>
+    <section className="relative py-24 lg:py-32 bg-white overflow-hidden">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
+        <div className="text-center mb-16 sm:mb-24">
+          <FadeIn>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black mb-6 tracking-tighter">
+              O Sistema Visual.
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-lg sm:text-xl text-black/50 max-w-2xl mx-auto font-medium">
+              Uma estrutura de marca inteligente que garante a máxima funcionalidade e aplicabilidade em múltiplos suportes físicos e digitais.
+            </p>
+          </FadeIn>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 auto-rows-[250px] sm:auto-rows-[300px] w-full">
-          {applications.map((app, i) => (
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full items-start"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
+          {applications.map((app) => (
             <motion.div
               key={app.name}
-              style={{ y: isMobile ? 0 : (i % 2 === 0 ? ySlow : yFast) }}
-              className={`${app.colSpan} will-change-transform`}
+              variants={itemVariants}
+              className={`will-change-transform w-full ${app.colSpan}`}
             >
-              <div
-                className="relative h-full rounded-2xl sm:rounded-3xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 border border-black/5"
-              >
+              <div className={`relative ${app.aspect} rounded-3xl overflow-hidden group cursor-pointer border border-black/[0.03] shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-shadow duration-700 w-full`}>
+                
+                {/* MANTIDO object-cover: As imagens regeneradas têm margens de segurança, por isso não cortam o conteúdo vital */}
                 <img 
                   src={app.img} 
                   alt={app.name} 
                   loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[0.16,1,0.3,1] group-hover:scale-[1.05] will-change-transform"
                 />
-                <div className="absolute inset-0 bg-black/5 sm:bg-black/0 group-hover:bg-black/10 transition-colors" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 
-                <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 bg-white/95 backdrop-blur-md px-3 py-1.5 sm:px-4 sm:py-2 rounded-full opacity-100 sm:opacity-0 group-hover:opacity-100 transition-all transform translate-y-0 sm:translate-y-2 group-hover:translate-y-0 shadow-sm">
-                   <span className="text-[10px] sm:text-xs font-bold text-black uppercase tracking-wide">{app.name}</span>
+                <div className="absolute bottom-6 left-6 right-6 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-[0.16,1,0.3,1]">
+                   <span className="text-xs font-bold text-white bg-black/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 uppercase tracking-widest">{app.name}</span>
                 </div>
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -528,21 +618,19 @@ const ManualSection = () => {
   return (
     <section className="relative py-16 sm:py-24 lg:py-32 bg-gray-50 border-t border-black/5">
       <div className="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-12 text-center w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="will-change-transform"
-        >
+        <FadeIn>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 sm:mb-6 tracking-tight">
             Manual de Identidade
           </h2>
-          <p className="text-base sm:text-lg text-black/60 max-w-2xl mx-auto mb-8 sm:mb-16">
+        </FadeIn>
+        <FadeIn delay={0.1}>
+          <p className="text-base sm:text-lg text-black/50 max-w-2xl mx-auto mb-8 sm:mb-16 font-medium">
             Explora em detalhe a construção estratégica, as regras de aplicação e o sistema visual completo desenvolvido para o IDIPV.
           </p>
-          
-          <div className="relative w-full aspect-[4/3] md:aspect-[16/9] lg:aspect-[4/3] rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-black/10 bg-white mb-8 sm:mb-12">
+        </FadeIn>
+        
+        <FadeIn delay={0.2} yOffset={50}>
+          <div className="relative w-full aspect-[4/3] md:aspect-[16/9] lg:aspect-[4/3] rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.06)] border border-black/5 bg-white mb-8 sm:mb-12">
             <iframe 
               allowFullScreen={true} 
               scrolling="no" 
@@ -551,8 +639,10 @@ const ManualSection = () => {
               title="Manual de Identidade IDIPV"
             ></iframe>
           </div>
+        </FadeIn>
 
-          <p className="text-xs sm:text-sm text-black/40 mb-4 sm:mb-6 font-medium uppercase tracking-widest">
+        <FadeIn delay={0.3}>
+          <p className="text-xs sm:text-sm text-black/30 mb-4 sm:mb-6 font-bold uppercase tracking-widest">
             Preferes o ficheiro local?
           </p>
 
@@ -570,7 +660,7 @@ const ManualSection = () => {
               Descarregar em PDF
             </motion.a>
           </Magnetic>
-        </motion.div>
+        </FadeIn>
       </div>
     </section>
   );
@@ -584,10 +674,10 @@ const OutroSection = () => {
     <section className="relative min-h-[60vh] sm:min-h-[80vh] flex items-center bg-white border-t border-black/5 py-16">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 w-full text-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="will-change-transform"
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as const }}
         >
           <p className="text-xs sm:text-sm text-black/40 uppercase tracking-[0.3em] mb-6 sm:mb-8 font-bold">
             Próximo projeto
@@ -596,12 +686,12 @@ const OutroSection = () => {
           <Link to="/trabalhos" className="block w-full">
             <Magnetic>
                 <div className="group max-w-4xl mx-auto cursor-pointer px-2">
-                  <h3 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-black mb-4 group-hover:text-[#0055FF] transition-colors tracking-tight break-words leading-tight">
+                  <h3 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-black mb-4 group-hover:text-[#0055FF] transition-colors tracking-tighter leading-tight">
                       Ver todos os projetos
                   </h3>
                   <div className="inline-flex items-center gap-2 text-[#0055FF] font-bold uppercase tracking-wider text-xs sm:text-sm mt-2 sm:mt-4 border-b-2 border-[#0055FF] pb-1">
                       Explorar portfólio
-                      <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" size={14} />
+                      <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" size={16} />
                   </div>
                 </div>
             </Magnetic>
@@ -625,8 +715,7 @@ export const IDIPV = () => {
       <Navigation />
       <ScrollProgress />
       <HeroSection />
-      <ContextSection />
-      <ChallengeSection />
+      <ConceptSection />
       <LogoRevealSection />
       <ColorSystemSection />
       <ApplicationsSection />

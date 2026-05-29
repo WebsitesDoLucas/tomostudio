@@ -4,7 +4,9 @@ import {
   useTransform, 
   useSpring, 
   useMotionValue, 
-  useMotionTemplate 
+  useMotionTemplate,
+  useInView,
+  Variants
 } from 'framer-motion';
 import { ArrowUpRight, Check, Play } from 'lucide-react';
 import { useRef, useState, useEffect, useLayoutEffect } from 'react';
@@ -25,12 +27,6 @@ import wayfindingImg from '../assets/jazz/Wayfinding.webp';
 
 // Vídeo
 import video1 from '../assets/jazz/JAZZCONCERTOfim.mp4';
-
-// Cores Oficiais Jazz Concert 
-const GROOVY_PINK = "#E85D96";
-const RETRO_ORANGE = "#E7883B";
-const OLIVE_GREEN = "#79883E";
-const LILAC_VIBE = "#D1A0D6";
 
 // ============================================
 // UTILS: MAGNETIC COMPONENT
@@ -60,7 +56,7 @@ const Magnetic = ({ children }: { children: React.ReactNode }) => {
       onMouseMove={handleMouse}
       onMouseLeave={reset}
       style={{ x, y }}
-      className="will-change-transform"
+      className="will-change-transform inline-block"
     >
       {children}
     </motion.div>
@@ -72,11 +68,7 @@ const Magnetic = ({ children }: { children: React.ReactNode }) => {
 // ============================================
 const ScrollProgress = () => {
   const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   return (
     <motion.div
@@ -85,6 +77,21 @@ const ScrollProgress = () => {
     />
   );
 };
+
+// ============================================
+// ANIMATION WRAPPER
+// ============================================
+const FadeIn = ({ children, delay = 0, yOffset = 40 }: { children: React.ReactNode, delay?: number, yOffset?: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: yOffset }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-50px" }}
+    transition={{ duration: 1, delay, ease: [0.16, 1, 0.3, 1] as const }}
+    className="will-change-transform"
+  >
+    {children}
+  </motion.div>
+);
 
 // ============================================
 // HERO SECTION
@@ -97,73 +104,113 @@ const HeroSection = () => {
   });
 
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const yText = useTransform(scrollYProgress, [0, 1], [0, 80]); 
+  const yText = useTransform(scrollYProgress, [0, 1], [0, 120]);
+
+  const titleLines = [
+    "Um festival imersivo",
+    "guiado pela cor",
+    "e pelo ritmo."
+  ];
 
   return (
-    <section 
-      ref={containerRef} 
-      className="relative flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-gray-50 via-white to-white pt-28 pb-16 sm:pt-36 sm:pb-20 lg:pt-48 lg:pb-32"
-    >
-      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
-
-      <motion.div 
-        style={{ opacity }}
-        className="relative z-10 w-full px-4 sm:px-6 lg:px-12"
+    <section ref={containerRef} className="relative pt-32 pb-16 lg:pt-48 lg:pb-24 bg-white overflow-hidden flex flex-col items-center min-h-[90vh]">
+      <div 
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)'
+        }}
       >
-        <div className="text-center max-w-[1600px] mx-auto">
-          
-          <motion.div style={{ y: yText }} className="will-change-transform">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#E85D96]/10 text-[#E85D96] text-xs sm:text-sm font-bold uppercase tracking-wider mb-6 sm:mb-8"
+        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
+        
+        <div className="absolute top-0 right-0 w-full lg:w-[60%] h-[600px] flex items-center justify-center lg:justify-end lg:pr-[10%]">
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.15, 1],
+              x: ["-2rem", "1rem", "-2rem"],
+              y: ["-2rem", "1rem", "-2rem"],
+              rotate: [0, 45, 0]
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] bg-[#E85D96]/20 rounded-full blur-[100px] lg:blur-[120px]" 
+          />
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.2, 1],
+              x: ["2rem", "-1rem", "2rem"],
+              y: ["2rem", "-2rem", "2rem"],
+              rotate: [0, -45, 0]
+            }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute w-[45vw] h-[45vw] max-w-[500px] max-h-[500px] bg-[#E7883B]/20 rounded-full blur-[100px] lg:blur-[120px]" 
+          />
+        </div>
+      </div>
+      
+      <motion.div 
+        style={{ opacity, y: yText }}
+        className="max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10 w-full will-change-transform"
+      >
+        <div className="max-w-5xl flex flex-col gap-1 md:gap-3 mb-6 md:mb-8">
+          {titleLines.map((line, index) => (
+            <div key={index} className="overflow-hidden pb-2">
+              <motion.h1
+                initial={{ y: "110%", rotate: 2, opacity: 0 }}
+                animate={{ y: "0%", rotate: 0, opacity: 1 }}
+                transition={{ duration: 1.2, delay: 0.1 + (index * 0.15), ease: [0.16, 1, 0.3, 1] as const }}
+                className="text-5xl sm:text-6xl md:text-8xl font-bold text-black tracking-tight leading-[1] drop-shadow-sm"
               >
-                Case Study · 2024
-              </motion.div>
-
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.8 }}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black max-w-5xl mx-auto leading-tight mb-8 sm:mb-12 tracking-tight break-words"
-              >
-                Um festival de cor e ritmo: Identidade visual para o Jazz Concert
-              </motion.h2>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="inline-flex flex-col sm:flex-row justify-center gap-x-12 gap-y-6 text-sm bg-white/80 backdrop-blur-sm border border-black/5 rounded-2xl sm:rounded-3xl px-6 py-6 sm:px-12 sm:py-8 shadow-sm w-full sm:w-auto text-center"
-          >
-            <div>
-              <div className="text-xs text-black/40 uppercase tracking-wider mb-1 font-bold">Cliente</div>
-              <div className="text-black font-bold text-base sm:text-lg">Jazz Concert London</div>
+                {line}
+              </motion.h1>
             </div>
-            <div className="hidden sm:block w-px bg-black/10 self-stretch" />
-            <div>
-              <div className="text-xs text-black/40 uppercase tracking-wider mb-1 font-bold">Serviços</div>
-              <div className="text-black font-bold text-base sm:text-lg">Event Branding & Wayfinding</div>
-            </div>
-          </motion.div>
+          ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full pt-12 hidden md:block"
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mt-16 md:mt-24 pt-8 border-t border-black/10 relative"
         >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="flex flex-col items-center gap-3"
-          >
-            <span className="text-[10px] text-black/30 uppercase tracking-[0.3em]">Scroll</span>
-            <div className="w-px h-16 bg-gradient-to-b from-[#E85D96]/40 to-transparent" />
-          </motion.div>
+          <motion.div 
+            className="absolute top-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-black/30 to-transparent"
+            initial={{ x: "-100%", width: "50%" }}
+            animate={{ x: "200%" }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear", delay: 2 }}
+          />
+
+          {[
+            { title: "Cliente", content: <p className="text-base font-medium text-black">Jazz Concert London</p> },
+            { title: "Tipologia", content: <p className="text-base font-medium text-black">Event Branding</p> },
+            { title: "Serviços", content: <ul className="text-base font-medium text-black space-y-1"><li>Direção de Arte</li><li>Identidade Visual</li><li>Sinalética</li></ul> },
+            { title: "Ano", content: <p className="text-base font-medium text-black border-b border-black/20 pb-0.5">2024</p> }
+          ].map((item, i) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8 + (i * 0.1), ease: [0.16, 1, 0.3, 1] as const }}
+            >
+              <h4 className="text-xs font-bold text-black/40 uppercase tracking-widest mb-2">{item.title}</h4>
+              {item.content}
+            </motion.div>
+          ))}
+        </motion.div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5 }}
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full pt-12 hidden md:block"
+      >
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center gap-3"
+        >
+          <span className="text-[10px] text-black/30 uppercase tracking-[0.3em] font-bold">Scroll</span>
+          <div className="w-px h-16 bg-gradient-to-b from-black/20 to-transparent" />
         </motion.div>
       </motion.div>
     </section>
@@ -171,156 +218,191 @@ const HeroSection = () => {
 };
 
 // ============================================
-// CONTEXT SECTION
+// SYSTEM SUB-COMPONENT: AWWWARDS FLUID ROW
 // ============================================
-const ContextSection = () => {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
+const ConceptRow = ({ item, index }: { item: any, index: number }) => {
+  const rowRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
+  
+  const isScrolledView = useInView(rowRef, { margin: "-30% 0px -30% 0px" });
+  const isActive = isHovered || isScrolledView;
+  const isLightBlue = item.color === 'light';
 
-  const y = useTransform(scrollYProgress, [0, 1], [60, -60]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const easeGolden = [0.76, 0, 0.24, 1] as const;
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center py-16 sm:py-24 lg:py-32 bg-white">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        <motion.div 
-          style={{ opacity }}
-          className="grid lg:grid-cols-2 gap-10 sm:gap-16 lg:gap-20 items-center w-full"
-        >
-          <motion.div
-            style={{ y }}
-            className="relative aspect-square w-full max-w-[450px] mx-auto lg:max-w-none flex items-center justify-center will-change-transform"
-          >
-            <Magnetic>
-                <div className="relative w-full h-full flex items-center justify-center rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
-                    <div className="absolute inset-0 bg-black/5 z-10 mix-blend-multiply" />
-                    <img 
-                      src={billboardImg} 
-                      alt="Jazz Concert Preview"
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" 
-                    />
-                </div>
-            </Magnetic>
-          </motion.div>
+    <motion.div 
+      ref={rowRef}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 1, delay: index * 0.1, ease: easeGolden }}
+      className="border-b border-black/10 first:border-t group relative overflow-hidden cursor-pointer will-change-transform"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <motion.div 
+        className="absolute inset-0 bg-gray-50 origin-bottom z-0"
+        initial={false}
+        animate={{ scaleY: isActive ? 1 : 0 }}
+        transition={{ duration: 0.6, ease: easeGolden }}
+      />
 
-          <div className="text-left">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+      <div className="relative z-10 px-6 lg:px-12 py-10 lg:py-14 w-full flex flex-col">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-6 lg:gap-16">
+            <motion.span 
+              animate={{ color: isActive ? (isLightBlue ? '#E85D96' : '#E7883B') : 'rgba(0,0,0,0.2)' }}
+              transition={{ duration: 0.4 }}
+              className="font-mono text-sm font-bold"
             >
-              <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-black leading-tight mb-6 sm:mb-8 tracking-tight">
-                Música, Comida e Arte.
-              </h2>
-              <div className="space-y-4 sm:space-y-6 text-base sm:text-lg text-black/70 leading-relaxed">
-                <p>
-                  O Jazz Concert, sediado em Oxford Street, Londres, não é apenas sobre música. 
-                  É uma celebração cultural vibrante que une a improvisação sonora à expressão artística 
-                  e à gastronomia.
-                </p>
-                <p>
-                  O desafio era afastar-nos dos clichés visuais do Jazz (silhuetas de saxofones ou tons noturnos) 
-                  e criar um universo gráfico explosivo e jovem, inspirado na estética dos anos 70, 
-                  mas desenhado com uma abordagem moderna e arrojada.
-                </p>
-              </div>
-            </motion.div>
+              ( {item.number} )
+            </motion.span>
+            
+            <motion.h3 
+              animate={{ x: isActive ? 24 : 0 }}
+              transition={{ duration: 0.6, ease: easeGolden }}
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tighter text-black"
+            >
+              {item.title}
+            </motion.h3>
+          </div>
+        </div>
+
+        <motion.div
+          initial={false}
+          animate={{ height: isActive ? 'auto' : 0, opacity: isActive ? 1 : 0 }}
+          transition={{ 
+            height: { duration: 0.6, ease: easeGolden },
+            opacity: { duration: 0.4, ease: "linear", delay: isActive ? 0.1 : 0 }
+          }}
+          className="overflow-hidden"
+        >
+          <div className="pt-8 lg:pt-12 pl-14 lg:pl-[120px] grid lg:grid-cols-12 gap-8 pb-2">
+            <div className="lg:col-span-7">
+              <p className="text-lg lg:text-xl text-black/60 font-medium leading-relaxed">
+                {item.description}
+              </p>
+            </div>
+            <div className="lg:col-span-5 flex flex-wrap content-start gap-3">
+              {item.features.map((feature: string, i: number) => (
+                <motion.span 
+                  key={feature} 
+                  initial={false}
+                  animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 10 }}
+                  transition={{ duration: 0.4, delay: isActive ? 0.2 + (i * 0.05) : 0, ease: easeGolden }}
+                  className="px-4 py-2 rounded-full text-xs font-bold border border-black/10 text-black/50 bg-white/50"
+                >
+                  {feature}
+                </motion.span>
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>
-    </section>
+    </motion.div>
   );
 };
 
 // ============================================
-// CHALLENGE SECTION
+// CONCEPT SECTION
 // ============================================
-const ChallengeSection = () => {
-  const ref = useRef(null);
+const ConceptSection = () => {
+  const containerRef = useRef(null);
+  
   const { scrollYProgress } = useScroll({
-    target: ref,
+    target: containerRef,
     offset: ["start end", "end start"]
   });
+  const yImage = useTransform(scrollYProgress, [0, 1], [40, -40]);
 
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.9, 1, 0.9]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const conceptData = [
+    {
+      number: '01',
+      title: 'A Improvisação',
+      color: 'dark',
+      description: 'O objetivo passava por capturar a natureza imprevisível e enérgica do Jazz, fugindo aos clichés noturnos tradicionais e apostando num estilo "groovy".',
+      features: ['Formas orgânicas', 'Estética anos 70', 'Fuga ao cliché']
+    },
+    {
+      number: '02',
+      title: 'A Atmosfera',
+      color: 'light',
+      description: 'Mais do que música, o festival une gastronomia e expressão artística na icónica Oxford Street. A marca precisava de transparecer uma sensação festiva e acolhedora.',
+      features: ['Música & Comida', 'Cultura urbana', 'Comunidade']
+    },
+    {
+      number: '03',
+      title: 'O Sistema Camaleónico',
+      color: 'dark',
+      description: 'As formas modulares e a tipografia expansiva funcionam como texturas ou janelas, permitindo aplicar o visual system em qualquer suporte de forma imersiva.',
+      features: ['Flexibilidade gráfica', 'Sinalética clara', 'Aplicações dinâmicas']
+    }
+  ];
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center py-16 sm:py-24 lg:py-32 bg-gray-50">
-      <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-12 text-center w-full">
-        <motion.div style={{ scale, opacity }} className="will-change-transform w-full">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-3xl sm:text-5xl lg:text-7xl font-bold text-black leading-tight mb-8 sm:mb-12 tracking-tight"
-          >
-            Como desenhar o{' '}
-            <span className="relative inline-block">
-              <span className="relative z-10">ritmo</span>
-              <motion.span
-                className="absolute -bottom-1 sm:-bottom-2 left-0 w-full h-2 sm:h-4 bg-[#E85D96]/20 -z-10 rounded-full"
-                initial={{ scaleX: 0 }}
-                whileInView={{ scaleX: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-              />
-            </span>
-            ?
-          </motion.h2>
+    <section ref={containerRef} className="relative py-24 lg:py-36 bg-gray-50 border-t border-black/5 overflow-hidden flex flex-col items-center">
+      
+      <div className="max-w-[1000px] mx-auto px-6 w-full text-center flex flex-col items-center mb-24 lg:mb-32">
+        <FadeIn yOffset={50}>
+          <span className="text-[10px] tracking-[0.3em] font-bold text-[#E85D96] uppercase block mb-6">
+            // Experiência Musical
+          </span>
+        </FadeIn>
+        <FadeIn delay={0.1} yOffset={50}>
+          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-black tracking-tighter leading-[1.05] max-w-4xl mb-6 sm:mb-10">
+            Desconstruir os clichés visuais do Jazz.
+          </h2>
+        </FadeIn>
+        <FadeIn delay={0.2}>
+          <p className="text-lg sm:text-xl text-black/50 max-w-2xl mx-auto font-medium mb-12 sm:mb-16">
+            Sediado em Oxford Street, o evento pedia um universo gráfico explosivo, jovem e inspirado na estética colorida dos anos 70, desenhado de forma moderna.
+          </p>
+        </FadeIn>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8 mt-12 sm:mt-20 text-left w-full"
-          >
-            {[
-              'Captar a energia da improvisação do Jazz',
-              'Criar sinalética clara mas divertida e imersiva',
-              'Desenvolver um sistema flexível para merch e posters'
-            ].map((challenge, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.4 + i * 0.1 }}
-                onMouseEnter={() => setHoveredIndex(i)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                className="relative p-6 rounded-2xl transition-colors duration-300 w-full"
-                style={{ 
-                    backgroundColor: hoveredIndex === i ? 'rgba(255,255,255,0.8)' : 'transparent' 
-                }}
-              >
-                <motion.div 
-                    className="text-3xl sm:text-4xl font-bold text-[#E85D96]/20 mb-3"
-                    animate={{ scale: hoveredIndex === i ? 1.05 : 1, color: hoveredIndex === i ? '#E85D96' : 'rgba(232, 93, 150, 0.2)' }}
-                >
-                  0{i + 1}
-                </motion.div>
-                <p className="text-base sm:text-lg text-black/70 leading-relaxed">
-                  {challenge}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
+        <motion.div style={{ y: yImage }} className="w-full max-w-[480px] aspect-square flex items-center justify-center my-6 relative z-10 will-change-transform">
+          <Magnetic>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 50 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }}
+              className="w-full h-full bg-white rounded-[2.5rem] shadow-[0_30px_80px_rgba(0,0,0,0.06)] border border-black/5 p-8 flex items-center justify-center will-change-transform"
+            >
+              <img 
+                src={billboardImg} 
+                alt="Jazz Concert Ambiente" 
+                className="w-full h-full object-cover rounded-[1.5rem]"
+              />
+            </motion.div>
+          </Magnetic>
         </motion.div>
+      </div>
+
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 w-full bg-white pt-16 lg:pt-24 pb-12 lg:pb-16 rounded-[3rem] border border-black/[0.03] shadow-sm relative z-20">
+        <div className="max-w-3xl mb-12 lg:mb-16">
+          <FadeIn>
+            <span className="text-xs font-mono font-bold text-black/40 block mb-3">O Desafio Gráfico</span>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-xl sm:text-2xl text-black/50 font-medium tracking-tight">
+              A resposta estética para representar o som e o espaço urbano ao mesmo tempo.
+            </p>
+          </FadeIn>
+        </div>
+
+        <div className="flex flex-col relative">
+          {conceptData.map((item, index) => (
+            <ConceptRow key={item.number} item={item} index={index} />
+          ))}
+        </div>
       </div>
     </section>
   );
 };
 
 // ============================================
-// LOGO REVEAL SECTION
+// LOGO / GRAFISMO REVEAL SECTION
 // ============================================
 const LogoRevealSection = () => {
   const ref = useRef(null);
@@ -332,7 +414,6 @@ const LogoRevealSection = () => {
   const scale = useTransform(scrollYProgress, [0, 0.5], [0.9, 1]);
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
 
-  // Spotlight logic
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -343,64 +424,63 @@ const LogoRevealSection = () => {
   }
 
   return (
-    <section ref={ref} className="relative min-h-[60vh] sm:min-h-screen flex items-center bg-white py-16 sm:py-32">
+    <section ref={ref} className="relative min-h-[60vh] sm:min-h-screen flex items-center bg-white py-16 sm:py-32 border-b border-black/5">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
         <motion.div 
           style={{ scale, opacity }}
           className="text-center will-change-transform"
         >
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-xs sm:text-sm text-black/40 tracking-[0.3em] uppercase mb-8 sm:mb-12 font-bold"
-          >
-            A Solução Gráfica
-          </motion.p>
+          <FadeIn yOffset={30}>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-10 sm:mb-16 tracking-tight">
+              A Solução Gráfica
+            </h2>
+          </FadeIn>
 
-          <div className="relative mb-10 sm:mb-20 group flex justify-center w-full" onMouseMove={handleMouseMove}>
-            <motion.div
-              className="relative aspect-[21/9] w-full max-w-5xl bg-white rounded-2xl sm:rounded-3xl flex items-center justify-center shadow-2xl shadow-[#E85D96]/5 overflow-hidden border border-black/5"
-              whileInView={{ 
-                boxShadow: [
-                  "0 0 0 0px rgba(232, 93, 150, 0)",
-                  "0 0 0 20px rgba(232, 93, 150, 0.1)",
-                  "0 0 0 0px rgba(232, 93, 150, 0)"
-                ]
-              }}
-              viewport={{ once: true }}
-              transition={{ duration: 2, delay: 0.5 }}
-            >
-               <motion.div
-                  className="pointer-events-none absolute -inset-px rounded-2xl sm:rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100 hidden sm:block"
-                  style={{
-                    background: useMotionTemplate`
-                      radial-gradient(
-                        650px circle at ${mouseX}px ${mouseY}px,
-                        rgba(232, 93, 150, 0.1),
-                        transparent 80%
-                      )
-                    `,
-                  }}
-                />
-              
-              <div className="w-[70%] sm:w-[60%] md:w-[40%] relative z-10">
-                <img 
-                  src={blhcImg} 
-                  alt="Grafismo Jazz Concert" 
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-contain mix-blend-multiply"
-                />
-              </div>
-            </motion.div>
-          </div>
+          <FadeIn delay={0.1} yOffset={30}>
+            <div className="relative mb-10 sm:mb-20 group flex justify-center w-full" onMouseMove={handleMouseMove}>
+              <motion.div
+                className="relative aspect-[21/9] w-full max-w-5xl bg-gray-50 rounded-2xl sm:rounded-3xl flex items-center justify-center shadow-inner overflow-hidden border border-black/5"
+                whileInView={{ 
+                  boxShadow: [
+                    "0 0 0 0px rgba(232, 93, 150, 0)",
+                    "0 0 0 20px rgba(232, 93, 150, 0.1)",
+                    "0 0 0 0px rgba(232, 93, 150, 0)"
+                  ]
+                }}
+                viewport={{ once: true }}
+                transition={{ duration: 2, delay: 0.5 }}
+              >
+                 <motion.div
+                    className="pointer-events-none absolute -inset-px rounded-2xl sm:rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100 hidden sm:block"
+                    style={{
+                      background: useMotionTemplate`
+                        radial-gradient(
+                          650px circle at ${mouseX}px ${mouseY}px,
+                          rgba(232, 93, 150, 0.08),
+                          transparent 80%
+                        )
+                      `,
+                    }}
+                  />
+                
+                <div className="w-[70%] sm:w-[60%] md:w-[45%] relative z-10">
+                  <img 
+                    src={blhcImg} 
+                    alt="Grafismo Jazz Concert" 
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-contain mix-blend-multiply"
+                  />
+                </div>
+              </motion.div>
+            </div>
+          </FadeIn>
 
-          <p className="text-base sm:text-xl md:text-2xl text-black/70 max-w-3xl mx-auto leading-relaxed px-2">
-            Uma tipografia "bubbly" e expandida que ocupa o espaço de forma arrojada. 
-            As formas complementares (nuvens e estrelas de 4 pontas) servem como janelas ou texturas, 
-            dando à marca uma capacidade camaleónica.
-          </p>
+          <FadeIn delay={0.2}>
+            <p className="text-base sm:text-xl md:text-2xl text-black/70 max-w-3xl mx-auto leading-relaxed px-2 font-medium">
+              Uma tipografia expandida que ocupa o espaço de forma arrojada. As formas complementares servem como janelas gráficas, dando à marca uma capacidade camaleónica e adaptável.
+            </p>
+          </FadeIn>
         </motion.div>
       </div>
     </section>
@@ -408,7 +488,7 @@ const LogoRevealSection = () => {
 };
 
 // ============================================
-// COLOR SYSTEM 
+// COLOR SYSTEM
 // ============================================
 const ColorSystemSection = () => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
@@ -420,16 +500,6 @@ const ColorSystemSection = () => {
     { name: 'Lilac Vibe', hex: '#D1A0D6', bg: 'bg-[#D1A0D6]' },
   ];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100 } }
-  };
-
   const handleCopy = (hex: string, index: number) => {
     navigator.clipboard.writeText(hex);
     setCopiedIndex(index);
@@ -437,36 +507,35 @@ const ColorSystemSection = () => {
   };
 
   return (
-    <section className="relative py-16 sm:py-24 lg:py-32 bg-white">
+    <section className="relative py-16 sm:py-24 lg:py-32 bg-gray-50 border-t border-black/5">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12 sm:mb-20"
-        >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
-            Paleta de Festival
-          </h2>
-          <p className="text-base sm:text-xl text-black/60 max-w-2xl mx-auto">
-            Cores de alto contraste que comunicam energia, festa e o espírito da cultura urbana.
-          </p>
-        </motion.div>
+        <div className="text-center mb-12 sm:mb-20">
+          <FadeIn>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
+              Paleta de Festival
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-base sm:text-xl text-black/50 max-w-2xl mx-auto font-medium">
+              Cores de alto contraste que comunicam a energia, a festa e o espírito vibrante da cultura urbana dos anos 70.
+            </p>
+          </FadeIn>
+        </div>
 
-        <motion.div 
-          className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 w-full"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-        >
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 w-full">
           {colors.map((color, i) => (
-            <motion.div key={color.name} variants={itemVariants} className="will-change-transform">
+            <motion.div 
+              key={color.name}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.8, delay: i * 0.15, ease: [0.16, 1, 0.3, 1] as const }}
+            >
               <div 
                  className="group cursor-pointer relative"
                  onClick={() => handleCopy(color.hex, i)}
               >
-                <div className={`${color.bg} aspect-square rounded-2xl sm:rounded-3xl mb-4 shadow-md border border-black/5 relative overflow-hidden`}>
+                <div className={`${color.bg} aspect-square rounded-2xl sm:rounded-[2rem] mb-4 shadow-md border border-black/5 relative overflow-hidden transition-transform duration-300 group-hover:-translate-y-1.5`}>
                     {copiedIndex === i && (
                         <div className="absolute inset-0 bg-black/20 flex items-center justify-center backdrop-blur-sm">
                             <div className="bg-white p-2 rounded-full shadow-sm">
@@ -477,8 +546,91 @@ const ColorSystemSection = () => {
                 </div>
                 <h4 className="font-bold text-black text-sm sm:text-lg mb-0.5">{color.name}</h4>
                 <div className="flex items-center gap-2">
-                    <p className="text-[11px] sm:text-sm text-black/40 font-mono bg-gray-50 px-1.5 py-0.5 rounded border border-black/[0.03]">{color.hex}</p>
+                    <p className="text-[11px] sm:text-sm text-black/40 font-mono bg-white px-1.5 py-0.5 rounded border border-black/[0.03]">{color.hex}</p>
                     {copiedIndex === i && <span className="text-[10px] sm:text-xs text-green-500 font-bold">Copiado!</span>}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ============================================
+// APPLICATIONS SECTION (Zero Lag Optimizado)
+// ============================================
+const ApplicationsSection = () => {
+  const applications = [
+    { name: 'Sinalética (Wayfinding)', img: wayfindingImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
+    { name: 'Posters de Rua', img: postersImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
+    { name: 'T-Shirt (Staff)', img: tshirtImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
+    { name: 'Merchandise Promocional', img: keychainImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
+    { name: 'Lanyard & Credencial', img: lanyardImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
+    { name: 'Billboard Outdoor', img: billboard2Img, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
+  ];
+
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.15 }
+    }
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 60, scale: 0.95 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1,
+      transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+    }
+  };
+
+  return (
+    <section className="relative py-24 lg:py-32 bg-white overflow-hidden">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
+        <div className="text-center mb-16 sm:mb-24">
+          <FadeIn>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black mb-6 tracking-tighter">
+              A Experiência Física.
+            </h2>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <p className="text-lg sm:text-xl text-black/50 max-w-2xl mx-auto font-medium">
+              A identidade gráfica imersiva aplicada no recinto através de sinalética arrojada e merchandise.
+            </p>
+          </FadeIn>
+        </div>
+
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full items-start"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          /* TRUQUE DE PERFORMANCE: Dispara 800px ANTES de aparecer no ecrã */
+          viewport={{ once: true, margin: "800px" }}
+        >
+          {applications.map((app) => (
+            <motion.div
+              key={app.name}
+              variants={itemVariants}
+              className={`will-change-transform transform-gpu w-full ${app.colSpan}`}
+            >
+              <div className={`relative ${app.aspect} rounded-3xl overflow-hidden group cursor-pointer border border-black/[0.03] shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-shadow duration-700 w-full`}>
+                {/* REMOVIDO o loading="lazy" para não engasgar o scroll, MANTIDO o decoding="async" */}
+                <img 
+                  src={app.img} 
+                  alt={app.name} 
+                  decoding="async"
+                  className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[0.16,1,0.3,1] group-hover:scale-[1.05] will-change-transform transform-gpu"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                <div className="absolute bottom-6 left-6 right-6 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500 ease-[0.16,1,0.3,1]">
+                   <span className="text-xs font-bold text-white bg-black/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 uppercase tracking-widest">{app.name}</span>
                 </div>
               </div>
             </motion.div>
@@ -490,87 +642,9 @@ const ColorSystemSection = () => {
 };
 
 // ============================================
-// APPLICATIONS SECTION 
-// ============================================
-const ApplicationsSection = () => {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  const yFast = useTransform(scrollYProgress, [0, 1], [0, -60]);
-  const ySlow = useTransform(scrollYProgress, [0, 1], [0, -15]);
-
-  const [isMobile, setIsMobile] = useState(false);
-  useLayoutEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const applications = [
-    { name: 'Sinalética (Wayfinding)', img: wayfindingImg, colSpan: 'col-span-1' },
-    { name: 'Posters de Rua', img: postersImg, colSpan: 'col-span-1' },
-    { name: 'Lanyard & ID Badge', img: lanyardImg, colSpan: 'col-span-1' },
-    { name: 'T-Shirt (Staff)', img: tshirtImg, colSpan: 'col-span-1' },
-    { name: 'Merchandise', img: keychainImg, colSpan: 'col-span-1' },
-    { name: 'Outdoors', img: billboard2Img, colSpan: 'col-span-1' },
-  ];
-
-  return (
-    <section ref={ref} className="relative py-16 sm:py-24 lg:py-32 bg-gray-50 overflow-hidden">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 relative z-10 w-full">
-        <div className="text-center mb-12 sm:mb-20">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
-            A Experiência Física
-          </h2>
-          <p className="text-base sm:text-xl text-black/60 max-w-2xl mx-auto">
-            A identidade visual transportada para o recinto através de aplicações imersivas.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 auto-rows-[250px] sm:auto-rows-[300px] w-full">
-          {applications.map((app, i) => (
-            <motion.div
-              key={app.name}
-              style={{ y: isMobile ? 0 : (i % 2 === 0 ? ySlow : yFast) }}
-              className={`${app.colSpan} will-change-transform`}
-            >
-              <motion.div
-                className="relative h-full rounded-2xl sm:rounded-3xl overflow-hidden group cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 border border-black/5"
-                initial={{ opacity: 0, scale: 0.98 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, margin: "-30px" }}
-                transition={{ duration: 0.6, delay: i * 0.05 }}
-              >
-                <img 
-                  src={app.img} 
-                  alt={app.name} 
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/5 sm:bg-black/0 group-hover:bg-black/10 transition-colors" />
-                
-                <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 bg-white/95 backdrop-blur-md px-3 py-1.5 sm:px-4 sm:py-2 rounded-full opacity-100 sm:opacity-0 group-hover:opacity-100 transition-all transform translate-y-0 sm:translate-y-2 group-hover:translate-y-0 shadow-sm">
-                   <span className="text-[10px] sm:text-xs font-bold text-black uppercase tracking-wide">{app.name}</span>
-                </div>
-              </motion.div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// ============================================
-// VIDEO NARRATIVE SECTION
+// VIDEO NARRATIVE SECTION (C/ Cursor Magnético Mantido)
 // ============================================
 const VideoSection = () => {
-  const ref = useRef(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const [isHovering, setIsHovering] = useState(false);
@@ -593,18 +667,17 @@ const VideoSection = () => {
   }, [isHovering]);
 
   return (
-    <section ref={ref} className="relative py-16 sm:py-24 lg:py-32 bg-white">
+    <section className="relative py-16 sm:py-24 lg:py-32 bg-gray-50 border-y border-black/5">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        <div className="text-center mb-10 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
-            O ritmo em movimento
-          </h2>
-          <p className="text-base sm:text-xl text-black/60 max-w-2xl mx-auto">
-            A energia vibrante do festival materializada num espetáculo visual.
-          </p>
+        <div className="text-center mb-16 lg:mb-20">
+          <FadeIn>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black tracking-tight">
+              O Ritmo em Movimento
+            </h2>
+          </FadeIn>
         </div>
 
-        <div className="max-w-4xl mx-auto relative w-full" ref={containerRef} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+        <div className="max-w-5xl mx-auto w-full relative" ref={containerRef} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
           
           <div 
             ref={cursorRef}
@@ -614,28 +687,25 @@ const VideoSection = () => {
             <Play size={24} className="text-white fill-white ml-1" />
           </div>
 
-          {[video1].map((src, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.2 }}
-              className="relative group sm:cursor-none w-full will-change-transform"
-            >
-              <div className="relative aspect-video bg-black rounded-2xl sm:rounded-3xl overflow-hidden border border-black/5 shadow-2xl">
-                <video 
-                  src={src} 
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline 
-                  preload="metadata"
-                  className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-500"
-                />
-              </div>
-            </motion.div>
-          ))}
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as const }}
+            className="relative group sm:cursor-none w-full will-change-transform"
+          >
+            <div className="relative aspect-video rounded-[2rem] sm:rounded-[2.5rem] bg-black border border-black/5 shadow-[0_20px_60px_rgba(0,0,0,0.04)] overflow-hidden">
+              <video 
+                src={video1} 
+                autoPlay 
+                loop 
+                muted 
+                playsInline 
+                preload="metadata"
+                className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-500"
+              />
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>
@@ -647,13 +717,13 @@ const VideoSection = () => {
 // ============================================
 const OutroSection = () => {
   return (
-    <section className="relative min-h-[60vh] sm:min-h-[80vh] flex items-center bg-white border-t border-black/5 py-16">
+    <section className="relative min-h-[60vh] sm:min-h-[80vh] flex items-center bg-white py-16">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 w-full text-center">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="will-change-transform"
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] as const }}
         >
           <p className="text-xs sm:text-sm text-black/40 uppercase tracking-[0.3em] mb-6 sm:mb-8 font-bold">
             Próximo projeto
@@ -662,12 +732,12 @@ const OutroSection = () => {
           <Link to="/trabalhos" className="block w-full">
             <Magnetic>
                 <div className="group max-w-4xl mx-auto cursor-pointer px-2">
-                  <h3 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-black mb-4 group-hover:text-[#E85D96] transition-colors tracking-tight break-words leading-tight">
+                  <h3 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-black mb-4 group-hover:text-[#E85D96] transition-colors tracking-tighter leading-tight">
                       Ver todos os projetos
                   </h3>
                   <div className="inline-flex items-center gap-2 text-[#E85D96] font-bold uppercase tracking-wider text-xs sm:text-sm mt-2 sm:mt-4 border-b-2 border-[#E85D96] pb-1">
                       Explorar portfólio
-                      <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" size={14} />
+                      <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" size={16} />
                   </div>
                 </div>
             </Magnetic>
@@ -691,8 +761,7 @@ export const Jazz = () => {
       <Navigation />
       <ScrollProgress />
       <HeroSection />
-      <ContextSection />
-      <ChallengeSection />
+      <ConceptSection />
       <LogoRevealSection />
       <ColorSystemSection />
       <ApplicationsSection />

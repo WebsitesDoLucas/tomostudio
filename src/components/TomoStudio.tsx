@@ -3,17 +3,20 @@ import {
   useScroll, 
   useTransform, 
   useSpring, 
-  useMotionValue 
+  useMotionValue,
+  useInView
 } from 'framer-motion';
-import { ArrowUpRight, Check, Square } from 'lucide-react';
+import { ArrowUpRight, Check, Download } from 'lucide-react';
 import { useRef, useState, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation';
 
 // ============================================
-// IMPORTAÇÃO DO LOGO
+// IMPORTAÇÃO DE ASSETS
 // ============================================
-import logoImg from "../assets/thumbs/tomostudio.webp";
+import logotipoImg from "../assets/thumbs/tomostudio.webp";
+import logoImg from "../assets/logo.webp";
+import manualPdf from '../assets/ManualdeidentidadeTOMO.pdf';
 
 // ============================================
 // UTILS: MAGNETIC COMPONENT
@@ -43,7 +46,7 @@ const Magnetic = ({ children }: { children: React.ReactNode }) => {
       onMouseMove={handleMouse}
       onMouseLeave={reset}
       style={{ x, y }}
-      className="will-change-transform"
+      className="will-change-transform inline-block"
     >
       {children}
     </motion.div>
@@ -55,129 +58,124 @@ const Magnetic = ({ children }: { children: React.ReactNode }) => {
 // ============================================
 const ScrollProgress = () => {
   const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  });
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
   return (
     <motion.div
-      className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#41B6E6] to-[#E06287] origin-left z-50 pointer-events-none"
+      className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-tomo-blue via-tomo-pink to-tomo-blue origin-left z-50 pointer-events-none"
       style={{ scaleX }}
     />
   );
 };
 
 // ============================================
+// ANIMATION WRAPPER
+// ============================================
+const FadeIn = ({ children, delay = 0, yOffset = 30 }: { children: React.ReactNode, delay?: number, yOffset?: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: yOffset }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-50px" }}
+    transition={{ duration: 1, delay, ease: [0.16, 1, 0.3, 1] as const }}
+  >
+    {children}
+  </motion.div>
+);
+
+// ============================================
 // HERO SECTION
 // ============================================
 const HeroSection = () => {
-  const containerRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"]
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const yText = useTransform(scrollYProgress, [0, 1], [0, 80]); 
+  const titleLines = [
+    "A nossa história:",
+    "dar forma à visão",
+    "de quem cria."
+  ];
 
   return (
-    <section 
-      ref={containerRef} 
-      className="relative flex flex-col items-center justify-center overflow-hidden bg-gray-50 pt-28 pb-16 sm:pt-36 sm:pb-20 lg:pt-48 lg:pb-32"
-    >
-      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
-
-      <motion.div 
-        style={{ opacity }}
-        className="relative z-10 w-full px-4 sm:px-6 lg:px-12"
+    <section className="relative pt-32 pb-16 lg:pt-48 lg:pb-24 bg-white overflow-hidden flex flex-col items-center">
+      <div 
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)'
+        }}
       >
-        <div className="text-center max-w-[1600px] mx-auto">
-          
-          <motion.div style={{ y: yText }} className="will-change-transform">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#41B6E6]/10 text-[#41B6E6] text-xs sm:text-sm font-bold uppercase tracking-wider mb-6 sm:mb-8"
-              >
-                Identidade & Brandbook · 2024
-              </motion.div>
-
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.8 }}
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#071D49] max-w-5xl mx-auto leading-tight mb-8 sm:mb-12 tracking-tight break-words"
-              >
-                A nossa própria história: dar forma à visão de quem cria.
-              </motion.h2>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="inline-flex flex-col sm:flex-row justify-center gap-x-12 gap-y-6 text-sm bg-white/80 backdrop-blur-sm border border-black/5 rounded-2xl sm:rounded-3xl px-6 py-6 sm:px-12 sm:py-8 shadow-sm w-full sm:w-auto text-center will-change-transform"
-          >
-            <div>
-              <div className="text-xs text-black/40 uppercase tracking-wider mb-1 font-bold">Estúdio</div>
-              <div className="text-black font-bold text-base sm:text-lg">tomo studio</div>
-            </div>
-            <div className="hidden sm:block w-px bg-black/10 self-stretch" />
-            <div>
-              <div className="text-xs text-black/40 uppercase tracking-wider mb-1 font-bold">Serviços</div>
-              <div className="text-black font-bold text-base sm:text-lg">Branding, UI/UX & Web Design</div>
-            </div>
-          </motion.div>
+        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
+        
+        <div className="absolute top-0 right-0 w-full lg:w-[60%] h-[600px] flex items-center justify-center lg:justify-end lg:pr-[10%]">
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.15, 1],
+              x: ["-2rem", "1rem", "-2rem"],
+              y: ["-2rem", "1rem", "-2rem"],
+              rotate: [0, 45, 0]
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] bg-tomo-blue/20 rounded-full blur-[100px] lg:blur-[120px]" 
+          />
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.2, 1],
+              x: ["2rem", "-1rem", "2rem"],
+              y: ["2rem", "-2rem", "2rem"],
+              rotate: [0, -45, 0]
+            }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute w-[45vw] h-[45vw] max-w-[500px] max-h-[500px] bg-tomo-pink/20 rounded-full blur-[100px] lg:blur-[120px]" 
+          />
         </div>
-      </motion.div>
-    </section>
-  );
-};
-
-// ============================================
-// CONTEXT SECTION 
-// ============================================
-const ContextSection = () => {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-
-  return (
-    <section ref={ref} className="relative py-16 sm:py-24 lg:py-32 bg-white">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
-        <motion.div 
-          style={{ opacity }}
-          className="max-w-4xl mx-auto text-center w-full"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="will-change-transform"
-          >
-            <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-[#071D49] leading-tight mb-6 sm:mb-8 tracking-tight">
-              Conceito & Essência
-            </h2>
-            <div className="space-y-4 sm:space-y-6 text-base sm:text-xl text-black/70 leading-relaxed text-justify md:text-center px-2">
-              <p>
-                O nome tomo nasce da ideia de ligação, companheirismo e criação em conjunto. Inspirado no kanji 友 (tomo), associado a amizade e proximidade, o nome reflete a relação entre os dois fundadores do estúdio, não apenas enquanto parceiros criativos, mas também enquanto amigos e casal.
-              </p>
-              <p>
-                A construção tipográfica incorpora um detalhe subtil no conjunto "to", criando uma composição visual que pode ser interpretada como uma expressão facial em forma de piscadela. Este elemento introduz leveza, proximidade e humanidade à identidade visual.
-              </p>
-              <p>
-                De forma mais discreta, a própria forma da piscadela sugere também um coração escondido — um detalhe simbólico que representa ligação, cuidado e a componente emocional presente na origem do estúdio. O resultado é um ecossistema que equilibra profissionalismo, criatividade e expressão humana.
-              </p>
+      </div>
+      
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10 w-full">
+        <div className="max-w-5xl flex flex-col gap-1 md:gap-3 mb-6 md:mb-8">
+          {titleLines.map((line, index) => (
+            <div key={index} className="overflow-hidden pb-2">
+              <motion.h1
+                initial={{ y: "110%", rotate: 2, opacity: 0 }}
+                animate={{ y: "0%", rotate: 0, opacity: 1 }}
+                transition={{ 
+                  duration: 1.2, 
+                  delay: 0.1 + (index * 0.15), 
+                  ease: [0.16, 1, 0.3, 1] as const 
+                }}
+                className="text-5xl sm:text-6xl md:text-8xl font-bold text-black tracking-tight leading-[1] drop-shadow-sm"
+              >
+                {line}
+              </motion.h1>
             </div>
-          </motion.div>
+          ))}
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mt-16 md:mt-24 pt-8 border-t border-black/10 relative"
+        >
+          <motion.div 
+            className="absolute top-0 left-0 h-[1px] bg-gradient-to-r from-transparent via-black/30 to-transparent"
+            initial={{ x: "-100%", width: "50%" }}
+            animate={{ x: "200%" }}
+            transition={{ duration: 4, repeat: Infinity, ease: "linear", delay: 2 }}
+          />
+
+          {[
+            { title: "Estúdio", content: <p className="text-base font-medium text-black">Tomo Studio</p> },
+            { title: "Ano", content: <p className="text-base font-medium text-black">2024</p> },
+            { title: "Serviços", content: <ul className="text-base font-medium text-black space-y-1"><li>Identidade Visual</li><li>Brandbook</li><li>UI/UX Design</li></ul> },
+            { title: "Website", content: <a href="#" className="inline-flex items-center gap-1 text-base font-medium text-black border-b border-black/20 hover:border-black transition-colors">tomostudio.pt <ArrowUpRight size={14} /></a> }
+          ].map((item, i) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8 + (i * 0.1), ease: [0.16, 1, 0.3, 1] as const }}
+            >
+              <h4 className="text-xs font-bold text-black/40 uppercase tracking-widest mb-2">{item.title}</h4>
+              {item.content}
+            </motion.div>
+          ))}
         </motion.div>
       </div>
     </section>
@@ -185,9 +183,180 @@ const ContextSection = () => {
 };
 
 // ============================================
-// LOGO SECTION
+// SYSTEM SUB-COMPONENT: AWWWARDS FLUID ROW
 // ============================================
-const LogoSection = () => {
+const ConceptRow = ({ item, index }: { item: any, index: number }) => {
+  const rowRef = useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
+  
+  const isScrolledView = useInView(rowRef, { margin: "-30% 0px -30% 0px" });
+  const isActive = isHovered || isScrolledView;
+  const isBlue = item.color === 'blue';
+
+  // Fix TypeScript com 'as const' para tuplos de Easing
+  const easeGolden = [0.76, 0, 0.24, 1] as const;
+
+  return (
+    <motion.div 
+      ref={rowRef}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 1, delay: index * 0.1, ease: easeGolden }}
+      className="border-b border-black/10 first:border-t group relative overflow-hidden cursor-pointer"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <motion.div 
+        className="absolute inset-0 bg-gray-50 origin-bottom z-0"
+        initial={false}
+        animate={{ scaleY: isActive ? 1 : 0 }}
+        transition={{ duration: 0.6, ease: easeGolden }}
+      />
+
+      <div className="relative z-10 px-6 lg:px-12 py-10 lg:py-14 w-full flex flex-col">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-6 lg:gap-16">
+            <motion.span 
+              animate={{ color: isActive ? (isBlue ? '#41B6E6' : '#E06287') : 'rgba(0,0,0,0.2)' }}
+              transition={{ duration: 0.4 }}
+              className="font-mono text-sm font-bold"
+            >
+              ( {item.number} )
+            </motion.span>
+            
+            <motion.h3 
+              animate={{ x: isActive ? 24 : 0 }}
+              transition={{ duration: 0.6, ease: easeGolden }}
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tighter text-black"
+            >
+              {item.title}
+            </motion.h3>
+          </div>
+        </div>
+
+        <motion.div
+          initial={false}
+          animate={{ height: isActive ? 'auto' : 0, opacity: isActive ? 1 : 0 }}
+          transition={{ 
+            height: { duration: 0.6, ease: easeGolden },
+            opacity: { duration: 0.4, ease: "linear", delay: isActive ? 0.1 : 0 }
+          }}
+          className="overflow-hidden"
+        >
+          <div className="pt-8 lg:pt-12 pl-14 lg:pl-[120px] grid lg:grid-cols-12 gap-8 pb-2">
+            <div className="lg:col-span-7">
+              <p className="text-lg lg:text-xl text-black/60 font-medium leading-relaxed">
+                {item.description}
+              </p>
+            </div>
+            <div className="lg:col-span-5 flex flex-wrap content-start gap-3">
+              {item.features.map((feature: string, i: number) => (
+                <motion.span 
+                  key={feature} 
+                  initial={false}
+                  animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 10 }}
+                  transition={{ duration: 0.4, delay: isActive ? 0.2 + (i * 0.05) : 0, ease: easeGolden }}
+                  className="px-4 py-2 rounded-full text-xs font-bold border border-black/10 text-black/50 bg-white/50"
+                >
+                  {feature}
+                </motion.span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+};
+
+// ============================================
+// MAIN INTEGRATED CONCEPT SECTION
+// ============================================
+const ConceptSection = () => {
+  const conceptData = [
+    {
+      number: '01',
+      title: 'A Ligação Japonesa',
+      color: 'blue',
+      description: 'O nome tomo nasce da ideia de companheirismo e cocriação. É estruturado através do kanji 友, que evoca os laços de amizade verdadeira e proximidade entre o estúdio e os nossos clientes.',
+      features: ['Companheirismo', 'Criação em conjunto', 'Kanji 友']
+    },
+    {
+      number: '02',
+      title: 'A Piscadela Humana',
+      color: 'pink',
+      description: 'A nossa assinatura incorpora um detalhe intencional no conjunto "to", cuja rotação anatómica das letras desenha uma subtil expressão de empatia em forma de piscadela.',
+      features: ['Expressão facial', 'Leveza gráfica', 'Interação humana']
+    },
+    {
+      number: '03',
+      title: 'O Coração Escondido',
+      color: 'blue',
+      description: 'Por detrás da precisão matemática e corporativa do monograma, a curvatura interna esconde a silhueta de um coração — um detalhe que simboliza a paixão e a componente emocional.',
+      features: ['Cuidado em pixel', 'Componente emocional', 'Rigor orgânico']
+    }
+  ];
+
+  return (
+    <section className="relative py-24 lg:py-36 bg-gray-50 border-t border-black/5 overflow-hidden flex flex-col items-center">
+      
+      {/* Manifesto Tipográfico */}
+      <div className="max-w-[1000px] mx-auto px-6 w-full text-center flex flex-col items-center mb-16 lg:mb-24">
+        <FadeIn yOffset={40}>
+          <span className="text-[10px] tracking-[0.3em] font-bold text-tomo-blue uppercase block mb-6">
+            // Essência de Marca
+          </span>
+          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-black tracking-tighter leading-[1.05] max-w-4xl mb-12 sm:mb-16">
+            Dar forma e significado ao nosso monograma.
+          </h2>
+        </FadeIn>
+
+        <div className="w-full max-w-[380px] aspect-square flex items-center justify-center my-6 relative z-10">
+          <Magnetic>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }}
+              className="w-full h-full bg-white rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.03)] border border-black/5 p-12 flex items-center justify-center will-change-transform"
+            >
+              <img 
+                src={logoImg} 
+                alt="Tomo Monograma" 
+                className="w-full h-full object-contain mix-blend-multiply"
+              />
+            </motion.div>
+          </Magnetic>
+        </div>
+      </div>
+
+      {/* Desconstrução do Sistema (Rows) */}
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 w-full bg-white pt-16 lg:pt-24 pb-12 lg:pb-16 rounded-[3rem] border border-black/[0.03] shadow-sm relative z-20 -mt-10 lg:-mt-20">
+        <div className="max-w-3xl mb-12 lg:mb-16">
+          <FadeIn>
+            <span className="text-xs font-mono font-bold text-black/40 block mb-3">Anatomia do Símbolo</span>
+            <p className="text-xl sm:text-2xl text-black/50 font-medium tracking-tight">
+              A desconstrução geométrica da nossa assinatura baseada nos conceitos de conectividade, emoção e humanidade.
+            </p>
+          </FadeIn>
+        </div>
+
+        <div className="flex flex-col relative">
+          {conceptData.map((item, index) => (
+            <ConceptRow key={item.number} item={item} index={index} />
+          ))}
+        </div>
+      </div>
+
+    </section>
+  );
+};
+
+// ============================================
+// LOGO REVEAL SECTION
+// ============================================
+const LogoRevealSection = () => {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -198,85 +367,46 @@ const LogoSection = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
 
   return (
-    <section ref={ref} className="relative py-12 sm:py-20 bg-white">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
+    <section ref={ref} className="relative min-h-[60vh] sm:min-h-[80vh] flex items-center bg-gray-50 py-16 sm:py-32 border-y border-black/5">
+      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+      
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full relative z-10">
         <motion.div 
           style={{ scale, opacity }}
-          className="text-center will-change-transform flex flex-col items-center justify-center w-full"
+          className="text-center will-change-transform"
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#071D49] mb-8 sm:mb-12 tracking-tight">
+          <motion.h2
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-10 sm:mb-16 tracking-tight"
+          >
             A Nossa Assinatura
-          </h2>
+          </motion.h2>
 
-          <div className="relative flex justify-center w-full">
+          <div className="relative mb-10 sm:mb-20 flex justify-center">
             <motion.div
-              className="relative aspect-[21/9] w-full max-w-4xl bg-gray-50 rounded-2xl sm:rounded-[2rem] border border-black/5 flex items-center justify-center p-6 sm:p-8 md:p-16 shadow-lg shadow-black/5 transition-all duration-500 hover:shadow-xl hover:-translate-y-1.5"
+              className="relative aspect-[21/9] w-full max-w-5xl bg-white rounded-2xl sm:rounded-[3rem] border border-black/5 flex items-center justify-center p-4 sm:p-8 md:p-16 shadow-xl"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <div className="w-[70%] sm:w-[60%] md:w-[45%] h-full flex justify-center items-center">
+              <div className="w-[70%] sm:w-[60%] md:w-[45%] relative z-10">
                 <img 
-                  src={logoImg} 
-                  alt="Logo tomo studio" 
+                  src={logotipoImg} 
+                  alt="Logo Tomo Studio" 
                   loading="lazy"
                   decoding="async"
-                  className="max-w-full max-h-full object-contain mix-blend-multiply drop-shadow-sm"
+                  className="w-full h-full object-contain drop-shadow-sm mix-blend-multiply"
                 />
               </div>
             </motion.div>
           </div>
-          
-          <p className="text-sm text-black/40 italic mt-6 max-w-lg mx-auto px-4">
-            "Variante Principal: Combina formas suaves e tipografia minimalista, estabelecendo a assinatura primária do estúdio."
+
+          <p className="text-base sm:text-xl md:text-2xl text-black/60 max-w-3xl mx-auto leading-relaxed px-2 font-medium">
+            A variante principal representa a versão base da identidade visual. Combina formas suaves e tipografia minimalista, criando uma presença memorável e próxima.
           </p>
-        </motion.div>
-      </div>
-    </section>
-  );
-};
-
-// ============================================
-// BRANDBOOK EMBED SECTION
-// ============================================
-const BrandbookSection = () => {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-
-  const scale = useTransform(scrollYProgress, [0, 0.5], [0.9, 1]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
-
-  return (
-    <section ref={ref} className="relative py-16 sm:py-24 lg:py-32 bg-gray-50 overflow-hidden border-y border-black/5">
-      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
-      
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 relative z-10 w-full">
-        <div className="text-center mb-10 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#071D49] mb-4 tracking-tight">
-            O Manual de Identidade
-          </h2>
-          <p className="text-base sm:text-xl text-black/60 max-w-2xl mx-auto">
-            Explora o nosso brandbook interativo e descobre as regras, as cores, 
-            a tipografia e o sistema visual que sustentam a tomo studio.
-          </p>
-        </div>
-
-        <motion.div 
-          style={{ scale, opacity }}
-          className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-black/10 bg-white will-change-transform"
-        >
-          <iframe 
-            allowFullScreen={true} 
-            scrolling="no" 
-            className="w-full h-[350px] sm:h-[500px] md:h-[700px] lg:h-[850px]" 
-            src="https://heyzine.com/flip-book/389f3bad32.html" 
-            style={{ border: 'none' }}
-            title="Tomo Studio Brandbook"
-          />
         </motion.div>
       </div>
     </section>
@@ -290,21 +420,11 @@ const ColorSystemSection = () => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const colors = [
-    { name: 'Azul Celeste', pantone: '298 C', hex: '#41B6E6', desc: 'Cor primária institucional que reflete rigor e solidez técnica.', bg: 'bg-[#41B6E6]' },
-    { name: 'Azul Escuro', pantone: '2768 C', hex: '#071D49', desc: 'Cor principal complementar para assinatura e contraste.', bg: 'bg-[#071D49]' },
-    { name: 'Rosa', pantone: '7423 C', hex: '#E06287', desc: 'Tom secundário ideal para quebrar a monotonia e chamar atenção.', bg: 'bg-[#E06287]' },
-    { name: 'Verde Lima', pantone: '372 C', hex: '#D4EB8E', desc: 'Cor de nicho reservada para pequenos apontamentos minimalistas.', bg: 'bg-[#D4EB8E]' },
+    { name: 'Azul Celeste', hex: '#41B6E6', bg: 'bg-tomo-blue' },
+    { name: 'Azul Escuro', hex: '#071D49', bg: 'bg-[#071D49]' },
+    { name: 'Rosa', hex: '#E06287', bg: 'bg-tomo-pink' },
+    { name: 'Verde Lima', hex: '#D4EB8E', bg: 'bg-[#D4EB8E]' },
   ];
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100 } }
-  };
 
   const handleCopy = (hex: string, index: number) => {
     navigator.clipboard.writeText(hex);
@@ -321,28 +441,29 @@ const ColorSystemSection = () => {
           viewport={{ once: true }}
           className="text-center mb-12 sm:mb-20"
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#071D49] mb-4 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
             A Nossa Paleta
           </h2>
-          <p className="text-base sm:text-xl text-black/60 max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-black/50 max-w-2xl mx-auto font-medium">
             Sólida, vibrante e intencional. Equivalências exatas homologadas no manual para ecrã (HEX) e suportes físicos (Pantone).
           </p>
         </motion.div>
 
-        <motion.div 
-          className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 w-full"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-        >
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 w-full">
           {colors.map((color, i) => (
-            <motion.div key={color.name} variants={itemVariants} className="will-change-transform">
+            <motion.div 
+              key={color.name}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="will-change-transform"
+            >
               <div 
-                 className="group cursor-pointer relative flex flex-col h-full bg-gray-50 border border-black/5 p-4 sm:p-5 rounded-3xl hover:bg-white hover:shadow-xl transition-all duration-300"
+                 className="group cursor-pointer relative"
                  onClick={() => handleCopy(color.hex, i)}
               >
-                <div className={`${color.bg} aspect-square rounded-2xl sm:rounded-3xl mb-4 shadow-md border border-black/5 relative overflow-hidden transition-transform duration-300 group-hover:-translate-y-1.5`}>
+                <div className={`${color.bg} aspect-square rounded-2xl sm:rounded-[2rem] mb-4 shadow-md border border-black/5 relative overflow-hidden transition-transform duration-300 group-hover:-translate-y-1.5`}>
                     {copiedIndex === i && (
                         <div className="absolute inset-0 bg-black/20 flex items-center justify-center backdrop-blur-sm">
                             <div className="bg-white p-2 rounded-full shadow-sm">
@@ -351,17 +472,69 @@ const ColorSystemSection = () => {
                         </div>
                     )}
                 </div>
-                <h4 className="font-bold text-black text-xs sm:text-base mb-0.5 leading-tight">{color.name}</h4>
-                <div className="flex items-center gap-2 mb-2">
+                <h4 className="font-bold text-black text-sm sm:text-lg mb-0.5">{color.name}</h4>
+                <div className="flex items-center gap-2">
                     <p className="text-[11px] sm:text-sm text-black/40 font-mono bg-gray-50 px-1.5 py-0.5 rounded border border-black/[0.03]">{color.hex}</p>
                     {copiedIndex === i && <span className="text-[10px] sm:text-xs text-green-500 font-bold">Copiado!</span>}
                 </div>
-                <p className="text-[11px] text-black/50 leading-relaxed hidden sm:block mt-auto">
-                  {color.desc}
-                </p>
               </div>
             </motion.div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// ============================================
+// MANUAL SECTION
+// ============================================
+const ManualSection = () => {
+  return (
+    <section className="relative py-16 sm:py-24 lg:py-32 bg-gray-50 border-t border-black/5">
+      <div className="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-12 text-center w-full">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="will-change-transform"
+        >
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 sm:mb-6 tracking-tight">
+            Manual de Identidade
+          </h2>
+          <p className="text-base sm:text-lg text-black/50 max-w-2xl mx-auto mb-8 sm:mb-16 font-medium">
+            Explora em detalhe a construção estratégica, as regras de aplicação e o sistema visual completo desenvolvido para a tomo studio.
+          </p>
+          
+          <div className="relative w-full aspect-[4/3] md:aspect-[16/9] lg:aspect-[4/3] rounded-2xl sm:rounded-[3rem] overflow-hidden shadow-2xl border border-black/10 bg-white mb-8 sm:mb-12">
+            <iframe 
+              allowFullScreen={true} 
+              scrolling="no" 
+              className="w-full h-full border-none" 
+              src="https://heyzine.com/flip-book/389f3bad32.html"
+              title="Manual de Identidade Tomo Studio"
+            ></iframe>
+          </div>
+
+          <p className="text-xs sm:text-sm text-black/30 mb-4 sm:mb-6 font-bold uppercase tracking-widest">
+            Preferes o ficheiro local?
+          </p>
+
+          <Magnetic>
+            <motion.a
+              href={manualPdf}
+              download="Manual_Identidade_TomoStudio.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-black text-white font-bold rounded-full shadow-lg shadow-black/10 transition-all hover:bg-black/80 text-sm sm:text-base"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Download size={18} />
+              Descarregar em PDF
+            </motion.a>
+          </Magnetic>
         </motion.div>
       </div>
     </section>
@@ -373,34 +546,27 @@ const ColorSystemSection = () => {
 // ============================================
 const OutroSection = () => {
   return (
-    <section className="relative min-h-[60vh] sm:min-h-[80vh] flex items-center bg-gray-50 border-t border-black/5 py-16">
-      <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
-      
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 w-full text-center relative z-10">
+    <section className="relative min-h-[60vh] flex items-center bg-white border-t border-black/5 py-16">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12 w-full text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="will-change-transform"
         >
-          <p className="text-xs sm:text-sm text-black/40 uppercase tracking-[0.3em] mb-6 sm:mb-8 font-bold">
-            <Square size={10} className="inline mr-2 text-[#41B6E6] fill-[#41B6E6]" />
-            Próximo projeto
+          <p className="text-xs font-bold text-black/30 uppercase tracking-[0.3em] mb-8">
+            Explorar mais
           </p>
-
-          <div className="text-xs text-[#E06287] font-mono tracking-widest uppercase mb-4 block">
-            "criamos contigo, não apenas para ti."
-          </div>
 
           <Link to="/trabalhos" className="block w-full">
             <Magnetic>
                 <div className="group max-w-4xl mx-auto cursor-pointer px-2">
-                  <h3 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-black mb-4 group-hover:text-[#41B6E6] transition-colors tracking-tight break-words leading-tight">
-                      Ver todos os projetos
+                  <h3 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-black mb-8 group-hover:text-black/50 transition-colors tracking-tighter leading-tight">
+                      Ver Portfólio
                   </h3>
-                  <div className="inline-flex items-center gap-2 text-[#41B6E6] font-bold uppercase tracking-wider text-xs sm:text-sm mt-2 sm:mt-4 border-b-2 border-[#41B6E6] pb-1">
-                      Explorar portfólio
-                      <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" size={14} />
+                  <div className="inline-flex items-center gap-2 text-black font-bold uppercase tracking-wider text-xs sm:text-sm mt-2 border-b-2 border-black pb-1">
+                      Explorar Projetos
+                      <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" size={16} />
                   </div>
                 </div>
             </Magnetic>
@@ -420,14 +586,14 @@ export const TomoStudio = () => {
   }, []);
 
   return (
-    <div className="bg-white overflow-x-hidden w-full selection:bg-[#41B6E6] selection:text-white">
+    <div className="bg-white overflow-x-hidden w-full selection:bg-tomo-blue selection:text-white">
       <Navigation />
       <ScrollProgress />
       <HeroSection />
-      <ContextSection />
-      <LogoSection />
-      <BrandbookSection />
+      <ConceptSection />
+      <LogoRevealSection />
       <ColorSystemSection />
+      <ManualSection />
       <OutroSection />
     </div>
   );
