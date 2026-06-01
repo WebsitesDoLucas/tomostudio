@@ -339,7 +339,8 @@ const HeroSection = () => {
         <div className="absolute bottom-[10%] right-[10%] w-[50vw] h-[50vw] rounded-full blur-[100px] opacity-10 bg-[#020224]" />
       </motion.div>
       
-      <div className="absolute inset-0 opacity-[0.35] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.webp')]" />
+
+<div className="absolute inset-0 opacity-[0.2] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center text-center transform-gpu">
         {/* Animações agora iniciam-se sozinhas (true) assim que a página abre */}
@@ -588,8 +589,7 @@ const WorksSection = () => {
   ];
 
   return (
-    <section id="trabalhos" ref={containerRef} className="relative py-16 lg:py-24 bg-white overflow-hidden">
-      <motion.div
+<section id="trabalhos" ref={containerRef} className="relative py-16 lg:py-24 bg-white overflow-hidden">      <motion.div
         style={{ scale, opacity }}
         className="max-w-[1400px] mx-auto px-6 lg:px-12 transform-gpu"
       >
@@ -738,11 +738,7 @@ const ProcessJourney = () => {
   ] as const;
 
   return (
-    <section
-      id="processo"
-      ref={containerRef}
-      className="relative py-16 lg:py-20 bg-gradient-to-b from-white via-gray-50 to-white overflow-hidden"
-    >
+    <section id="processo" ref={containerRef} className="relative py-16 lg:py-20 bg-white overflow-hidden">
       <motion.div className="absolute inset-0 opacity-30" style={{ y: backgroundY }}>
         <div className="absolute top-20 left-10 w-72 h-72 bg-tomo-blue/10 rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-tomo-pink/10 rounded-full blur-3xl" />
@@ -960,11 +956,7 @@ const ContactSection = () => {
   };
 
   return (
-    <section
-      id="contacto"
-      ref={containerRef}
-      className="relative py-16 lg:py-20 bg-gradient-to-b from-white to-gray-50 overflow-hidden"
-    >
+   <section id="contacto" ref={containerRef} className="relative py-16 lg:py-20 bg-white overflow-hidden">
       <motion.div style={{ y }} className="absolute inset-0 opacity-30 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-tomo-blue/20 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-tomo-pink/20 rounded-full blur-3xl" />
