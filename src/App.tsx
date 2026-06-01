@@ -1,5 +1,6 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { MotionConfig } from 'framer-motion';
 
 // IMPORTS LAZY (Todas as páginas passam a chunks independentes para aliviar o arranque no Safari)
 const Home = lazy(() => import('./components/Home').then(module => ({ default: module.Home })));
@@ -20,30 +21,33 @@ const PageLoader = () => (
 
 function App() {
   return (
-    <Router>
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          {/* Rotas Principais */}
-          <Route path="/" element={<Home />} />
-          <Route path="/trabalhos" element={<Trabalhos />} />
-          <Route path="/Processo" element={<Processo />} /> 
-          
-          {/* Projetos Individuais */}
-          <Route path="/poliempreende" element={<Poliempreende />} />
-          <Route path="/aveimedica" element={<Aveimedica />} />
-          <Route path="/idipv" element={<IDIPV />} /> 
-          <Route path="/jazz" element={<Jazz />} />
-          <Route path="/tomostudio" element={<TomoStudio />} />
-          
-          {/* Fallbacks e Redirecionamentos de rotas antigas */}
-          <Route path="/trabalhos/1" element={<Poliempreende />} />
-          <Route path="/trabalhos/poliempreende" element={<Poliempreende />} />
-          
-          {/* 404 / Catch-all */}
-          <Route path="*" element={<Home />} />
-        </Routes>
-      </Suspense>
-    </Router>
+    // 🌟 AQUI ESTÁ O KILL-SWITCH: Envolvemos o Router para desligar contas pesadas no Safari
+    <MotionConfig reducedMotion="always">
+      <Router>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            {/* Rotas Principais */}
+            <Route path="/" element={<Home />} />
+            <Route path="/trabalhos" element={<Trabalhos />} />
+            <Route path="/Processo" element={<Processo />} /> 
+            
+            {/* Projetos Individuais */}
+            <Route path="/poliempreende" element={<Poliempreende />} />
+            <Route path="/aveimedica" element={<Aveimedica />} />
+            <Route path="/idipv" element={<IDIPV />} /> 
+            <Route path="/jazz" element={<Jazz />} />
+            <Route path="/tomostudio" element={<TomoStudio />} />
+            
+            {/* Fallbacks e Redirecionamentos de rotas antigas */}
+            <Route path="/trabalhos/1" element={<Poliempreende />} />
+            <Route path="/trabalhos/poliempreende" element={<Poliempreende />} />
+            
+            {/* 404 / Catch-all */}
+            <Route path="*" element={<Home />} />
+          </Routes>
+        </Suspense>
+      </Router>
+    </MotionConfig>
   );
 }
 
