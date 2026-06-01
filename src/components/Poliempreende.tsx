@@ -25,7 +25,6 @@ import tshirtImg from '../assets/poliempreende/tshirt.webp';
 import toteImg from '../assets/poliempreende/tote.webp';
 import standImg from '../assets/poliempreende/Stand.webp';
 import websiteImg from '../assets/poliempreende/Website.webp';
-import video1 from '../assets/poliempreende/VideoPromocialComSom.mp4';
 import video2 from '../assets/poliempreende/VideoPromocional1.mp4';
 
 // ============================================
@@ -663,10 +662,10 @@ const VideoSection = () => {
     });
   }, []);
 
-  const videos = [
-    { src: video1, aspect: "aspect-square", label: "Vídeo Promocional Com Som" },
-    { src: video2, aspect: "aspect-square", label: "Vídeo Promocional 1" }
-  ];
+ const videos = [
+  { src: "/videos/VideoPromocialComSom.mp4", aspect: "aspect-square", label: "Vídeo Promocional Com Som" }, // 🌟 ATUALIZADO
+  { src: video2, aspect: "aspect-square", label: "Vídeo Promocional 1" } // Se o 2 for leve, pode ficar por agora
+];
 
   return (
     <section className="relative py-16 sm:py-24 lg:py-32 bg-gray-50 border-y border-black/5">
