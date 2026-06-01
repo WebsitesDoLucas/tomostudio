@@ -92,14 +92,48 @@
   }
 }
 
-/* Otimização Premium de Performance (GPU Acceleration) */
+/* Otimização de Performance (Ajustada para não esgotar a RAM do iOS) */
 .will-change-transform {
-  will-change: transform, opacity;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
+  will-change: transform;
 }
 
 .transform-gpu {
   transform: translateZ(0);
+}
+
+/* =========================================================
+   MODO DE SOBREVIVÊNCIA PARA SAFARI / iOS
+   Resolve definitivamente os ecrãs brancos e bloqueios
+   ========================================================= */
+
+@supports (-webkit-hyphens:none) {
+  /* 1. Impede a sobrecarga catastrófica de memória VRAM */
+  * {
+    will-change: auto !important;
+  }
+
+  /* 2. Desativa o efeito de vidro fosco (blur) que bloqueia a renderização */
+  .backdrop-blur-sm,
+  .backdrop-blur-md, 
+  .backdrop-blur-lg, 
+  .backdrop-blur-xl,
+  [class*="backdrop-blur"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background-color: rgba(255, 255, 255, 0.98) !important;
+  }
+
+  /* 3. Força o WebKit a usar aceleração nativa de scroll sem bloquear o JS */
+  html, body {
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* 4. Fix Global: Unidade Dinâmica para evitar recálculos do Safari ao fazer scroll */
+.h-screen {
+  height: 100dvh !important;
+}
+.min-h-screen {
+  min-height: 100dvh !important;
 }
