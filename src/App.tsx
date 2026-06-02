@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 // IMPORTS ESTÁTICOS (Páginas principais carregam instantaneamente sem esperar pela rede)
@@ -47,6 +47,52 @@ function App() {
 
 export default App;
 
+function PerfBadge() {
+  const [perf, setPerf] = useState<{ time: number; path: string } | null>(null);
+
+  useEffect(() => {
+    const logs = JSON.parse(localStorage.getItem('navPerfLogs') || '[]');
+    if (logs.length > 0) {
+      const last = logs[logs.length - 1];
+      setPerf({ time: last.time, path: last.to });
+    }
+
+    const interval = setInterval(() => {
+      const logs = JSON.parse(localStorage.getItem('navPerfLogs') || '[]');
+      if (logs.length > 0) {
+        const last = logs[logs.length - 1];
+        setPerf({ time: last.time, path: last.to });
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!perf) return null;
+
+  const isSlowWithClassName = perf.time > 5000;
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: '10px',
+        right: '10px',
+        backgroundColor: '#000',
+        color: isSlowWithClassName ? '#ff4444' : '#44ff44',
+        padding: '8px 12px',
+        borderRadius: '4px',
+        fontSize: '12px',
+        fontFamily: 'monospace',
+        zIndex: 9999,
+        pointerEvents: 'none',
+      }}
+    >
+      {perf.time}ms
+    </div>
+  );
+}
+
 function NavigationPerfTracker() {
   const location = useLocation();
 
@@ -89,5 +135,5 @@ function NavigationPerfTracker() {
     };
   }, []);
 
-  return null;
+  return <PerfBadge />;
 }
