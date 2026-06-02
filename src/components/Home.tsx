@@ -1,14 +1,14 @@
 import { 
   motion, 
-  useScroll, 
-  useTransform, 
   useSpring, 
-  useMotionValue
+  useMotionValue,
+  useTransform
 } from 'framer-motion';
 
 import { ArrowRight, Heart } from 'lucide-react';
 import { useRef, useEffect } from 'react';
-import { Navigation } from './Navigation';
+
+// 🌟 REMOVEMOS O IMPORT DA NAVIGATION E DO CURSOR PARA VER SE É DAÍ O BLOQUEIO
 
 export const Home = () => {
   const containerRef = useRef<HTMLElement>(null);
@@ -28,8 +28,8 @@ export const Home = () => {
   }, []);
 
   return (
-    <div className="bg-white w-full min-h-screen flex flex-col justify-between">
-      <Navigation />
+    <div className="bg-white w-full min-h-screen flex flex-col justify-between text-black">
+      {/* 🌟 SEM MENU NENHUM AQUI PARA ISOLAR O ERRO */}
       
       <section 
         ref={containerRef} 
@@ -42,70 +42,40 @@ export const Home = () => {
         </div>
         
         <div className="relative z-10 flex flex-col items-center text-center transform-gpu">
-          <motion.div 
-            initial={{ opacity: 0, y: 15 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ duration: 0.6 }} 
-            className="mb-4 md:mb-6"
-          >
+          <div className="mb-4 md:mb-6">
             <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase opacity-40" style={{ color: tomoNavy }}>
               Estúdio de Design & Estratégia
             </span>
-          </motion.div>
+          </div>
 
           <div className="flex flex-col items-center leading-[0.85]">
             <div className="overflow-hidden p-2">
-              <motion.h1
-                initial={{ y: "110%" }}
-                animate={{ y: 0 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
-                style={{ color: tomoNavy }}
-              >
+              <h1 className="text-[14vw] lg:text-[11vw] font-black tracking-tighter" style={{ color: tomoNavy }}>
                 CRIAMOS
-              </motion.h1>
+              </h1>
             </div>
 
             <div className="overflow-hidden flex items-center justify-center gap-2 md:gap-6 mt-[-2vw] lg:mt-[-1.5vw] p-2 pr-6">
-              <motion.h1
-                initial={{ y: "110%" }}
-                animate={{ y: 0 }}
-                transition={{ duration: 0.8, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-                className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
-                style={{ color: tomoNavy }}
-              >
+              <h1 className="text-[14vw] lg:text-[11vw] font-black tracking-tighter" style={{ color: tomoNavy }}>
                 CONTIGO
-              </motion.h1>
+              </h1>
 
-              {/* ⚡ LOGO SUBSTITUÍDO POR VETOR CSS ULTRA-LEVE PARA TESTE */}
               <motion.div 
                 style={{ x: xLogo, y: yLogo }} 
-                className="relative w-[14vw] h-[14vw] md:w-[10vw] md:h-[10vw] lg:w-[9vw] lg:h-[9vw] mb-[2vw] border-4 rounded-2xl bg-[#020224] flex items-center justify-center shadow-2xl"
-                initial={{ scale: 0, rotate: -90, opacity: 0 }}
-                animate={{ scale: 0.9, rotate: 0, opacity: 1 }}
-                transition={{ type: "spring", duration: 1.2, delay: 0.1 }}
+                className="relative w-[14vw] h-[14vw] md:w-[10vw] md:h-[10vw] lg:w-[9vw] lg:h-[9vw] mb-[2vw] border-4 rounded-2xl bg-[#020224] flex items-center justify-center shadow-2xl animate-pulse"
               >
                 <span className="text-[2.5vw] lg:text-[1.5vw] font-black text-white tracking-tighter">TOMO</span>
               </motion.div>
             </div>
           </div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.25, duration: 0.6 }}
-          >
-            <p className="mt-4 text-lg md:text-xl font-medium italic opacity-60" style={{ color: tomoNavy }}>
+          <div className="mt-4 animate-fade-in">
+            <p className="text-lg md:text-xl font-medium italic opacity-60" style={{ color: tomoNavy }}>
               não apenas para ti
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div 
-            initial={{ opacity: 0, y: 15 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.4, duration: 0.6 }} 
-            className="mt-8"
-          >
+          <div className="mt-8">
             <a 
               href="#contacto"
               className="group flex items-center gap-3 px-8 py-4 rounded-full text-white font-bold text-sm shadow-xl bg-[#020224]"
@@ -113,12 +83,12 @@ export const Home = () => {
               Iniciar Projeto
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </a>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       <footer className="py-6 bg-black text-white text-center text-xs text-white/40">
-        © {new Date().getFullYear()} tomo studio. Feito com <Heart size={10} className="inline text-white" fill="currentColor" /> em Viseu.
+        © tomo studio. Teste de Isolamento do Menu.
       </footer>
     </div>
   );
