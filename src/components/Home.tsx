@@ -83,6 +83,13 @@ const Magnetic = ({ children }: { children: React.ReactNode }) => {
 // AWWWARDS-STYLE CURSOR
 // ============================================
 const CustomCursor = () => {
+  // 🌟 OTIMIZAÇÃO: Verifica nativamente se é Mobile antes de criar qualquer lógica ou mola
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    setIsDesktop(window.innerWidth >= 1024);
+  }, []);
+
   const [cursorVariant, setCursorVariant] = useState<'default' | 'hover'>('default');
   const [isVisible, setIsVisible] = useState(false);
 
@@ -92,6 +99,8 @@ const CustomCursor = () => {
   const dotY = useSpring(0, { damping: 30, stiffness: 200 });
 
   useEffect(() => {
+    if (!isDesktop) return; // Se não for Desktop, sai imediatamente
+
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
       cursorX.set(clientX);
@@ -124,14 +133,15 @@ const CustomCursor = () => {
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseover', handleMouseOver);
     };
-  }, [cursorX, cursorY, dotX, dotY]);
+  }, [isDesktop, cursorX, cursorY, dotX, dotY]);
 
-  if (!isVisible) return null;
+  // 🌟 Se for Mobile, retorna null imediatamente e poupa a CPU do iPhone
+  if (!isDesktop || !isVisible) return null;
 
   return (
     <>
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference rounded-full hidden lg:block"
+        className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference rounded-full"
         style={{
           x: cursorX,
           y: cursorY,
@@ -156,7 +166,7 @@ const CustomCursor = () => {
       />
 
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9998] w-1 h-1 bg-white/60 rounded-full mix-blend-difference hidden lg:block"
+        className="fixed top-0 left-0 pointer-events-none z-[9998] w-1 h-1 bg-white/60 rounded-full mix-blend-difference"
         style={{
           x: dotX,
           y: dotY,
@@ -307,6 +317,12 @@ const HeroSection = () => {
   const containerRef = useRef<HTMLElement>(null);
   const tomoNavy = "#020224";
   
+  // 🌟 OTIMIZAÇÃO: Detetar se é mobile para ignorar o movimento do rato
+  const [isMobile, setIsMobile] = useState(true);
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 1024);
+  }, []);
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const springConfig = { damping: 25, stiffness: 150 };
@@ -319,6 +335,7 @@ const HeroSection = () => {
   const yBack = useTransform(mouseYSpring, [-0.5, 0.5], ["50px", "-50px"]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
+    if (isMobile) return; // 🌟 Se for mobile, ignora por completo o evento
     const { width, height } = e.currentTarget.getBoundingClientRect();
     mouseX.set(e.clientX / width - 0.5);
     mouseY.set(e.clientY / height - 0.5);
@@ -331,19 +348,18 @@ const HeroSection = () => {
       onMouseMove={handleMouseMove} 
       className="relative h-screen min-h-[700px] w-full bg-white flex flex-col items-center justify-center px-6 overflow-hidden"
     >
+      {/* 🌟 Só aplica o estilo de parallax por movimento se NÃO for mobile */}
       <motion.div 
         className="absolute inset-0 pointer-events-none"
-        style={{ x: xBack, y: yBack }}
+        style={isMobile ? {} : { x: xBack, y: yBack }}
       >
         <div className="absolute top-[10%] left-[10%] w-[40vw] h-[40vw] rounded-full blur-[100px] opacity-20 bg-[#0099FF]" />
         <div className="absolute bottom-[10%] right-[10%] w-[50vw] h-[50vw] rounded-full blur-[100px] opacity-10 bg-[#020224]" />
       </motion.div>
       
-
-<div className="absolute inset-0 opacity-[0.2] pointer-events-none" />
+      <div className="absolute inset-0 opacity-[0.2] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center text-center transform-gpu">
-        {/* Animações agora iniciam-se sozinhas (true) assim que a página abre */}
         <motion.div 
           initial={{ opacity: 0, y: 15 }} 
           animate={{ opacity: 1, y: 0 }} 
@@ -380,7 +396,7 @@ const HeroSection = () => {
             </motion.h1>
 
             <motion.div 
-              style={{ x: xLogo, y: yLogo }} 
+              style={isMobile ? {} : { x: xLogo, y: yLogo }} // 🌟 Proteção mobile aqui também
               className="relative w-[14vw] h-[14vw] md:w-[10vw] md:h-[10vw] lg:w-[9vw] lg:h-[9vw] p-4 mb-[2vw] perspective-1000 flex items-center justify-center"
             >
               <motion.img 
@@ -388,7 +404,7 @@ const HeroSection = () => {
                 alt="Tomo Logo" 
                 initial={{ scale: 0, rotate: -90, opacity: 0 }}
                 animate={{ scale: 0.9, rotate: 0, opacity: 1 }}
-                whileInView={{ y: [0, -6, 0], rotate: [0, 5, 0] }}
+                whileInView={isMobile ? {} : { y: [0, -6, 0], rotate: [0, 5, 0] }} // Desativa loop infinito no telemóvel
                 transition={{ 
                   scale: { type: "spring", duration: 1.2, delay: 0.1 },
                   opacity: { duration: 0.4, delay: 0.1 },
