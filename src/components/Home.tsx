@@ -81,102 +81,14 @@ const Magnetic = ({ children }: { children: React.ReactNode }) => {
 };
 
 // ============================================
-// AWWWARDS-STYLE CURSOR
+// AWWWARDS-STYLE CURSOR (DISABLED ON SAFARI/MOBILE FOR PERF)
 // ============================================
 const CustomCursor = () => {
-  // 🌟 OTIMIZAÇÃO: Verifica nativamente se é Mobile antes de criar qualquer lógica ou mola
-  const [isDesktop, setIsDesktop] = useState(false);
+  // Disable custom cursor completely on Safari/mobile — triggers render-blocking listeners
+  const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+  if (isSafari || window.innerWidth < 1024) return null;
 
-  useEffect(() => {
-    setIsDesktop(window.innerWidth >= 1024);
-  }, []);
-
-  const [cursorVariant, setCursorVariant] = useState<'default' | 'hover'>('default');
-  const [isVisible, setIsVisible] = useState(false);
-
-  const cursorX = useSpring(0, { damping: 25, stiffness: 400 });
-  const cursorY = useSpring(0, { damping: 25, stiffness: 400 });
-  const dotX = useSpring(0, { damping: 30, stiffness: 200 });
-  const dotY = useSpring(0, { damping: 30, stiffness: 200 });
-
-  useEffect(() => {
-    if (!isDesktop) return; // Se não for Desktop, sai imediatamente
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const { clientX, clientY } = e;
-      cursorX.set(clientX);
-      cursorY.set(clientY);
-      dotX.set(clientX);
-      dotY.set(clientY);
-      setIsVisible(true);
-    };
-
-    const handleMouseEnter = () => setIsVisible(true);
-    const handleMouseLeave = () => setIsVisible(false);
-
-    const handleMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (target && target.closest('a, button, input, textarea, select')) {
-        setCursorVariant('hover');
-      } else {
-        setCursorVariant('default');
-      }
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseenter', handleMouseEnter);
-    document.addEventListener('mouseleave', handleMouseLeave);
-    document.addEventListener('mouseover', handleMouseOver);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseenter', handleMouseEnter);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-      document.removeEventListener('mouseover', handleMouseOver);
-    };
-  }, [isDesktop, cursorX, cursorY, dotX, dotY]);
-
-  // 🌟 Se for Mobile, retorna null imediatamente e poupa a CPU do iPhone
-  if (!isDesktop || !isVisible) return null;
-
-  return (
-    <>
-      <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference rounded-full"
-        style={{
-          x: cursorX,
-          y: cursorY,
-          translateX: '-50%',
-          translateY: '-50%'
-        }}
-        animate={{
-          width: cursorVariant === 'hover' ? 60 : 12,
-          height: cursorVariant === 'hover' ? 60 : 12,
-          backgroundColor:
-            cursorVariant === 'hover'
-              ? 'rgba(255, 255, 255, 0.15)'
-              : 'rgba(255, 255, 255, 0.9)',
-          borderWidth: cursorVariant === 'hover' ? 2 : 0,
-          borderColor: 'rgba(255, 255, 255, 0.5)'
-        }}
-        transition={{
-          type: 'spring',
-          stiffness: 500,
-          damping: 28
-        }}
-      />
-
-      <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9998] w-1 h-1 bg-white/60 rounded-full mix-blend-difference"
-        style={{
-          x: dotX,
-          y: dotY,
-          translateX: '-50%',
-          translateY: '-50%'
-        }}
-      />
-    </>
-  );
+  return null;
 };
 
 // ============================================
@@ -1280,35 +1192,26 @@ return (
 // MAIN COMPONENT
 // ============================================
 export const Home = () => {
+  // Reduce scroll delay on Safari to avoid perceived lag
+  const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+  
   useEffect(() => {
-    // Verifica se o link tem um '#' (ex: /#contacto)
     if (window.location.hash) {
       const id = window.location.hash.replace('#', '');
-      // Dá 300ms para o Framer Motion e a página carregarem, e depois faz o scroll
+      const delay = isSafari ? 0 : 300;
       setTimeout(() => {
         const element = document.getElementById(id);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' });
         }
-      }, 300);
+      }, delay);
     } else {
       window.scrollTo(0, 0);
     }
-  }, []);
+  }, [isSafari]);
 
   return (
     <div className="bg-white w-full">
-      <style>{`
-        body {
-          overflow-x: hidden;
-        }
-        @media (min-width: 1024px) {
-          * {
-            cursor: none !important;
-          }
-        }
-      `}</style>
-      <CustomCursor />
       <Navigation />
       <ChapterIndicator />
       

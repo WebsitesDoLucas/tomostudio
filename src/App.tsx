@@ -52,20 +52,20 @@ function NavigationPerfTracker() {
 
   useEffect(() => {
     const navStart = (window as any).__navStart || performance.now();
-    requestAnimationFrame(() => requestAnimationFrame(() => {
+    // Use single RAF instead of double RAF to avoid blocking on Safari
+    const rafId = requestAnimationFrame(() => {
       const elapsed = performance.now() - navStart;
       (window as any).__navPerfLogs = (window as any).__navPerfLogs || [];
       (window as any).__navPerfLogs.push({ to: location.pathname + location.hash, time: Math.round(elapsed), ts: Date.now() });
-      // Persist last 50 logs so user can inspect from device
       try {
         localStorage.setItem('navPerfLogs', JSON.stringify((window as any).__navPerfLogs.slice(-50)));
       } catch (e) {
         // ignore storage errors
       }
-      // Log to console for remote debugging
-      // eslint-disable-next-line no-console
       console.log('[NAV PERF]', location.pathname + location.hash, Math.round(elapsed), 'ms');
-    }));
+    });
+    
+    return () => cancelAnimationFrame(rafId);
   }, [location]);
 
   useEffect(() => {
