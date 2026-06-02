@@ -343,12 +343,12 @@ const HeroSection = () => {
 <div className="absolute inset-0 opacity-[0.2] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center text-center transform-gpu">
-        {/* Animações agora iniciam-se sozinhas (true) assim que a página abre */}
+        {/* Animações com initial={false} para aparecerem instantaneamente no Safari */}
         <motion.div 
-          initial={{ opacity: 0, y: 15 }} 
+          initial={false}
           animate={{ opacity: 1, y: 0 }} 
           transition={{ duration: 0.6 }} 
-          className="mb-4 md:mb-6"
+          className="mb-4 md:mb-6 opacity-0 translate-y-4"
         >
           <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase opacity-40" style={{ color: tomoNavy }}>
             Estúdio de Design & Estratégia
@@ -358,7 +358,7 @@ const HeroSection = () => {
         <div className="flex flex-col items-center leading-[0.85]">
           <div className="overflow-hidden p-2">
             <motion.h1
-              initial={{ y: "110%", rotate: 2 }}
+              initial={false}
               animate={{ y: 0, rotate: 0 }}
               transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
               className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
@@ -370,7 +370,7 @@ const HeroSection = () => {
 
           <div className="overflow-hidden flex items-center justify-center gap-2 md:gap-6 mt-[-2vw] lg:mt-[-1.5vw] p-2 pr-6">
             <motion.h1
-              initial={{ y: "110%", rotate: 2 }}
+              initial={false}
               animate={{ y: 0, rotate: 0 }}
               transition={{ duration: 1.0, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
               className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
@@ -386,7 +386,7 @@ const HeroSection = () => {
               <motion.img 
                 src={logowebp} 
                 alt="Tomo Logo" 
-                initial={{ scale: 0, rotate: -90, opacity: 0 }}
+                initial={false}
                 animate={{ scale: 0.9, rotate: 0, opacity: 1 }}
                 whileInView={{ y: [0, -6, 0], rotate: [0, 5, 0] }}
                 transition={{ 
@@ -402,9 +402,10 @@ const HeroSection = () => {
         </div>
 
         <motion.div 
-          initial={{ opacity: 0, y: 10 }} 
+          initial={false}
           animate={{ opacity: 1, y: 0 }} 
           transition={{ delay: 0.25, duration: 0.6 }}
+          className="opacity-0 translate-y-2"
         >
           <p className="mt-4 text-lg md:text-xl font-medium italic opacity-60" style={{ color: tomoNavy }}>
             não apenas para ti
@@ -412,10 +413,10 @@ const HeroSection = () => {
         </motion.div>
 
         <motion.div 
-          initial={{ opacity: 0, y: 15 }} 
+          initial={false}
           animate={{ opacity: 1, y: 0 }} 
-          transition={{ delay: 0.4, duration: 0.6 }} 
-          className="mt-8"
+          transition={{ delay: 0.4, duration: 0.6 }}
+          className="mt-8 opacity-0 translate-y-4"
         >
           <motion.a 
             href="#contacto"
@@ -430,16 +431,12 @@ const HeroSection = () => {
       </div>
 
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={false}
+        animate={{ opacity: 0.3 }}
         transition={{ delay: 0.6 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30"
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-0"
       >
-        <motion.div 
-          animate={{ height: [0, 40, 0], opacity: [0, 1, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="w-[1px] bg-[#020224]"
-        />
+        <div className="w-[1px] h-10 bg-[#020224]" />
       </motion.div>
     </section>
   );
@@ -1236,6 +1233,8 @@ return (
 // MAIN COMPONENT
 // ============================================
 export const Home = () => {
+  const [renderHeavyComponents, setRenderHeavyComponents] = useState(false);
+
   useEffect(() => {
     // Verifica se o link tem um '#' (ex: /#contacto)
     if (window.location.hash) {
@@ -1250,6 +1249,12 @@ export const Home = () => {
     } else {
       window.scrollTo(0, 0);
     }
+
+    // OTIMIZAÇÃO: Adiar animações pesadas para não travar Safari
+    const timer = requestAnimationFrame(() => {
+      setTimeout(() => setRenderHeavyComponents(true), 100);
+    });
+    return () => cancelAnimationFrame(timer);
   }, []);
 
   return (
@@ -1264,7 +1269,12 @@ export const Home = () => {
           }
         }
       `}</style>
-      <CustomCursor />
+      {renderHeavyComponents && (
+        <>
+          <CustomCursor />
+          <ScrollProgress />
+        </>
+      )}
       <Navigation />
       <ChapterIndicator />
       
