@@ -37,9 +37,19 @@ import poliempreendeImg from '../assets/poliempreende/Billboard.webp';
 import AveimédicaImg from '../assets/aveimedica/FACHADA1.webp';
 
 // ============================================
-// UTILS: MAGNETIC COMPONENT
+// GLOBAL: Detect Safari for performance optimization
+// ============================================
+const isSafariGlobal = () => /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+
+// ============================================
+// UTILS: MAGNETIC COMPONENT (DISABLED ON SAFARI)
 // ============================================
 const Magnetic = ({ children }: { children: React.ReactNode }) => {
+  // Disable completely on Safari — too expensive for mobile
+  if (isSafariGlobal() || window.innerWidth < 1024) {
+    return <>{children}</>;
+  }
+
   const ref = useRef<HTMLDivElement>(null);
   
   // Usar MotionValues nativos em vez de state
@@ -92,9 +102,14 @@ const CustomCursor = () => {
 };
 
 // ============================================
-// SCROLL PROGRESS
+// SCROLL PROGRESS (DISABLED ON SAFARI)
 // ============================================
 const ScrollProgress = () => {
+  // Disable on Safari — useScroll + useSpring is expensive
+  if (isSafariGlobal()) {
+    return null;
+  }
+
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
@@ -224,17 +239,63 @@ const TransitionReveal = ({
 };
 
 // ============================================
-// HERO SECTION (Instant Mobile Load)
+// HERO SECTION (Instant Mobile Load, Simplified for Safari)
 // ============================================
 const HeroSection = () => {
   const containerRef = useRef<HTMLElement>(null);
   const tomoNavy = "#020224";
+  const isSafari = isSafariGlobal();
   
   // 🌟 OTIMIZAÇÃO: Detetar se é mobile para ignorar o movimento do rato
   const [isMobile, setIsMobile] = useState(true);
   useEffect(() => {
     setIsMobile(window.innerWidth < 1024);
   }, []);
+
+  // Skip complex animations on Safari
+  if (isSafari) {
+    return (
+      <section 
+        ref={containerRef} 
+        id="intro"
+        className="relative h-screen min-h-[700px] w-full bg-white flex flex-col items-center justify-center px-6 overflow-hidden"
+      >
+        <div className="absolute inset-0 opacity-[0.2] pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <div className="mb-4 md:mb-6">
+            <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase opacity-40" style={{ color: tomoNavy }}>
+              Estúdio de Design & Estratégia
+            </span>
+          </div>
+
+          <div className="flex flex-col items-center leading-[0.85]">
+            <h1
+              className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
+              style={{ color: tomoNavy }}
+            >
+              CRIAMOS
+            </h1>
+            <h2 className="text-[12vw] lg:text-[10vw] font-black tracking-tighter mt-[-1vw]" style={{ color: tomoNavy }}>
+              EXPERIÊNCIAS
+            </h2>
+          </div>
+
+          <p className="mt-8 md:mt-12 text-sm md:text-base max-w-md text-gray-600">
+            Design, Branding e Estratégia Digital para marcas que querem deixar marca
+          </p>
+
+          <MotionLink 
+            to="/trabalhos" 
+            className="mt-12 md:mt-16 px-6 md:px-8 py-3 md:py-4 bg-black text-white text-xs md:text-sm font-bold uppercase tracking-wider rounded-full hover:bg-gray-800 transition-colors inline-flex items-center gap-2"
+          >
+            Ver Trabalhos
+            <ArrowRight size={16} />
+          </MotionLink>
+        </div>
+      </section>
+    );
+  }
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
