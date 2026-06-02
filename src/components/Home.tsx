@@ -25,6 +25,7 @@ import {
 
 import { useRef, useState, useEffect, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+const MotionLink = motion(Link);
 import { Navigation } from './Navigation';
 
 
@@ -246,9 +247,9 @@ const ChapterIndicator = () => {
     <div className="fixed left-8 top-1/2 -translate-y-1/2 z-40 hidden lg:block mix-blend-difference pointer-events-none">
       <div className="space-y-6 pointer-events-auto">
         {chapters.map((chapter, index) => (
-          <motion.a
+          <MotionLink
             key={chapter.id}
-            href={`#${chapter.id}`}
+            to={`#${chapter.id}`}
             className="group flex items-center gap-3"
             whileHover={{ x: 8 }}
           >
@@ -268,7 +269,7 @@ const ChapterIndicator = () => {
             >
               {chapter.label}
             </span>
-          </motion.a>
+          </MotionLink>
         ))}
       </div>
     </div>
@@ -433,15 +434,15 @@ const HeroSection = () => {
           transition={{ delay: 0.4, duration: 0.6 }} 
           className="mt-8"
         >
-          <motion.a 
-            href="#contacto"
+          <MotionLink 
+            to="#contacto"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="group flex items-center gap-3 px-8 py-4 rounded-full text-white font-bold text-sm shadow-xl shadow-blue-900/20 hover:shadow-blue-900/30 transition-all bg-[#020224]"
           >
             Iniciar Projeto
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </motion.a>
+          </MotionLink>
         </motion.div>
       </div>
 
@@ -1034,20 +1035,21 @@ const ContactSection = () => {
   href: 'https://www.instagram.com/tomostudio.pt' 
 }
                 ].map(item => (
-    <motion.a
-      key={item.title}
-      href={item.href} // Adicionamos o atributo href
-      target={item.href?.startsWith('http') ? "_blank" : undefined} // Abre redes sociais noutro tab
-      rel={item.href?.startsWith('http') ? "noopener noreferrer" : undefined}
-      className="flex items-start gap-4 cursor-pointer"
-      whileHover={{ x: 4 }}
-    >
-      <div
-        className={`w-12 h-12 rounded-2xl ${
-          item.color === 'blue' ? 'bg-tomo-blue/10' : 'bg-tomo-pink/10'
-        } flex items-center justify-center flex-shrink-0`}
-      >
-        <item.icon
+                  item.href && item.href.startsWith('http') ? (
+                    <motion.a
+                      key={item.title}
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-start gap-4 cursor-pointer"
+                      whileHover={{ x: 4 }}
+                    >
+                      <div
+                        className={`w-12 h-12 rounded-2xl ${
+                          item.color === 'blue' ? 'bg-tomo-blue/10' : 'bg-tomo-pink/10'
+                        } flex items-center justify-center flex-shrink-0`}
+                      >
+                        <item.icon
           className={
             item.color === 'blue' ? 'text-tomo-blue' : 'text-tomo-pink'
           }
@@ -1059,8 +1061,34 @@ const ContactSection = () => {
         <p className="text-sm text-black/60 hover:text-tomo-blue transition-colors">{item.info}</p>
         <p className="text-xs text-black/40 italic">{item.sub}</p>
       </div>
-    </motion.a>
-  ))
+                    </motion.a>
+                  ) : (
+                    <MotionLink
+                      key={item.title}
+                      to={item.href || '#'}
+                      className="flex items-start gap-4 cursor-pointer"
+                      whileHover={{ x: 4 }}
+                    >
+                      <div
+                        className={`w-12 h-12 rounded-2xl ${
+                          item.color === 'blue' ? 'bg-tomo-blue/10' : 'bg-tomo-pink/10'
+                        } flex items-center justify-center flex-shrink-0`}
+                      >
+                        <item.icon
+                          className={
+                            item.color === 'blue' ? 'text-tomo-blue' : 'text-tomo-pink'
+                          }
+                          size={18}
+                        />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-medium text-black mb-1">{item.title}</h4>
+                        <p className="text-sm text-black/60 hover:text-tomo-blue transition-colors">{item.info}</p>
+                        <p className="text-xs text-black/40 italic">{item.sub}</p>
+                      </div>
+                    </MotionLink>
+                  )
+                ))
 }
               </div>
             </div>

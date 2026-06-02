@@ -1,5 +1,5 @@
-import { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 // IMPORTS ESTÁTICOS (Páginas principais carregam instantaneamente sem esperar pela rede)
 import { Home } from './components/Home';
@@ -23,6 +23,7 @@ function App() {
   return (
     <Router>
       <Suspense fallback={<PageLoader />}>
+        <NavigationPerfTracker />
         <Routes>
           {/* Home e Trabalhos agora abrem sem delay de rede */}
           <Route path="/" element={<Home />} />
@@ -45,3 +46,48 @@ function App() {
 }
 
 export default App;
+
+function NavigationPerfTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const navStart = (window as any).__navStart || performance.now();
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const elapsed = performance.now() - navStart;
+      (window as any).__navPerfLogs = (window as any).__navPerfLogs || [];
+      (window as any).__navPerfLogs.push({ to: location.pathname + location.hash, time: Math.round(elapsed), ts: Date.now() });
+      // Persist last 50 logs so user can inspect from device
+      try {
+        localStorage.setItem('navPerfLogs', JSON.stringify((window as any).__navPerfLogs.slice(-50)));
+      } catch (e) {
+        // ignore storage errors
+      }
+      // Log to console for remote debugging
+      // eslint-disable-next-line no-console
+      console.log('[NAV PERF]', location.pathname + location.hash, Math.round(elapsed), 'ms');
+    }));
+  }, [location]);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      const anchor = target?.closest && (target.closest('a') as HTMLAnchorElement | null);
+      if (!anchor) return;
+      const href = anchor.getAttribute('href') || anchor.getAttribute('to') || '';
+      if (href.startsWith('/') || href.startsWith('#')) {
+        (window as any).__navStart = performance.now();
+      }
+    };
+
+    const onPop = () => { (window as any).__navStart = performance.now(); };
+
+    document.addEventListener('click', onClick, true);
+    window.addEventListener('popstate', onPop);
+    return () => {
+      document.removeEventListener('click', onClick, true);
+      window.removeEventListener('popstate', onPop);
+    };
+  }, []);
+
+  return null;
+}
