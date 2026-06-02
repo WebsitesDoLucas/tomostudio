@@ -1,13 +1,9 @@
 import path from "path";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import basicSsl from '@vitejs/plugin-basic-ssl';
 
-export default defineConfig(({ mode }) => ({
-  plugins: [
-    react(),
-    ...(mode === 'development' ? [basicSsl()] : []),
-  ],
+export default defineConfig({
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -17,17 +13,22 @@ export default defineConfig(({ mode }) => ({
     drop: ['console', 'debugger'],
   },
   build: {
-    target: ['es2020', 'safari14'], // ← fix principal
+    target: ['es2020', 'safari14'],
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
             if (id.includes('framer-motion')) return 'vendor-framer';
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) return 'vendor-react';
+            if (id.includes('react-dom')) return 'vendor-react-dom';
+            if (id.includes('react-router')) return 'vendor-router';
+            if (id.includes('react')) return 'vendor-react';
+            if (id.includes('lucide')) return 'vendor-lucide';
+            if (id.includes('gsap')) return 'vendor-gsap';
+            if (id.includes('lenis')) return 'vendor-lenis';
             return 'vendor';
           }
         }
       }
     }
   }
-}));
+});

@@ -1,17 +1,14 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-// IMPORTS ESTÁTICOS (Páginas principais carregam instantaneamente sem esperar pela rede)
-import { Home } from './components/Home';
-import { Trabalhos } from './components/Trabalhos';
-
-// IMPORTS LAZY (Apenas os projetos pesados secundários ficam em lazy)
-const Poliempreende = lazy(() => import('./components/Poliempreende').then(module => ({ default: module.Poliempreende })));
-const Aveimedica = lazy(() => import('./components/Aveimedica').then(module => ({ default: module.Aveimedica })));
-const IDIPV = lazy(() => import('./components/IDIPV').then(module => ({ default: module.IDIPV })));
-const Jazz = lazy(() => import('./components/Jazz').then(module => ({ default: module.Jazz })));
-const Processo = lazy(() => import('./components/Processo').then(module => ({ default: module.Processo })));
-const TomoStudio = lazy(() => import('./components/TomoStudio').then(module => ({ default: module.TomoStudio })));
+const Home = lazy(() => import('./components/Home').then(m => ({ default: m.Home })));
+const Trabalhos = lazy(() => import('./components/Trabalhos').then(m => ({ default: m.Trabalhos })));
+const Poliempreende = lazy(() => import('./components/Poliempreende').then(m => ({ default: m.Poliempreende })));
+const Aveimedica = lazy(() => import('./components/Aveimedica').then(m => ({ default: m.Aveimedica })));
+const IDIPV = lazy(() => import('./components/IDIPV').then(m => ({ default: m.IDIPV })));
+const Jazz = lazy(() => import('./components/Jazz').then(m => ({ default: m.Jazz })));
+const Processo = lazy(() => import('./components/Processo').then(m => ({ default: m.Processo })));
+const TomoStudio = lazy(() => import('./components/TomoStudio').then(m => ({ default: m.TomoStudio })));
 
 const PageLoader = () => (
   <div className="min-h-screen w-full flex items-center justify-center bg-white">
@@ -24,17 +21,14 @@ function App() {
     <Router>
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          {/* Home e Trabalhos agora abrem sem delay de rede */}
           <Route path="/" element={<Home />} />
           <Route path="/trabalhos" element={<Trabalhos />} />
-          
-          {/* Projetos continuam protegidos e leves */}
           <Route path="/poliempreende" element={<Poliempreende />} />
           <Route path="/aveimedica" element={<Aveimedica />} />
-          <Route path="/idipv" element={<IDIPV />} /> 
+          <Route path="/idipv" element={<IDIPV />} />
           <Route path="/jazz" element={<Jazz />} />
           <Route path="/tomostudio" element={<TomoStudio />} />
-          <Route path="/Processo" element={<Processo />} /> 
+          <Route path="/Processo" element={<Processo />} />
           <Route path="/trabalhos/1" element={<Poliempreende />} />
           <Route path="/trabalhos/poliempreende" element={<Poliempreende />} />
           <Route path="*" element={<Home />} />
