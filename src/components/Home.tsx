@@ -28,13 +28,11 @@ import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation';
 
 
-// Importações de Imagens
-import fotocasal from '../assets/fotocasal.webp';
-import LogoCompleto from '../assets/LogoCompleto.webp';
-import logowebp from '../assets/logo.webp'; // <-- Dá-lhe o nome logoPng aqui!
-import poliempreendeImg from '../assets/poliempreende/Billboard.webp';
-import AveimédicaImg from '../assets/aveimedica/FACHADA1.webp';
-
+const fotocasal = new URL('../assets/fotocasal.webp', import.meta.url).href;
+const LogoCompleto = new URL('../assets/LogoCompleto.webp', import.meta.url).href;
+const logowebp = new URL('../assets/logo.webp', import.meta.url).href;
+const poliempreendeImg = new URL('../assets/poliempreende/Billboard.webp', import.meta.url).href;
+const AveimédicaImg = new URL('../assets/aveimedica/FACHADA1.webp', import.meta.url).href;
 // ============================================
 // UTILS: MAGNETIC COMPONENT
 // ============================================
