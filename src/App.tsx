@@ -20,6 +20,13 @@ const PageLoader = () => (
 );
 
 function App() {
+  useEffect(() => {
+    // Hide splash screen when app mounts
+    if ((window as any).__hideSplash) {
+      (window as any).__hideSplash();
+    }
+  }, []);
+
   return (
     <Router>
       <Suspense fallback={<PageLoader />}>
