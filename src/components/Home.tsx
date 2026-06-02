@@ -343,30 +343,41 @@ const HeroSection = () => {
 <div className="absolute inset-0 opacity-[0.2] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center text-center transform-gpu">
-        {/* SEM ANIMAÇÕES - Aparecem instantaneamente */}
-        <div className="mb-4 md:mb-6">
+        {/* Animações agora iniciam-se sozinhas (true) assim que a página abre */}
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.6 }} 
+          className="mb-4 md:mb-6"
+        >
           <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase opacity-40" style={{ color: tomoNavy }}>
             Estúdio de Design & Estratégia
           </span>
-        </div>
+        </motion.div>
 
         <div className="flex flex-col items-center leading-[0.85]">
           <div className="overflow-hidden p-2">
-            <h1
+            <motion.h1
+              initial={{ y: "110%", rotate: 2 }}
+              animate={{ y: 0, rotate: 0 }}
+              transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
               className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
               style={{ color: tomoNavy }}
             >
               CRIAMOS
-            </h1>
+            </motion.h1>
           </div>
 
           <div className="overflow-hidden flex items-center justify-center gap-2 md:gap-6 mt-[-2vw] lg:mt-[-1.5vw] p-2 pr-6">
-            <h1
+            <motion.h1
+              initial={{ y: "110%", rotate: 2 }}
+              animate={{ y: 0, rotate: 0 }}
+              transition={{ duration: 1.0, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
               className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
               style={{ color: tomoNavy }}
             >
               CONTIGO
-            </h1>
+            </motion.h1>
 
             <motion.div 
               style={{ x: xLogo, y: yLogo }} 
@@ -375,39 +386,61 @@ const HeroSection = () => {
               <motion.img 
                 src={logowebp} 
                 alt="Tomo Logo" 
+                initial={{ scale: 0, rotate: -90, opacity: 0 }}
+                animate={{ scale: 0.9, rotate: 0, opacity: 1 }}
                 whileInView={{ y: [0, -6, 0], rotate: [0, 5, 0] }}
                 transition={{ 
-                  y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 },
-                  rotate: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0 }
+                  scale: { type: "spring", duration: 1.2, delay: 0.1 },
+                  opacity: { duration: 0.4, delay: 0.1 },
+                  y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.2 },
+                  rotate: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.1 }
                 }}
-                className="w-full h-full object-contain drop-shadow-2xl opacity-90"
+                className="w-full h-full object-contain drop-shadow-2xl"
               />
             </motion.div>
           </div>
         </div>
 
-        <div className="mt-4 text-lg md:text-xl font-medium italic opacity-60" style={{ color: tomoNavy }}>
-          <p>não apenas para ti</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.25, duration: 0.6 }}
+        >
+          <p className="mt-4 text-lg md:text-xl font-medium italic opacity-60" style={{ color: tomoNavy }}>
+            não apenas para ti
+          </p>
+        </motion.div>
 
         <motion.div 
+          initial={{ opacity: 0, y: 15 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ delay: 0.4, duration: 0.6 }} 
           className="mt-8"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
         >
-          <a 
+          <motion.a 
             href="#contacto"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             className="group flex items-center gap-3 px-8 py-4 rounded-full text-white font-bold text-sm shadow-xl shadow-blue-900/20 hover:shadow-blue-900/30 transition-all bg-[#020224]"
           >
             Iniciar Projeto
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </a>
+          </motion.a>
         </motion.div>
       </div>
 
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30">
-        <div className="w-[1px] h-10 bg-[#020224]" />
-      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30"
+      >
+        <motion.div 
+          animate={{ height: [0, 40, 0], opacity: [0, 1, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="w-[1px] bg-[#020224]"
+        />
+      </motion.div>
     </section>
   );
 };
@@ -1231,6 +1264,7 @@ export const Home = () => {
           }
         }
       `}</style>
+      <CustomCursor />
       <Navigation />
       <ChapterIndicator />
       
