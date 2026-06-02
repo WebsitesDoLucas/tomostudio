@@ -172,16 +172,6 @@ const CustomCursor = () => {
 // SCROLL PROGRESS
 // ============================================
 const ScrollProgress = () => {
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    // Adiar até 200ms para não bloquear Safari
-    const timer = setTimeout(() => setIsReady(true), 200);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (!isReady) return null;
-
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
@@ -212,36 +202,31 @@ const ChapterIndicator = () => {
     // 🌟 Verificação direta e nativa: se for mobile, não faz nada
     if (typeof window !== 'undefined' && window.innerWidth < 1024) return;
 
-    // OTIMIZAÇÃO: Adiar o IntersectionObserver para 500ms após o render
-    const setupTimer = setTimeout(() => {
-      const observerOptions = {
-        root: null,
-        rootMargin: '-45% 0px -45% 0px',
-        threshold: 0
-      };
+    const observerOptions = {
+      root: null,
+      rootMargin: '-45% 0px -45% 0px',
+      threshold: 0
+    };
 
-      const observerCallback = (entries: IntersectionObserverEntry[]) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const index = chapters.findIndex(c => c.id === entry.target.id);
-            if (index !== -1) {
-              setActiveChapter(index);
-            }
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const index = chapters.findIndex(c => c.id === entry.target.id);
+          if (index !== -1) {
+            setActiveChapter(index);
           }
-        });
-      };
-
-      const observer = new IntersectionObserver(observerCallback, observerOptions);
-
-      chapters.forEach(chapter => {
-        const el = document.getElementById(chapter.id);
-        if (el) observer.observe(el);
+        }
       });
+    };
 
-      return () => observer.disconnect();
-    }, 500);
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-    return () => clearTimeout(setupTimer);
+    chapters.forEach(chapter => {
+      const el = document.getElementById(chapter.id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   // 🌟 Se for ecrã pequeno, esconde o indicador lateral imediatamente
@@ -257,10 +242,14 @@ const ChapterIndicator = () => {
             className="group flex items-center gap-3"
             whileHover={{ x: 8 }}
           >
-            <div
+            <motion.div
               className={`w-2 h-2 rounded-full transition-all ${
                 activeChapter === index ? 'bg-white w-8' : 'bg-white/30'
               }`}
+              animate={{
+                scale: activeChapter === index ? [1, 1.2, 1] : 1
+              }}
+              transition={{ duration: 1, repeat: activeChapter === index ? Infinity : 0 }}
             />
             <span
               className={`text-xs opacity-0 group-hover:opacity-100 transition-opacity ${
@@ -354,41 +343,30 @@ const HeroSection = () => {
 <div className="absolute inset-0 opacity-[0.2] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center text-center transform-gpu">
-        {/* Animações com initial={false} para aparecerem instantaneamente no Safari */}
-        <motion.div 
-          initial={false}
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.6 }} 
-          className="mb-4 md:mb-6 opacity-0 translate-y-4"
-        >
+        {/* SEM ANIMAÇÕES - Aparecem instantaneamente */}
+        <div className="mb-4 md:mb-6">
           <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase opacity-40" style={{ color: tomoNavy }}>
             Estúdio de Design & Estratégia
           </span>
-        </motion.div>
+        </div>
 
         <div className="flex flex-col items-center leading-[0.85]">
           <div className="overflow-hidden p-2">
-            <motion.h1
-              initial={false}
-              animate={{ y: 0, rotate: 0 }}
-              transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+            <h1
               className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
               style={{ color: tomoNavy }}
             >
               CRIAMOS
-            </motion.h1>
+            </h1>
           </div>
 
           <div className="overflow-hidden flex items-center justify-center gap-2 md:gap-6 mt-[-2vw] lg:mt-[-1.5vw] p-2 pr-6">
-            <motion.h1
-              initial={false}
-              animate={{ y: 0, rotate: 0 }}
-              transition={{ duration: 1.0, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+            <h1
               className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
               style={{ color: tomoNavy }}
             >
               CONTIGO
-            </motion.h1>
+            </h1>
 
             <motion.div 
               style={{ x: xLogo, y: yLogo }} 
@@ -397,58 +375,39 @@ const HeroSection = () => {
               <motion.img 
                 src={logowebp} 
                 alt="Tomo Logo" 
-                initial={false}
-                animate={{ scale: 0.9, rotate: 0, opacity: 1 }}
                 whileInView={{ y: [0, -6, 0], rotate: [0, 5, 0] }}
                 transition={{ 
-                  scale: { type: "spring", duration: 1.2, delay: 0.1 },
-                  opacity: { duration: 0.4, delay: 0.1 },
-                  y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.2 },
-                  rotate: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.1 }
+                  y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 },
+                  rotate: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0 }
                 }}
-                className="w-full h-full object-contain drop-shadow-2xl"
+                className="w-full h-full object-contain drop-shadow-2xl opacity-90"
               />
             </motion.div>
           </div>
         </div>
 
-        <motion.div 
-          initial={false}
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ delay: 0.25, duration: 0.6 }}
-          className="opacity-0 translate-y-2"
-        >
-          <p className="mt-4 text-lg md:text-xl font-medium italic opacity-60" style={{ color: tomoNavy }}>
-            não apenas para ti
-          </p>
-        </motion.div>
+        <div className="mt-4 text-lg md:text-xl font-medium italic opacity-60" style={{ color: tomoNavy }}>
+          <p>não apenas para ti</p>
+        </div>
 
         <motion.div 
-          initial={false}
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="mt-8 opacity-0 translate-y-4"
+          className="mt-8"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
-          <motion.a 
+          <a 
             href="#contacto"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             className="group flex items-center gap-3 px-8 py-4 rounded-full text-white font-bold text-sm shadow-xl shadow-blue-900/20 hover:shadow-blue-900/30 transition-all bg-[#020224]"
           >
             Iniciar Projeto
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </motion.a>
+          </a>
         </motion.div>
       </div>
 
-      <motion.div
-        initial={false}
-        animate={{ opacity: 0.3 }}
-        transition={{ delay: 0.6 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-0"
-      >
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30">
         <div className="w-[1px] h-10 bg-[#020224]" />
-      </motion.div>
+      </div>
     </section>
   );
 };
@@ -1244,8 +1203,6 @@ return (
 // MAIN COMPONENT
 // ============================================
 export const Home = () => {
-  const [renderHeavyComponents, setRenderHeavyComponents] = useState(false);
-
   useEffect(() => {
     // Verifica se o link tem um '#' (ex: /#contacto)
     if (window.location.hash) {
@@ -1260,12 +1217,6 @@ export const Home = () => {
     } else {
       window.scrollTo(0, 0);
     }
-
-    // OTIMIZAÇÃO: Adiar animações pesadas para não travar Safari
-    const timer = requestAnimationFrame(() => {
-      setTimeout(() => setRenderHeavyComponents(true), 100);
-    });
-    return () => cancelAnimationFrame(timer);
   }, []);
 
   return (
@@ -1280,12 +1231,6 @@ export const Home = () => {
           }
         }
       `}</style>
-      {renderHeavyComponents && (
-        <>
-          <CustomCursor />
-          <ScrollProgress />
-        </>
-      )}
       <Navigation />
       <ChapterIndicator />
       
