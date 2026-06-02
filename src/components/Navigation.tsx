@@ -4,6 +4,8 @@ import { Menu, X } from 'lucide-react';
 import logo from '../assets/logo.webp';
 import { Link } from 'react-router-dom';
 
+const MotionLink = motion(Link);
+
 const navItems = [
   { name: 'Trabalhos', href: '/trabalhos' }, 
   { name: 'Serviços', href: '/#servicos' },
@@ -56,26 +58,26 @@ export const Navigation = () => {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-12">
               {navItems.map((item, index) => (
-                <motion.a
+                <MotionLink
                   key={item.name}
-                  href={item.href}
+                  to={item.href}
                   className="text-sm font-medium text-black/60 hover:text-black transition-colors relative"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.08, duration: 0.4 }}
                 >
                   {item.name}
-                </motion.a>
+                </MotionLink>
               ))}
               
               {/* Botão de Call to Action Principal */}
-              <motion.a
-                href="/#contacto"
+              <MotionLink
+                to="/#contacto"
                 className="px-6 py-2.5 bg-black text-white text-sm font-medium hover:bg-tomo-dark transition-colors rounded-full"
                 whileTap={{ scale: 0.98 }}
               >
                 Vamos falar
-              </motion.a>
+              </MotionLink>
             </div>
 
             {/* Mobile Menu Button */}
@@ -102,9 +104,9 @@ export const Navigation = () => {
           >
             <div className="flex flex-col items-start justify-center h-full px-12 space-y-8">
               {navItems.map((item, index) => (
-                <motion.a
+                <MotionLink
                   key={item.name}
-                  href={item.href}
+                  to={item.href}
                   className="text-4xl font-bold text-black hover:text-tomo-dark transition-colors tracking-tight"
                   onClick={() => setIsMobileMenuOpen(false)}
                   initial={{ opacity: 0, x: -16 }}
@@ -112,10 +114,10 @@ export const Navigation = () => {
                   transition={{ delay: index * 0.06 }}
                 >
                   {item.name}
-                </motion.a>
+                </MotionLink>
               ))}
-              <motion.a
-                href="/#contacto"
+              <MotionLink
+                to="/#contacto"
                 className="px-8 py-4 bg-black text-white text-lg font-medium hover:bg-tomo-dark transition-colors rounded-full"
                 onClick={() => setIsMobileMenuOpen(false)}
                 initial={{ opacity: 0, y: 16 }}
@@ -124,7 +126,7 @@ export const Navigation = () => {
                 whileTap={{ scale: 0.95 }}
               >
                 Vamos falar
-              </motion.a>
+              </MotionLink>
             </div>
           </motion.div>
         )}
