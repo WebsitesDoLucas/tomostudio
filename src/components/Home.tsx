@@ -3,16 +3,12 @@ import {
   useScroll, 
   useTransform, 
   useSpring, 
-  useInView, 
   useMotionValue
 } from 'framer-motion';
 
 import { ArrowRight, Heart } from 'lucide-react';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { Navigation } from './Navigation';
-
-// Importamos apenas o logo para a Hero por agora
-import logowebp from '../assets/logo.webp';
 
 export const Home = () => {
   const containerRef = useRef<HTMLElement>(null);
@@ -35,7 +31,6 @@ export const Home = () => {
     <div className="bg-white w-full min-h-screen flex flex-col justify-between">
       <Navigation />
       
-      {/* HERO SECTION ORIGINAL RECONSTRUÍDA */}
       <section 
         ref={containerRef} 
         id="intro"
@@ -82,24 +77,15 @@ export const Home = () => {
                 CONTIGO
               </motion.h1>
 
+              {/* ⚡ LOGO SUBSTITUÍDO POR VETOR CSS ULTRA-LEVE PARA TESTE */}
               <motion.div 
                 style={{ x: xLogo, y: yLogo }} 
-                className="relative w-[14vw] h-[14vw] md:w-[10vw] md:h-[10vw] lg:w-[9vw] lg:h-[9vw] p-2 mb-[2vw] flex items-center justify-center"
+                className="relative w-[14vw] h-[14vw] md:w-[10vw] md:h-[10vw] lg:w-[9vw] lg:h-[9vw] mb-[2vw] border-4 rounded-2xl bg-[#020224] flex items-center justify-center shadow-2xl"
+                initial={{ scale: 0, rotate: -90, opacity: 0 }}
+                animate={{ scale: 0.9, rotate: 0, opacity: 1 }}
+                transition={{ type: "spring", duration: 1.2, delay: 0.1 }}
               >
-                <motion.img 
-                  src={logowebp} 
-                  alt="Tomo Logo" 
-                  initial={{ scale: 0, rotate: -90, opacity: 0 }}
-                  animate={{ scale: 0.9, rotate: 0, opacity: 1 }}
-                  whileInView={{ y: [0, -6, 0], rotate: [0, 5, 0] }}
-                  transition={{ 
-                    scale: { type: "spring", duration: 1.2, delay: 0.1 },
-                    opacity: { duration: 0.4, delay: 0.1 },
-                    y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.2 },
-                    rotate: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.1 }
-                  }}
-                  className="w-full h-full object-contain drop-shadow-2xl" 
-                />
+                <span className="text-[2.5vw] lg:text-[1.5vw] font-black text-white tracking-tighter">TOMO</span>
               </motion.div>
             </div>
           </div>
