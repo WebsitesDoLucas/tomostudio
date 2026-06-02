@@ -14,6 +14,12 @@ const navItems = [
 export const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [canAnimate, setCanAnimate] = useState(false);
+
+  useEffect(() => {
+    // Permitir animações apenas após o primeiro render
+    setCanAnimate(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,8 +42,8 @@ export const Navigation = () => {
         className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-500 will-change-transform transform-gpu ${
           isScrolled ? 'bg-white/80 border-b border-black/5' : 'bg-transparent'
         }`}
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
+        initial={false}
+        animate={canAnimate ? { y: 0 } : undefined}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
@@ -60,8 +66,8 @@ export const Navigation = () => {
                   key={item.name}
                   href={item.href}
                   className="text-sm font-medium text-black/60 hover:text-black transition-colors relative"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={false}
+                  animate={canAnimate ? { opacity: 1, y: 0 } : undefined}
                   transition={{ delay: index * 0.08, duration: 0.4 }}
                 >
                   {item.name}

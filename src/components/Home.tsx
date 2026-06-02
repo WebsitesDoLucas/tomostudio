@@ -172,6 +172,16 @@ const CustomCursor = () => {
 // SCROLL PROGRESS
 // ============================================
 const ScrollProgress = () => {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    // Adiar até 200ms para não bloquear Safari
+    const timer = setTimeout(() => setIsReady(true), 200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!isReady) return null;
+
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
@@ -202,31 +212,36 @@ const ChapterIndicator = () => {
     // 🌟 Verificação direta e nativa: se for mobile, não faz nada
     if (typeof window !== 'undefined' && window.innerWidth < 1024) return;
 
-    const observerOptions = {
-      root: null,
-      rootMargin: '-45% 0px -45% 0px',
-      threshold: 0
-    };
+    // OTIMIZAÇÃO: Adiar o IntersectionObserver para 500ms após o render
+    const setupTimer = setTimeout(() => {
+      const observerOptions = {
+        root: null,
+        rootMargin: '-45% 0px -45% 0px',
+        threshold: 0
+      };
 
-    const observerCallback = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const index = chapters.findIndex(c => c.id === entry.target.id);
-          if (index !== -1) {
-            setActiveChapter(index);
+      const observerCallback = (entries: IntersectionObserverEntry[]) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const index = chapters.findIndex(c => c.id === entry.target.id);
+            if (index !== -1) {
+              setActiveChapter(index);
+            }
           }
-        }
+        });
+      };
+
+      const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+      chapters.forEach(chapter => {
+        const el = document.getElementById(chapter.id);
+        if (el) observer.observe(el);
       });
-    };
 
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
+      return () => observer.disconnect();
+    }, 500);
 
-    chapters.forEach(chapter => {
-      const el = document.getElementById(chapter.id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
+    return () => clearTimeout(setupTimer);
   }, []);
 
   // 🌟 Se for ecrã pequeno, esconde o indicador lateral imediatamente
@@ -242,14 +257,10 @@ const ChapterIndicator = () => {
             className="group flex items-center gap-3"
             whileHover={{ x: 8 }}
           >
-            <motion.div
+            <div
               className={`w-2 h-2 rounded-full transition-all ${
                 activeChapter === index ? 'bg-white w-8' : 'bg-white/30'
               }`}
-              animate={{
-                scale: activeChapter === index ? [1, 1.2, 1] : 1
-              }}
-              transition={{ duration: 1, repeat: activeChapter === index ? Infinity : 0 }}
             />
             <span
               className={`text-xs opacity-0 group-hover:opacity-100 transition-opacity ${
