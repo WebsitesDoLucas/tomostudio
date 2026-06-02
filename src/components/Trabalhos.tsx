@@ -728,11 +728,11 @@ export const Trabalhos = () => {
               Cada projeto começa com uma conversa. Conta-nos a história da tua marca.
             </p>
             
-            <Link to="/#contacto">
+            <a href="/#contacto">
               <button className="px-8 py-4 bg-gradient-to-r from-tomo-blue to-tomo-pink text-white font-bold text-sm rounded-full shadow-lg active:scale-95 transition-transform duration-200">
                 Começar o teu projeto
               </button>
-            </Link>
+            </a>
           </div>
         </div>
       </section>

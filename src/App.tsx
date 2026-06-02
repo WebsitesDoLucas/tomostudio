@@ -1,5 +1,5 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // IMPORTS ESTÁTICOS (Páginas principais carregam instantaneamente sem esperar pela rede)
 import { Home } from './components/Home';
@@ -20,17 +20,9 @@ const PageLoader = () => (
 );
 
 function App() {
-  useEffect(() => {
-    // Hide splash screen when app mounts
-    if ((window as any).__hideSplash) {
-      (window as any).__hideSplash();
-    }
-  }, []);
-
   return (
     <Router>
       <Suspense fallback={<PageLoader />}>
-        <NavigationPerfTracker />
         <Routes>
           {/* Home e Trabalhos agora abrem sem delay de rede */}
           <Route path="/" element={<Home />} />
@@ -53,94 +45,3 @@ function App() {
 }
 
 export default App;
-
-function PerfBadge() {
-  const [perf, setPerf] = useState<{ time: number; path: string } | null>(null);
-
-  useEffect(() => {
-    const logs = JSON.parse(localStorage.getItem('navPerfLogs') || '[]');
-    if (logs.length > 0) {
-      const last = logs[logs.length - 1];
-      setPerf({ time: last.time, path: last.to });
-    }
-
-    const interval = setInterval(() => {
-      const logs = JSON.parse(localStorage.getItem('navPerfLogs') || '[]');
-      if (logs.length > 0) {
-        const last = logs[logs.length - 1];
-        setPerf({ time: last.time, path: last.to });
-      }
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  if (!perf) return null;
-
-  const isSlowWithClassName = perf.time > 5000;
-
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        top: '10px',
-        right: '10px',
-        backgroundColor: '#000',
-        color: isSlowWithClassName ? '#ff4444' : '#44ff44',
-        padding: '8px 12px',
-        borderRadius: '4px',
-        fontSize: '12px',
-        fontFamily: 'monospace',
-        zIndex: 9999,
-        pointerEvents: 'none',
-      }}
-    >
-      {perf.time}ms
-    </div>
-  );
-}
-
-function NavigationPerfTracker() {
-  const location = useLocation();
-
-  useEffect(() => {
-    const navStart = (window as any).__navStart || performance.now();
-    // Use single RAF instead of double RAF to avoid blocking on Safari
-    const rafId = requestAnimationFrame(() => {
-      const elapsed = performance.now() - navStart;
-      (window as any).__navPerfLogs = (window as any).__navPerfLogs || [];
-      (window as any).__navPerfLogs.push({ to: location.pathname + location.hash, time: Math.round(elapsed), ts: Date.now() });
-      try {
-        localStorage.setItem('navPerfLogs', JSON.stringify((window as any).__navPerfLogs.slice(-50)));
-      } catch (e) {
-        // ignore storage errors
-      }
-      console.log('[NAV PERF]', location.pathname + location.hash, Math.round(elapsed), 'ms');
-    });
-    
-    return () => cancelAnimationFrame(rafId);
-  }, [location]);
-
-  useEffect(() => {
-    const onClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      const anchor = target?.closest && (target.closest('a') as HTMLAnchorElement | null);
-      if (!anchor) return;
-      const href = anchor.getAttribute('href') || anchor.getAttribute('to') || '';
-      if (href.startsWith('/') || href.startsWith('#')) {
-        (window as any).__navStart = performance.now();
-      }
-    };
-
-    const onPop = () => { (window as any).__navStart = performance.now(); };
-
-    document.addEventListener('click', onClick, true);
-    window.addEventListener('popstate', onPop);
-    return () => {
-      document.removeEventListener('click', onClick, true);
-      window.removeEventListener('popstate', onPop);
-    };
-  }, []);
-
-  return <PerfBadge />;
-}

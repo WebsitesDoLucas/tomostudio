@@ -25,7 +25,6 @@ import {
 
 import { useRef, useState, useEffect, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-const MotionLink = motion(Link);
 import { Navigation } from './Navigation';
 
 
@@ -37,19 +36,9 @@ import poliempreendeImg from '../assets/poliempreende/Billboard.webp';
 import AveimédicaImg from '../assets/aveimedica/FACHADA1.webp';
 
 // ============================================
-// GLOBAL: Detect Safari for performance optimization
-// ============================================
-const isSafariGlobal = () => /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-
-// ============================================
-// UTILS: MAGNETIC COMPONENT (DISABLED ON SAFARI)
+// UTILS: MAGNETIC COMPONENT
 // ============================================
 const Magnetic = ({ children }: { children: React.ReactNode }) => {
-  // Disable completely on Safari — too expensive for mobile
-  if (isSafariGlobal() || window.innerWidth < 1024) {
-    return <>{children}</>;
-  }
-
   const ref = useRef<HTMLDivElement>(null);
   
   // Usar MotionValues nativos em vez de state
@@ -91,25 +80,98 @@ const Magnetic = ({ children }: { children: React.ReactNode }) => {
 };
 
 // ============================================
-// AWWWARDS-STYLE CURSOR (DISABLED ON SAFARI/MOBILE FOR PERF)
+// AWWWARDS-STYLE CURSOR
 // ============================================
 const CustomCursor = () => {
-  // Disable custom cursor completely on Safari/mobile — triggers render-blocking listeners
-  const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-  if (isSafari || window.innerWidth < 1024) return null;
+  const [cursorVariant, setCursorVariant] = useState<'default' | 'hover'>('default');
+  const [isVisible, setIsVisible] = useState(false);
 
-  return null;
+  const cursorX = useSpring(0, { damping: 25, stiffness: 400 });
+  const cursorY = useSpring(0, { damping: 25, stiffness: 400 });
+  const dotX = useSpring(0, { damping: 30, stiffness: 200 });
+  const dotY = useSpring(0, { damping: 30, stiffness: 200 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const { clientX, clientY } = e;
+      cursorX.set(clientX);
+      cursorY.set(clientY);
+      dotX.set(clientX);
+      dotY.set(clientY);
+      setIsVisible(true);
+    };
+
+    const handleMouseEnter = () => setIsVisible(true);
+    const handleMouseLeave = () => setIsVisible(false);
+
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && target.closest('a, button, input, textarea, select')) {
+        setCursorVariant('hover');
+      } else {
+        setCursorVariant('default');
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseenter', handleMouseEnter);
+    document.addEventListener('mouseleave', handleMouseLeave);
+    document.addEventListener('mouseover', handleMouseOver);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseenter', handleMouseEnter);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('mouseover', handleMouseOver);
+    };
+  }, [cursorX, cursorY, dotX, dotY]);
+
+  if (!isVisible) return null;
+
+  return (
+    <>
+      <motion.div
+        className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference rounded-full hidden lg:block"
+        style={{
+          x: cursorX,
+          y: cursorY,
+          translateX: '-50%',
+          translateY: '-50%'
+        }}
+        animate={{
+          width: cursorVariant === 'hover' ? 60 : 12,
+          height: cursorVariant === 'hover' ? 60 : 12,
+          backgroundColor:
+            cursorVariant === 'hover'
+              ? 'rgba(255, 255, 255, 0.15)'
+              : 'rgba(255, 255, 255, 0.9)',
+          borderWidth: cursorVariant === 'hover' ? 2 : 0,
+          borderColor: 'rgba(255, 255, 255, 0.5)'
+        }}
+        transition={{
+          type: 'spring',
+          stiffness: 500,
+          damping: 28
+        }}
+      />
+
+      <motion.div
+        className="fixed top-0 left-0 pointer-events-none z-[9998] w-1 h-1 bg-white/60 rounded-full mix-blend-difference hidden lg:block"
+        style={{
+          x: dotX,
+          y: dotY,
+          translateX: '-50%',
+          translateY: '-50%'
+        }}
+      />
+    </>
+  );
 };
 
 // ============================================
-// SCROLL PROGRESS (DISABLED ON SAFARI)
+// SCROLL PROGRESS
 // ============================================
 const ScrollProgress = () => {
-  // Disable on Safari — useScroll + useSpring is expensive
-  if (isSafariGlobal()) {
-    return null;
-  }
-
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
@@ -174,9 +236,9 @@ const ChapterIndicator = () => {
     <div className="fixed left-8 top-1/2 -translate-y-1/2 z-40 hidden lg:block mix-blend-difference pointer-events-none">
       <div className="space-y-6 pointer-events-auto">
         {chapters.map((chapter, index) => (
-          <MotionLink
+          <motion.a
             key={chapter.id}
-            to={`#${chapter.id}`}
+            href={`#${chapter.id}`}
             className="group flex items-center gap-3"
             whileHover={{ x: 8 }}
           >
@@ -196,7 +258,7 @@ const ChapterIndicator = () => {
             >
               {chapter.label}
             </span>
-          </MotionLink>
+          </motion.a>
         ))}
       </div>
     </div>
@@ -239,64 +301,12 @@ const TransitionReveal = ({
 };
 
 // ============================================
-// HERO SECTION (Instant Mobile Load, Simplified for Safari)
+// HERO SECTION (Instant Mobile Load)
 // ============================================
 const HeroSection = () => {
   const containerRef = useRef<HTMLElement>(null);
   const tomoNavy = "#020224";
-  const isSafari = isSafariGlobal();
   
-  // 🌟 OTIMIZAÇÃO: Detetar se é mobile para ignorar o movimento do rato
-  const [isMobile, setIsMobile] = useState(true);
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 1024);
-  }, []);
-
-  // Skip complex animations on Safari
-  if (isSafari) {
-    return (
-      <section 
-        ref={containerRef} 
-        id="intro"
-        className="relative h-screen min-h-[700px] w-full bg-white flex flex-col items-center justify-center px-6 overflow-hidden"
-      >
-        <div className="absolute inset-0 opacity-[0.2] pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col items-center text-center">
-          <div className="mb-4 md:mb-6">
-            <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase opacity-40" style={{ color: tomoNavy }}>
-              Estúdio de Design & Estratégia
-            </span>
-          </div>
-
-          <div className="flex flex-col items-center leading-[0.85]">
-            <h1
-              className="text-[14vw] lg:text-[11vw] font-black tracking-tighter"
-              style={{ color: tomoNavy }}
-            >
-              CRIAMOS
-            </h1>
-            <h2 className="text-[12vw] lg:text-[10vw] font-black tracking-tighter mt-[-1vw]" style={{ color: tomoNavy }}>
-              EXPERIÊNCIAS
-            </h2>
-          </div>
-
-          <p className="mt-8 md:mt-12 text-sm md:text-base max-w-md text-gray-600">
-            Design, Branding e Estratégia Digital para marcas que querem deixar marca
-          </p>
-
-          <MotionLink 
-            to="/trabalhos" 
-            className="mt-12 md:mt-16 px-6 md:px-8 py-3 md:py-4 bg-black text-white text-xs md:text-sm font-bold uppercase tracking-wider rounded-full hover:bg-gray-800 transition-colors inline-flex items-center gap-2"
-          >
-            Ver Trabalhos
-            <ArrowRight size={16} />
-          </MotionLink>
-        </div>
-      </section>
-    );
-  }
-
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const springConfig = { damping: 25, stiffness: 150 };
@@ -309,7 +319,6 @@ const HeroSection = () => {
   const yBack = useTransform(mouseYSpring, [-0.5, 0.5], ["50px", "-50px"]);
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (isMobile) return; // 🌟 Se for mobile, ignora por completo o evento
     const { width, height } = e.currentTarget.getBoundingClientRect();
     mouseX.set(e.clientX / width - 0.5);
     mouseY.set(e.clientY / height - 0.5);
@@ -322,18 +331,19 @@ const HeroSection = () => {
       onMouseMove={handleMouseMove} 
       className="relative h-screen min-h-[700px] w-full bg-white flex flex-col items-center justify-center px-6 overflow-hidden"
     >
-      {/* 🌟 Só aplica o estilo de parallax por movimento se NÃO for mobile */}
       <motion.div 
         className="absolute inset-0 pointer-events-none"
-        style={isMobile ? {} : { x: xBack, y: yBack }}
+        style={{ x: xBack, y: yBack }}
       >
         <div className="absolute top-[10%] left-[10%] w-[40vw] h-[40vw] rounded-full blur-[100px] opacity-20 bg-[#0099FF]" />
         <div className="absolute bottom-[10%] right-[10%] w-[50vw] h-[50vw] rounded-full blur-[100px] opacity-10 bg-[#020224]" />
       </motion.div>
       
-      <div className="absolute inset-0 opacity-[0.2] pointer-events-none" />
+
+<div className="absolute inset-0 opacity-[0.2] pointer-events-none" />
 
       <div className="relative z-10 flex flex-col items-center text-center transform-gpu">
+        {/* Animações agora iniciam-se sozinhas (true) assim que a página abre */}
         <motion.div 
           initial={{ opacity: 0, y: 15 }} 
           animate={{ opacity: 1, y: 0 }} 
@@ -370,7 +380,7 @@ const HeroSection = () => {
             </motion.h1>
 
             <motion.div 
-              style={isMobile ? {} : { x: xLogo, y: yLogo }} // 🌟 Proteção mobile aqui também
+              style={{ x: xLogo, y: yLogo }} 
               className="relative w-[14vw] h-[14vw] md:w-[10vw] md:h-[10vw] lg:w-[9vw] lg:h-[9vw] p-4 mb-[2vw] perspective-1000 flex items-center justify-center"
             >
               <motion.img 
@@ -378,7 +388,7 @@ const HeroSection = () => {
                 alt="Tomo Logo" 
                 initial={{ scale: 0, rotate: -90, opacity: 0 }}
                 animate={{ scale: 0.9, rotate: 0, opacity: 1 }}
-                whileInView={isMobile ? {} : { y: [0, -6, 0], rotate: [0, 5, 0] }} // Desativa loop infinito no telemóvel
+                whileInView={{ y: [0, -6, 0], rotate: [0, 5, 0] }}
                 transition={{ 
                   scale: { type: "spring", duration: 1.2, delay: 0.1 },
                   opacity: { duration: 0.4, delay: 0.1 },
@@ -407,15 +417,15 @@ const HeroSection = () => {
           transition={{ delay: 0.4, duration: 0.6 }} 
           className="mt-8"
         >
-          <MotionLink 
-            to="#contacto"
+          <motion.a 
+            href="#contacto"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="group flex items-center gap-3 px-8 py-4 rounded-full text-white font-bold text-sm shadow-xl shadow-blue-900/20 hover:shadow-blue-900/30 transition-all bg-[#020224]"
           >
             Iniciar Projeto
             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </MotionLink>
+          </motion.a>
         </motion.div>
       </div>
 
@@ -1008,21 +1018,20 @@ const ContactSection = () => {
   href: 'https://www.instagram.com/tomostudio.pt' 
 }
                 ].map(item => (
-                  item.href && item.href.startsWith('http') ? (
-                    <motion.a
-                      key={item.title}
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-start gap-4 cursor-pointer"
-                      whileHover={{ x: 4 }}
-                    >
-                      <div
-                        className={`w-12 h-12 rounded-2xl ${
-                          item.color === 'blue' ? 'bg-tomo-blue/10' : 'bg-tomo-pink/10'
-                        } flex items-center justify-center flex-shrink-0`}
-                      >
-                        <item.icon
+    <motion.a
+      key={item.title}
+      href={item.href} // Adicionamos o atributo href
+      target={item.href?.startsWith('http') ? "_blank" : undefined} // Abre redes sociais noutro tab
+      rel={item.href?.startsWith('http') ? "noopener noreferrer" : undefined}
+      className="flex items-start gap-4 cursor-pointer"
+      whileHover={{ x: 4 }}
+    >
+      <div
+        className={`w-12 h-12 rounded-2xl ${
+          item.color === 'blue' ? 'bg-tomo-blue/10' : 'bg-tomo-pink/10'
+        } flex items-center justify-center flex-shrink-0`}
+      >
+        <item.icon
           className={
             item.color === 'blue' ? 'text-tomo-blue' : 'text-tomo-pink'
           }
@@ -1034,34 +1043,8 @@ const ContactSection = () => {
         <p className="text-sm text-black/60 hover:text-tomo-blue transition-colors">{item.info}</p>
         <p className="text-xs text-black/40 italic">{item.sub}</p>
       </div>
-                    </motion.a>
-                  ) : (
-                    <MotionLink
-                      key={item.title}
-                      to={item.href || '#'}
-                      className="flex items-start gap-4 cursor-pointer"
-                      whileHover={{ x: 4 }}
-                    >
-                      <div
-                        className={`w-12 h-12 rounded-2xl ${
-                          item.color === 'blue' ? 'bg-tomo-blue/10' : 'bg-tomo-pink/10'
-                        } flex items-center justify-center flex-shrink-0`}
-                      >
-                        <item.icon
-                          className={
-                            item.color === 'blue' ? 'text-tomo-blue' : 'text-tomo-pink'
-                          }
-                          size={18}
-                        />
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-medium text-black mb-1">{item.title}</h4>
-                        <p className="text-sm text-black/60 hover:text-tomo-blue transition-colors">{item.info}</p>
-                        <p className="text-xs text-black/40 italic">{item.sub}</p>
-                      </div>
-                    </MotionLink>
-                  )
-                ))
+    </motion.a>
+  ))
 }
               </div>
             </div>
@@ -1253,26 +1236,35 @@ return (
 // MAIN COMPONENT
 // ============================================
 export const Home = () => {
-  // Reduce scroll delay on Safari to avoid perceived lag
-  const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
-  
   useEffect(() => {
+    // Verifica se o link tem um '#' (ex: /#contacto)
     if (window.location.hash) {
       const id = window.location.hash.replace('#', '');
-      const delay = isSafari ? 0 : 300;
+      // Dá 300ms para o Framer Motion e a página carregarem, e depois faz o scroll
       setTimeout(() => {
         const element = document.getElementById(id);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' });
         }
-      }, delay);
+      }, 300);
     } else {
       window.scrollTo(0, 0);
     }
-  }, [isSafari]);
+  }, []);
 
   return (
     <div className="bg-white w-full">
+      <style>{`
+        body {
+          overflow-x: hidden;
+        }
+        @media (min-width: 1024px) {
+          * {
+            cursor: none !important;
+          }
+        }
+      `}</style>
+      <CustomCursor />
       <Navigation />
       <ChapterIndicator />
       
