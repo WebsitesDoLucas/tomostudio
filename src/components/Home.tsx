@@ -25,14 +25,18 @@ import { useRef, useState, useEffect, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation';
 
-// 🌟 IMPORTS ESTÁTICOS NATIVOS: Corrige o atraso de carregamento do construtor de URL no Safari
+// ============================================
+// IMPORTS ESTÁTICOS DE SINAL REAIS (Sem travar o Safari)
+// ============================================
 import fotocasal from '../assets/fotocasal.webp';
 import LogoCompleto from '../assets/LogoCompleto.webp';
 import logowebp from '../assets/logo.webp';
 import poliempreendeImg from '../assets/poliempreende/Billboard.webp';
 import AveimédicaImg from '../assets/aveimedica/FACHADA1.webp';
 
-// 🌟 HOOK UTILITÁRIO DETETOR DE TOUCH/MOBILE GLOBAL
+// ============================================
+// GLOBAL HOOK: DETETOR MOBILE/TOUCH (No Topo Absoluto)
+// ============================================
 const useIsMobile = () => {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -88,7 +92,7 @@ const Magnetic = ({ children }: { children: React.ReactNode }) => {
 };
 
 // ============================================
-// AWWWARDS-STYLE CURSOR (Otimizado contra Deadlocks no iOS)
+// AWWWARDS-STYLE CURSOR
 // ============================================
 const CustomCursor = () => {
   const isMobile = useIsMobile();
@@ -244,31 +248,30 @@ const ChapterIndicator = () => {
 };
 
 // ============================================
-// TRANSITION REVEAL (Otimizado para carregar de imediato no Mobile)
+// TRANSITION REVEAL (Força Pintura Imediata no Mobile)
 // ============================================
 const TransitionReveal = ({ children, direction = 'up', delay = 0 }: { children: ReactNode; direction?: 'up' | 'left' | 'right'; delay?: number; }) => {
   const ref = useRef(null);
   const isMobile = useIsMobile();
   
-  // Margem generosa de 400px no telemóvel para pintar em background antes do utilizador fazer scroll
-  const isInView = useInView(ref, { 
-    once: true, 
-    margin: isMobile ? "400px 0px 400px 0px" : "-50px" 
-  });
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  
+  // 🌟 Se for telemóvel, ignora o scroll e força true para renderizar tudo visível no arranque
+  const shouldAnimate = isMobile ? true : isInView;
 
   const variants = {
-    up: { opacity: 0, y: isMobile ? 10 : 60 },
-    left: { opacity: 0, x: isMobile ? -10 : -60 },
-    right: { opacity: 0, x: isMobile ? 10 : 60 }
+    up: { opacity: isMobile ? 1 : 0, y: isMobile ? 0 : 60 },
+    left: { opacity: isMobile ? 1 : 0, x: isMobile ? 0 : -60 },
+    right: { opacity: isMobile ? 1 : 0, x: isMobile ? 0 : 60 }
   };
 
   return (
     <motion.div
       ref={ref}
       initial={variants[direction]}
-      animate={isInView ? { opacity: 1, y: 0, x: 0 } : variants[direction]}
+      animate={shouldAnimate ? { opacity: 1, y: 0, x: 0 } : variants[direction]}
       transition={{ 
-        duration: isMobile ? 0.3 : 1.2, 
+        duration: isMobile ? 0 : 1.2, 
         delay: isMobile ? 0 : delay, 
         ease: [0.16, 1, 0.3, 1] 
       }}
@@ -566,7 +569,7 @@ const ProcessJourney = () => {
               <span className="text-xs tracking-[0.3em] text-black/40 uppercase font-medium">Capítulo IV</span>
             </div>
             <h2 className="text-5xl lg:text-6xl font-bold text-black mb-4 tracking-tight">O nosso processo</h2>
-            <p className="text-lg lg:text-xl text-black/60 max-w-2xl mx-auto">Cada projeto é uma jornada única de discovery e criação</p>
+            <p className="text-lg lg:text-xl text-black/60 max-w-2xl mx-auto">Cada projeto é uma jornada única de descoberta e criação</p>
           </div>
         </TransitionReveal>
 
@@ -892,7 +895,7 @@ export const Footer = () => {
 };
 
 // ============================================
-// MAIN COMPONENT
+// MAIN EXPORTED COMPONENT
 // ============================================
 export const Home = () => {
   useEffect(() => {
