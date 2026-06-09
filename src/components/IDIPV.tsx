@@ -23,7 +23,7 @@ import mupiImg from '../assets/idipv/MUPI.webp';
 import placaVidroImg from '../assets/idipv/placa.webp';
 import posterImg from '../assets/idipv/poster.webp';
 import instagramImg from '../assets/idipv/Publicações de instagram.webp';
-import rollupsImg from '../assets/idipv/rollups.webp';
+import rollupsImg from '../assets/idipv/Rollups.webp';
 
 // Importação do PDF
 import manualPdf from '../assets/idipv/ManualdeIdentidadeIDIPV.pdf';
