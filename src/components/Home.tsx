@@ -349,7 +349,7 @@ const HeroSection = () => {
           className="mb-4 md:mb-6"
         >
           <span className="text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase opacity-40" style={{ color: tomoNavy }}>
-            Estúdio de Design & Estratégia
+            Estúdio de Design
           </span>
         </motion.div>
 
@@ -457,16 +457,16 @@ const ServicesSection = () => {
     },
     {
       number: '02',
-      title: 'UI/UX Design',
-      description: 'Interfaces digitais focadas em experiência do utilizador e conversão.',
-      features: ['Websites responsivos', 'Prototipagem', 'Design de interfaces', 'Estrutura UX'],
+      title: 'Web Design',
+      description: 'Design de websites, lojas online e plataformas digitais.',
+      features: ['Sites institucionais', 'E-commerce e lojas', 'Desenho visual à medida da tua marca', 'Adaptação para mobile'],
       color: 'pink'
     },
     {
       number: '03',
       title: 'Design para Redes Sociais',
-      description: 'Conteúdo visual estratégico mantendo a consistência da marca.',
-      features: ['Templates', 'Feed design', 'Stories & Reels', 'Estratégia visual'],
+      description: 'Conteúdo visual mantendo a consistência da marca.',
+      features: ['Templates', 'Posts para o feed', 'Vídeos curtos e verticais', 'Captação de conteúdo fotográfico e vídeo'],
       color: 'blue'
     }
   ] as const;
@@ -482,11 +482,10 @@ const ServicesSection = () => {
               </span>
             </div>
             <h2 className="text-5xl lg:text-6xl font-bold text-black mb-4 tracking-tight">
-              Serviços que geram impacto
+              O que fazemos pelo teu negócio
             </h2>
             <p className="text-lg lg:text-xl text-black/60 max-w-2xl mx-auto">
-              Transformamos marcas com propósito
-            </p>
+Do conceito inicial à tua presença no mundo digital.            </p>
           </div>
         </TransitionReveal>
 
@@ -563,9 +562,9 @@ const WorksSection = () => {
     {
       id: 1,
       title: 'PoliEmpreende',
-      category: 'Branding & Identidade',
+      category: 'Rebranding',
       description: 'Identidade visual completa para o concurso nacional de empreendedorismo.',
-      year: '2024',
+      year: '2025',
       tags: ['Identidade Visual', 'Sistema de Marca'],
       color: 'blue',
       image: poliempreendeImg,
@@ -575,10 +574,10 @@ const WorksSection = () => {
     {
       id: 2,
       title: 'Aveimédica', 
-      category: 'Rebrand Corporativo',
-      description: 'Renovação estratégica da identidade e posicionamento de marca.',
+      category: 'Rebranding',
+      description: 'Renovação da identidade e posicionamento da marca.',
       year: '2024',
-      tags: ['Rebrand', 'Strategy'],
+      tags: ['Identidade Visual', 'Sistema de Marca'],
       color: 'pink',
       image: AveimédicaImg, 
       path: '/aveimedica',
@@ -600,11 +599,10 @@ const WorksSection = () => {
               </div>
 
               <h2 className="text-5xl lg:text-7xl font-bold text-black leading-tight tracking-tight mb-6">
-                Projetos que contam histórias
+                Trabalhos em destaque
               </h2>
               <p className="text-lg lg:text-2xl text-black/60 max-w-3xl">
-                Cada projeto é um capítulo único. Trabalhamos em profundidade para criar
-                identidades autênticas.
+                Uma amostra do nosso trabalho em branding, design digital e estratégia de marca.
               </p>
             </TransitionReveal>
         </div>
@@ -679,7 +677,7 @@ const WorksSection = () => {
                       className="inline-flex items-center gap-3 text-base font-bold text-black group"
                       whileHover={{ x: 6 }}
                     >
-                      Ver caso completo
+                      Conhecer projeto
                       <ArrowUpRight size={18} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
                     </motion.div>
                   </Link>
@@ -729,10 +727,10 @@ const ProcessJourney = () => {
   const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1, 0.95]);
 
   const steps = [
-    { icon: Target, title: 'Descoberta', description: 'Mergulhamos na essência da tua marca', color: 'blue' },
-    { icon: Lightbulb, title: 'Conceito', description: 'Transformamos ideias em direções visuais', color: 'pink' },
-    { icon: Layers, title: 'Execução', description: 'Materializamos cada detalhe com precisão', color: 'blue' },
-    { icon: Zap, title: 'Lançamento', description: 'Elevamos a tua marca ao mundo', color: 'pink' }
+    { icon: Target, title: 'Descoberta', description: 'Reuniões de diagnóstico e definição de objetivos', color: 'blue' },
+    { icon: Lightbulb, title: 'Conceito', description: 'Análise de mercado, concorrência e público-alvo.', color: 'pink' },
+    { icon: Layers, title: 'Execução', description: 'Transformamos ideias em direções visuais', color: 'blue' },
+    { icon: Zap, title: 'Entrega', description: 'Envio de ficheiros finais, manuais de uso e lançamento.', color: 'pink' }
   ] as const;
 
   return (
@@ -754,7 +752,7 @@ const ProcessJourney = () => {
               O nosso processo
             </h2>
             <p className="text-lg lg:text-xl text-black/60 max-w-2xl mx-auto">
-              Cada projeto é uma jornada única de descoberta e criação
+              O próximo capítulo da tua marca
             </p>
           </div>
         </TransitionReveal>

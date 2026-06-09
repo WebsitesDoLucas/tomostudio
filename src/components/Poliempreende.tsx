@@ -178,8 +178,8 @@ const HeroSection = () => {
           />
 
           {[
-            { title: "Cliente", content: <p className="text-base font-medium text-black">Inst. Politécnico Viseu</p> },
-            { title: "Tipologia", content: <p className="text-base font-medium text-black">Concurso / Pitch</p> },
+            { title: "Cliente", content: <p className="text-base font-medium text-black">Poliempreende</p> },
+            { title: "Tipologia", content: <p className="text-base font-medium text-black">Concurso</p> },
             { title: "Serviços", content: <ul className="text-base font-medium text-black space-y-1"><li>Rebranding</li><li>Identidade Visual</li><li>Aplicações Gráficas</li></ul> },
             { title: "Rede", content: <p className="text-base font-medium text-black border-b border-black/20 pb-0.5">poliempreende.com</p> }
           ].map((item, i) => (
@@ -563,9 +563,11 @@ const ColorSystemSection = () => {
 };
 
 // ============================================
-// APPLICATIONS SECTION (Performance Optimized)
+// APPLICATIONS SECTION (🌟 Lightbox Funcional Integrado)
 // ============================================
 const ApplicationsSection = () => {
+  const [activeImage, setActiveImage] = useState<{ src: string; name: string } | null>(null);
+
   const applications = [
     { name: 'Billboard Outdoor', img: billboardImg },
     { name: 'Plataforma Website', img: websiteImg },
@@ -606,7 +608,7 @@ const ApplicationsSection = () => {
           </FadeIn>
           <FadeIn delay={0.1}>
             <p className="text-lg sm:text-xl text-black/50 max-w-2xl mx-auto font-medium">
-              Garantindo uma experiência unificada, escalável e imersiva através de todos os pontos de contacto da marca.
+              Garantindo uma experiência unificada, escalável e imersiva através de todos os pontos de contacto da marca. Clica nas imagens para as expandir.
             </p>
           </FadeIn>
         </div>
@@ -623,14 +625,14 @@ const ApplicationsSection = () => {
               key={app.name}
               variants={itemVariants}
               className="will-change-transform"
+              onClick={() => setActiveImage({ src: app.img, name: app.name })}
             >
               <div className="relative aspect-[4/5] rounded-3xl overflow-hidden group cursor-pointer border border-black/[0.03] shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-shadow duration-700">
                 <img 
                   src={app.img} 
                   alt={app.name} 
                   loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[0.16,1,0.3,1] group-hover:scale-[1.05] will-change-transform"
+                  className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[0.16,1,0.3,1] group-hover:scale-[1.03] will-change-transform"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 
@@ -642,6 +644,44 @@ const ApplicationsSection = () => {
           ))}
         </motion.div>
       </div>
+
+      {/* Lightbox para visualização de imagens inteiras */}
+      <AnimatePresence>
+        {activeImage && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
+            onClick={() => setActiveImage(null)}
+          >
+            <button 
+              className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all z-30"
+              onClick={() => setActiveImage(null)}
+            >
+              <X size={24} />
+            </button>
+
+            <motion.div 
+              initial={{ scale: 0.97, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.97, y: 15 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="relative max-w-full max-h-[85vh] rounded-2xl overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img 
+                src={activeImage.src} 
+                alt={activeImage.name}
+                className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-xl"
+              />
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-black/40 text-white text-xs font-medium tracking-wide rounded-full backdrop-blur-sm pointer-events-none">
+                {activeImage.name}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

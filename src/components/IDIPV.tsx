@@ -5,9 +5,10 @@ import {
   useSpring, 
   useMotionValue,
   useInView,
+  AnimatePresence,
   Variants
 } from 'framer-motion';
-import { ArrowUpRight, Check, Download } from 'lucide-react';
+import { ArrowUpRight, Check, Download, X } from 'lucide-react';
 import { useRef, useState, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation';
@@ -22,8 +23,7 @@ import mupiImg from '../assets/idipv/MUPI.webp';
 import placaVidroImg from '../assets/idipv/placa.webp';
 import posterImg from '../assets/idipv/poster.webp';
 import instagramImg from '../assets/idipv/Publicações de instagram.webp';
-import rollupsImg from '../assets/idipv/Rollups.webp';
-import zoomImg from '../assets/idipv/zoom (2).webp';
+import rollupsImg from '../assets/idipv/rollups.webp';
 
 // Importação do PDF
 import manualPdf from '../assets/idipv/ManualdeIdentidadeIDIPV.pdf';
@@ -121,7 +121,7 @@ const HeroSection = () => {
           WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)'
         }}
       >
-        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
+        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_1px]" />
         
         <div className="absolute top-0 right-0 w-full lg:w-[60%] h-[600px] flex items-center justify-center lg:justify-end lg:pr-[10%]">
           <motion.div 
@@ -181,9 +181,9 @@ const HeroSection = () => {
 
           {[
             { title: "Cliente", content: <p className="text-base font-medium text-black">Inst. Politécnico Viseu</p> },
-            { title: "Tipologia", content: <p className="text-base font-medium text-black">Case Study</p> },
-            { title: "Serviços", content: <ul className="text-base font-medium text-black space-y-1"><li>Naming & Branding</li><li>Identidade Visual</li><li>Aplicações Digitais</li></ul> },
-            { title: "Ano", content: <p className="text-base font-medium text-black border-b border-black/20 pb-0.5">2024</p> }
+            { title: "Tipologia", content: <p className="text-base font-medium text-black">Identidade Visual</p> },
+            { title: "Serviços", content: <ul className="text-base font-medium text-black space-y-1"><li>Estratégia de Marca</li><li>Identidade Visual</li><li>Estacionário & Digital</li></ul> },
+            { title: "Ano", content: <p className="text-base font-medium text-black border-b border-black/20 pb-0.5">2026</p> }
           ].map((item, i) => (
             <motion.div
               key={item.title}
@@ -305,7 +305,7 @@ const ConceptRow = ({ item, index }: { item: any, index: number }) => {
 };
 
 // ============================================
-// CONCEPT SECTION
+// CONCEPT SECTION (Ativadas Animações de Scroll)
 // ============================================
 const ConceptSection = () => {
   const containerRef = useRef(null);
@@ -319,24 +319,24 @@ const ConceptSection = () => {
   const conceptData = [
     {
       number: '01',
-      title: 'A Investigação',
+      title: 'A Inovação e Identidade',
       color: 'dark',
-      description: 'Representado pela anatomia da letra "i", reflete o pilar académico fundamental: o saber científico sólido, a descoberta metódica e a inovação constante.',
-      features: ['Saber académico', 'Inovação focada', 'Rigor científico']
+      description: 'O monograma "id" afirma o conceito de Identidade e o destaque individual de cada projeto, ao mesmo tempo que remete diretamente para as siglas de Inovação e Desenvolvimento (I&D).',
+      features: ['Afirmação de Identidade', 'Destaque individual', 'Inovação e I&D']
     },
     {
       number: '02',
-      title: 'O Desenvolvimento',
+      title: 'O Desenvolvimento Regional',
       color: 'light',
-      description: 'Materializado na curvatura da letra "d", projeta a transição fluida do conhecimento do laboratório e da academia diretamente para o tecido empresarial da região.',
-      features: ['Ciência aplicada', 'Evolução ativa', 'Soluções de mercado']
+      description: 'Espelhado no alargamento e na curvatura da letra "d" (Desenvolvimento). Evoca movimento e progressão contínua, posicionando o gabinete como um motor ativo de aceleração para o tecido empresarial.',
+      features: ['Ciência aplicada', 'Evolução constante', 'Aceleração de mercado']
     },
     {
       number: '03',
-      title: 'O Pixel Central',
+      title: 'O Pixel Tecnológico',
       color: 'dark',
-      description: 'O ponto do "i", desenhado como um pixel digital perfeito, afirma a precisão técnica inquestionável e define o ADN puramente tecnológico da instituição.',
-      features: ['Precisão modular', 'ADN Digital', 'Módulo geométrico']
+      description: 'O ponto da letra "i" foi rigorosamente desenhado sob a forma geométrica de um pixel — a unidade mínima de qualquer sistema digital. Afirma o ADN tecnológico, o rigor científico e a precisão do gabinete.',
+      features: ['Grelha modular', 'ADN Digital', 'Precisão técnica']
     }
   ];
 
@@ -344,35 +344,35 @@ const ConceptSection = () => {
     <section ref={containerRef} className="relative py-24 lg:py-36 bg-gray-50 border-t border-black/5 overflow-hidden flex flex-col items-center">
       
       <div className="max-w-[1000px] mx-auto px-6 w-full text-center flex flex-col items-center mb-24 lg:mb-32">
-        <FadeIn yOffset={50}>
+        <FadeIn yOffset={30}>
           <span className="text-[10px] tracking-[0.3em] font-bold text-[#0055FF] uppercase block mb-6">
-            // O motor da transferência tecnológica
+            // GABINETE DE TRANSFERÊNCIA DE TECNOLOGIA DO IPV
           </span>
         </FadeIn>
-        <FadeIn delay={0.1} yOffset={50}>
+        <FadeIn delay={0.1} yOffset={30}>
           <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-black tracking-tighter leading-[1.05] max-w-4xl mb-6 sm:mb-10">
-            Aproximar o conhecimento e a inovação empresarial.
+            Aproximar o saber científico do tecido empresarial.
           </h2>
         </FadeIn>
-        <FadeIn delay={0.2}>
+        <FadeIn delay={0.2} yOffset={30}>
           <p className="text-lg sm:text-xl text-black/50 max-w-2xl mx-auto font-medium mb-12 sm:mb-16">
-            O nosso desafio passou por estruturar um ecossistema gráfico moderno e flexível capaz de traduzir a ciência aplicada com o máximo rigor técnico e autoridade visual.
+            A identidade visual do IDIPV assenta no princípio fundamental do rigor técnico, unindo o conceito de Inovação e Desenvolvimento (I&D) com a afirmação de uma Identidade forte e de destaque global.
           </p>
         </FadeIn>
 
-        <motion.div style={{ y: yImage }} className="w-full max-w-[480px] aspect-square flex items-center justify-center my-6 relative z-10 will-change-transform">
+        <motion.div style={{ y: yImage }} className="w-full max-w-[500px] aspect-[16/10] flex items-center justify-center my-6 relative z-10 will-change-transform">
           <Magnetic>
             <motion.div 
               initial={{ opacity: 0, scale: 0.9, y: 50 }}
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }}
-              className="w-full h-full bg-white rounded-[2.5rem] shadow-[0_30px_80px_rgba(0,0,0,0.06)] border border-black/5 p-8 flex items-center justify-center will-change-transform"
+              className="w-full h-full bg-white rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.05)] border border-black/5 overflow-hidden flex items-center justify-center will-change-transform"
             >
               <img 
                 src={placaVidroImg} 
-                alt="IDIPV Símbolo" 
-                className="w-full h-full object-contain mix-blend-multiply scale-[1.4]"
+                alt="IDIPV Símbolo em Placa" 
+                className="w-full h-full object-cover"
               />
             </motion.div>
           </Magnetic>
@@ -382,11 +382,11 @@ const ConceptSection = () => {
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 w-full bg-white pt-16 lg:pt-24 pb-12 lg:pb-16 rounded-[3rem] border border-black/[0.03] shadow-sm relative z-20">
         <div className="max-w-3xl mb-12 lg:mb-16">
           <FadeIn>
-            <span className="text-xs font-mono font-bold text-black/40 block mb-3">Conceito Visual</span>
+            <span className="text-xs font-mono font-bold text-black/40 block mb-3">Conceito Visual e Estratégia</span>
           </FadeIn>
           <FadeIn delay={0.1}>
             <p className="text-xl sm:text-2xl text-black/50 font-medium tracking-tight">
-              A desconstrução geométrica do símbolo baseada na precisão e progressão tecnológica.
+              A união milimétrica entre a solidez das formas institucionais e a afirmação de uma identidade conectada.
             </p>
           </FadeIn>
         </div>
@@ -402,7 +402,7 @@ const ConceptSection = () => {
 };
 
 // ============================================
-// LOGO REVEAL SECTION
+// LOGO REVEAL SECTION (Ativadas Animações de Scroll)
 // ============================================
 const LogoRevealSection = () => {
   const ref = useRef(null);
@@ -423,7 +423,7 @@ const LogoRevealSection = () => {
         >
           <FadeIn yOffset={30}>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-10 sm:mb-16 tracking-tight">
-              A Solução Visual
+              A Variante Principal
             </h2>
           </FadeIn>
 
@@ -433,7 +433,7 @@ const LogoRevealSection = () => {
                 <div className="w-[70%] sm:w-[60%] md:w-[45%] relative z-10">
                   <img 
                     src={logoImg} 
-                    alt="Logo IDIPV" 
+                    alt="Assinatura Padrão IDIPV" 
                     loading="lazy"
                     decoding="async"
                     className="w-full h-full object-contain drop-shadow-xl mix-blend-multiply"
@@ -443,9 +443,9 @@ const LogoRevealSection = () => {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.2}>
+          <FadeIn delay={0.2} yOffset={30}>
             <p className="text-base sm:text-xl md:text-2xl text-black/70 max-w-3xl mx-auto leading-relaxed px-2 font-medium">
-              O monograma baseia-se na interseção fluida entre o "i" e o "d". O ponto da letra "i" assume a forma de um pixel perfeito, afirmando a sua precisão e ADN puramente tecnológico.
+              Composta pelo símbolo monogramático seguido da sigla IPV em alinhamento horizontal. O símbolo assume destaque cromático em gradiente vibrante, contrastando com o preto tipográfico para garantir o equilíbrio e a legibilidade institucional.
             </p>
           </FadeIn>
         </motion.div>
@@ -455,14 +455,14 @@ const LogoRevealSection = () => {
 };
 
 // ============================================
-// COLOR SYSTEM
+// COLOR SYSTEM (Ativadas Animações de Scroll)
 // ============================================
 const ColorSystemSection = () => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const colors = [
-    { name: 'Neon Blue', hex: '#0055FF', bg: 'bg-[#0055FF]' },
-    { name: 'Deep Blue', hex: '#1E007F', bg: 'bg-[#1E007F]' },
+    { name: 'Neon Blue (2728 C)', hex: '#0055FF', bg: 'bg-[#0055FF]' },
+    { name: 'Deep Blue (2748 C)', hex: '#1E007F', bg: 'bg-[#1E007F]' },
     { name: 'Tech White', hex: '#FFFFFF', bg: 'bg-white' },
     { name: 'Night Black', hex: '#000000', bg: 'bg-black' },
   ];
@@ -479,12 +479,12 @@ const ColorSystemSection = () => {
         <div className="text-center mb-12 sm:mb-20">
           <FadeIn>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
-              A Cor da Evolução
+              A Paleta Cromática Oficial
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
             <p className="text-base sm:text-xl text-black/50 max-w-2xl mx-auto font-medium">
-              O <span className="font-bold text-[#1E007F]">Deep Blue</span> assegura a base autoritária e institucional, enquanto o <span className="font-bold text-[#0055FF]">Neon Blue</span> funciona como ponto de luz e inovação constante.
+              O <span className="font-bold text-[#1E007F]">Deep Blue</span> estabelece a base de autoridade institucional, enquanto o <span className="font-bold text-[#0055FF]">Neon Blue</span> funciona como ponto de luz e dinamismo para a comunicação digital.
             </p>
           </FadeIn>
         </div>
@@ -526,10 +526,11 @@ const ColorSystemSection = () => {
 };
 
 // ============================================
-// APPLICATIONS SECTION (Resolvido o problema do Crop de Informação)
+// APPLICATIONS SECTION (🌟 Lightbox Funcional Integrado)
 // ============================================
 const ApplicationsSection = () => {
-  // MAPEAMENTO COM AS NOVAS IMAGENS (COM MARGENS EXTRAS) E O CÓDIGO ORIGINAL
+  const [activeImage, setActiveImage] = useState<{ src: string; name: string } | null>(null);
+
   const applications = [
     { name: 'Billboard Outdoor', img: outdoorImg, aspect: 'aspect-video md:aspect-[21/9]', colSpan: 'sm:col-span-2 lg:col-span-3' },
     { name: 'Sinalética Exterior (MUPI)', img: mupiImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
@@ -537,8 +538,7 @@ const ApplicationsSection = () => {
     { name: 'Cartazes e Posters', img: posterImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
     { name: 'Estacionário Institucional', img: estacionarioImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
     { name: 'Roll-ups / Eventos', img: rollupsImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
-    { name: 'Redes Sociais', img: instagramImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
-    { name: 'Fundo de Videoconferência', img: zoomImg, aspect: 'aspect-video md:aspect-[21/9]', colSpan: 'sm:col-span-2 lg:col-span-3' },
+    { name: 'Redes Sociais (Feed/Stories)', img: instagramImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
   ];
 
   const containerVariants: Variants = {
@@ -565,12 +565,12 @@ const ApplicationsSection = () => {
         <div className="text-center mb-16 sm:mb-24">
           <FadeIn>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black mb-6 tracking-tighter">
-              O Sistema Visual.
+              A marca em todo o lado.
             </h2>
           </FadeIn>
           <FadeIn delay={0.1}>
             <p className="text-lg sm:text-xl text-black/50 max-w-2xl mx-auto font-medium">
-              Uma estrutura de marca inteligente que garante a máxima funcionalidade e aplicabilidade em múltiplos suportes físicos e digitais.
+              Garantindo coesão em todos os suportes, desde a sinalética exterior e placas de vidro até ao estacionário oficial e plataformas digitais. Clica nas imagens para as expandir.
             </p>
           </FadeIn>
         </div>
@@ -582,20 +582,19 @@ const ApplicationsSection = () => {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
-          {applications.map((app) => (
+          {applications.map((app, index) => (
             <motion.div
-              key={app.name}
+              key={`${app.name}-${index}`}
               variants={itemVariants}
-              className={`will-change-transform w-full ${app.colSpan}`}
+              className={`will-change-transform w-full ${app.colSpan || ''}`}
+              onClick={() => setActiveImage({ src: app.img, name: app.name })}
             >
               <div className={`relative ${app.aspect} rounded-3xl overflow-hidden group cursor-pointer border border-black/[0.03] shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-shadow duration-700 w-full`}>
-                
-                {/* MANTIDO object-cover: As imagens regeneradas têm margens de segurança, por isso não cortam o conteúdo vital */}
                 <img 
                   src={app.img} 
                   alt={app.name} 
                   loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[0.16,1,0.3,1] group-hover:scale-[1.05] will-change-transform"
+                  className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[0.16,1,0.3,1] group-hover:scale-[1.03] will-change-transform"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 
@@ -607,12 +606,50 @@ const ApplicationsSection = () => {
           ))}
         </motion.div>
       </div>
+
+      {/* Lightbox para visualização da imagem expandida */}
+      <AnimatePresence>
+        {activeImage && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
+            onClick={() => setActiveImage(null)}
+          >
+            <button 
+              className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all z-30"
+              onClick={() => setActiveImage(null)}
+            >
+              <X size={24} />
+            </button>
+
+            <motion.div 
+              initial={{ scale: 0.97, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.97, y: 15 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="relative max-w-full max-h-[85vh] rounded-2xl overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img 
+                src={activeImage.src} 
+                alt={activeImage.name}
+                className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-xl"
+              />
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-black/40 text-white text-xs font-medium tracking-wide rounded-full backdrop-blur-sm pointer-events-none">
+                {activeImage.name}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };
 
 // ============================================
-// BRANDBOOK FLIPBOOK & DOWNLOAD SECTION
+// BRANDBOOK SECTION (Ativadas Animações de Scroll)
 // ============================================
 const ManualSection = () => {
   return (
@@ -625,11 +662,11 @@ const ManualSection = () => {
         </FadeIn>
         <FadeIn delay={0.1}>
           <p className="text-base sm:text-lg text-black/50 max-w-2xl mx-auto mb-8 sm:mb-16 font-medium">
-            Explora em detalhe a construção estratégica, as regras de aplicação e o sistema visual completo desenvolvido para o IDIPV.
+            Explora em detalhe a construção, as regras de aplicação e o sistema visual completo desenvolvido para o IDIPV.
           </p>
         </FadeIn>
         
-        <FadeIn delay={0.2} yOffset={50}>
+        <FadeIn delay={0.2} yOffset={30}>
           <div className="relative w-full aspect-[4/3] md:aspect-[16/9] lg:aspect-[4/3] rounded-2xl sm:rounded-3xl overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.06)] border border-black/5 bg-white mb-8 sm:mb-12">
             <iframe 
               allowFullScreen={true} 
@@ -641,7 +678,7 @@ const ManualSection = () => {
           </div>
         </FadeIn>
 
-        <FadeIn delay={0.3}>
+        <FadeIn delay={0.3} yOffset={20}>
           <p className="text-xs sm:text-sm text-black/30 mb-4 sm:mb-6 font-bold uppercase tracking-widest">
             Preferes o ficheiro local?
           </p>

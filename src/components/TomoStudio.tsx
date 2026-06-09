@@ -14,7 +14,7 @@ import { Navigation } from './Navigation';
 // ============================================
 // IMPORTAÇÃO DE ASSETS
 // ============================================
-import logotipoImg from "../assets/thumbs/tomostudio.webp";
+import logotipoImg from "../assets/LogoCompleto.webp";
 import logoImg from "../assets/logo.webp";
 import manualPdf from '../assets/ManualdeidentidadeTOMO.pdf';
 
@@ -87,9 +87,9 @@ const FadeIn = ({ children, delay = 0, yOffset = 30 }: { children: React.ReactNo
 // ============================================
 const HeroSection = () => {
   const titleLines = [
-    "A nossa história:",
-    "dar forma à visão",
-    "de quem cria."
+    "Muito prazer,",
+    "somos a tomo,",
+    "o teu parceiro criativo."
   ];
 
   return (
@@ -162,8 +162,8 @@ const HeroSection = () => {
 
           {[
             { title: "Estúdio", content: <p className="text-base font-medium text-black">Tomo Studio</p> },
-            { title: "Ano", content: <p className="text-base font-medium text-black">2024</p> },
-            { title: "Serviços", content: <ul className="text-base font-medium text-black space-y-1"><li>Identidade Visual</li><li>Brandbook</li><li>UI/UX Design</li></ul> },
+            { title: "Localização", content: <p className="text-base font-medium text-black">Viseu, Portugal</p> },
+            { title: "Serviços", content: <ul className="text-base font-medium text-black space-y-1"><li>Branding & Identidade</li><li>Websites & Digital</li><li>Direção Criativa</li></ul> },
             { title: "Website", content: <a href="#" className="inline-flex items-center gap-1 text-base font-medium text-black border-b border-black/20 hover:border-black transition-colors">tomostudio.pt <ArrowUpRight size={14} /></a> }
           ].map((item, i) => (
             <motion.div
@@ -193,7 +193,6 @@ const ConceptRow = ({ item, index }: { item: any, index: number }) => {
   const isActive = isHovered || isScrolledView;
   const isBlue = item.color === 'blue';
 
-  // Fix TypeScript com 'as const' para tuplos de Easing
   const easeGolden = [0.76, 0, 0.24, 1] as const;
 
   return (
@@ -277,24 +276,24 @@ const ConceptSection = () => {
   const conceptData = [
     {
       number: '01',
-      title: 'A Ligação Japonesa',
+      title: 'A Origem: O Amigo',
       color: 'blue',
-      description: 'O nome tomo nasce da ideia de companheirismo e cocriação. É estruturado através do kanji 友, que evoca os laços de amizade verdadeira e proximidade entre o estúdio e os nossos clientes.',
-      features: ['Companheirismo', 'Criação em conjunto', 'Kanji 友']
+      description: 'A palavra "tomo" tem origem no kanji japonês 友, que significa amigo ou parceiro. É exatamente assim que vemos a nossa relação com cada cliente: uma parceria próxima onde a criação acontece em conjunto.',
+      features: ['Companheirismo', 'Proximidade', 'Criação partilhada']
     },
     {
       number: '02',
       title: 'A Piscadela Humana',
       color: 'pink',
-      description: 'A nossa assinatura incorpora um detalhe intencional no conjunto "to", cuja rotação anatómica das letras desenha uma subtil expressão de empatia em forma de piscadela.',
-      features: ['Expressão facial', 'Leveza gráfica', 'Interação humana']
+      description: 'Se reparares bem nas letras "to" da nossa assinatura, vais notar uma pequena piscadela de olho. É um detalhe intencional que reflete o nosso espírito jovem, acessível e sempre pronto a ajudar.',
+      features: ['Empatia visual', 'Espírito jovem', 'Tom conversacional']
     },
     {
       number: '03',
       title: 'O Coração Escondido',
       color: 'blue',
-      description: 'Por detrás da precisão matemática e corporativa do monograma, a curvatura interna esconde a silhueta de um coração — um detalhe que simboliza a paixão e a componente emocional.',
-      features: ['Cuidado em pixel', 'Componente emocional', 'Rigor orgânico']
+      description: 'O nosso símbolo esconde a silhueta de um coração na sua curva principal. Porque, no fundo, o nosso trabalho é dar vida e forma a marcas que nascem da verdadeira paixão de quem as cria.',
+      features: ['Cuidado e detalhe', 'Apoio aos negócios', 'Visão 360º']
     }
   ];
 
@@ -305,10 +304,10 @@ const ConceptSection = () => {
       <div className="max-w-[1000px] mx-auto px-6 w-full text-center flex flex-col items-center mb-16 lg:mb-24">
         <FadeIn yOffset={40}>
           <span className="text-[10px] tracking-[0.3em] font-bold text-tomo-blue uppercase block mb-6">
-            // Essência de Marca
+            // O Significado
           </span>
           <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-black tracking-tighter leading-[1.05] max-w-4xl mb-12 sm:mb-16">
-            Dar forma e significado ao nosso monograma.
+            Cada detalhe conta a nossa história.
           </h2>
         </FadeIn>
 
@@ -335,9 +334,9 @@ const ConceptSection = () => {
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 w-full bg-white pt-16 lg:pt-24 pb-12 lg:pb-16 rounded-[3rem] border border-black/[0.03] shadow-sm relative z-20 -mt-10 lg:-mt-20">
         <div className="max-w-3xl mb-12 lg:mb-16">
           <FadeIn>
-            <span className="text-xs font-mono font-bold text-black/40 block mb-3">Anatomia do Símbolo</span>
+            <span className="text-xs font-mono font-bold text-black/40 block mb-3">O nosso ADN</span>
             <p className="text-xl sm:text-2xl text-black/50 font-medium tracking-tight">
-              A desconstrução geométrica da nossa assinatura baseada nos conceitos de conectividade, emoção e humanidade.
+              A nossa marca foi desenhada para transmitir exatamente aquilo que somos: um estúdio próximo, profissional e focado nos detalhes que fazem a diferença.
             </p>
           </FadeIn>
         </div>
@@ -405,7 +404,7 @@ const LogoRevealSection = () => {
           </div>
 
           <p className="text-base sm:text-xl md:text-2xl text-black/60 max-w-3xl mx-auto leading-relaxed px-2 font-medium">
-            A variante principal representa a versão base da identidade visual. Combina formas suaves e tipografia minimalista, criando uma presença memorável e próxima.
+            A nossa assinatura principal é limpa, direta e amigável. Escolhemos formas arredondadas e uma tipografia simples para que a marca respire profissionalismo, sem nunca perder o lado humano.
           </p>
         </motion.div>
       </div>
@@ -414,16 +413,17 @@ const LogoRevealSection = () => {
 };
 
 // ============================================
-// COLOR SYSTEM
+// COLOR SYSTEM (Valores Técnicos 100% Corretos)
 // ============================================
 const ColorSystemSection = () => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
+  // 🌟 CORRIGIDO: Valores exatos de PANTONE, CMYK e HEX extraídos das tuas imagens
   const colors = [
-    { name: 'Azul Celeste', hex: '#41B6E6', bg: 'bg-tomo-blue' },
-    { name: 'Azul Escuro', hex: '#071D49', bg: 'bg-[#071D49]' },
-    { name: 'Rosa', hex: '#E06287', bg: 'bg-tomo-pink' },
-    { name: 'Verde Lima', hex: '#D4EB8E', bg: 'bg-[#D4EB8E]' },
+    { name: 'Azul Escuro', hex: '#050838', cmyk: 'C:98% M:93% Y:42% K:58%', pantone: 'PANTONE 2768 C', bg: 'bg-[#050838]' },
+    { name: 'Azul Celeste', hex: '#49B6FF', cmyk: 'C:57% M:16% Y:0% K:0%', pantone: 'PANTONE 298 C', bg: 'bg-[#49B6FF]' },
+    { name: 'Rosa', hex: '#E56399', cmyk: 'C:5% M:76% Y:9% K:0%', pantone: 'PANTONE 7423 C', bg: 'bg-[#E56399]' },
+    { name: 'Creme', hex: '#FCF3CF', cmyk: 'C:20% M:0% Y:52% K:0%', pantone: 'PANTONE 372 C', bg: 'bg-[#FCF3CF]' },
   ];
 
   const handleCopy = (hex: string, index: number) => {
@@ -442,14 +442,15 @@ const ColorSystemSection = () => {
           className="text-center mb-12 sm:mb-20"
         >
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-black mb-4 tracking-tight">
-            A Nossa Paleta
+            As Nossas Cores
           </h2>
           <p className="text-base sm:text-xl text-black/50 max-w-2xl mx-auto font-medium">
-            Sólida, vibrante e intencional. Equivalências exatas homologadas no manual para ecrã (HEX) e suportes físicos (Pantone).
+            Fugimos ao tradicional formato escuro e fechado de agência. Escolhemos tons vibrantes e cheios de personalidade para mostrar a nossa energia e vontade de inovar.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 w-full">
+        {/* Grelha de 4 colunas com a ficha de especificações completa */}
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 w-full items-start">
           {colors.map((color, i) => (
             <motion.div 
               key={color.name}
@@ -473,10 +474,16 @@ const ColorSystemSection = () => {
                     )}
                 </div>
                 <h4 className="font-bold text-black text-sm sm:text-lg mb-0.5">{color.name}</h4>
-                <div className="flex items-center gap-2">
+                
+                <div className="flex flex-col gap-1 mt-1">
+                  <div className="flex items-center gap-2">
                     <p className="text-[11px] sm:text-sm text-black/40 font-mono bg-gray-50 px-1.5 py-0.5 rounded border border-black/[0.03]">{color.hex}</p>
                     {copiedIndex === i && <span className="text-[10px] sm:text-xs text-green-500 font-bold">Copiado!</span>}
+                  </div>
+                  <span className="text-[10px] sm:text-xs text-black/40 font-bold tracking-wider uppercase mt-1">{color.pantone}</span>
+                  <span className="text-[10px] sm:text-xs text-black/30 font-mono leading-tight">{color.cmyk}</span>
                 </div>
+
               </div>
             </motion.div>
           ))}
@@ -504,7 +511,7 @@ const ManualSection = () => {
             Manual de Identidade
           </h2>
           <p className="text-base sm:text-lg text-black/50 max-w-2xl mx-auto mb-8 sm:mb-16 font-medium">
-            Explora em detalhe a construção estratégica, as regras de aplicação e o sistema visual completo desenvolvido para a tomo studio.
+            Gostamos de ser transparentes e partilhar como trabalhamos. Podes folhear o nosso manual de marca e ver todas as regras que guiam o visual da tomo.
           </p>
           
           <div className="relative w-full aspect-[4/3] md:aspect-[16/9] lg:aspect-[4/3] rounded-2xl sm:rounded-[3rem] overflow-hidden shadow-2xl border border-black/10 bg-white mb-8 sm:mb-12">
@@ -518,7 +525,7 @@ const ManualSection = () => {
           </div>
 
           <p className="text-xs sm:text-sm text-black/30 mb-4 sm:mb-6 font-bold uppercase tracking-widest">
-            Preferes o ficheiro local?
+            Preferes ler o ficheiro local?
           </p>
 
           <Magnetic>
@@ -542,7 +549,7 @@ const ManualSection = () => {
 };
 
 // ============================================
-// OUTRO SECTION
+// OUTRO SECTION (Slogan em Destaque)
 // ============================================
 const OutroSection = () => {
   return (
@@ -554,18 +561,18 @@ const OutroSection = () => {
           viewport={{ once: true }}
           className="will-change-transform"
         >
-          <p className="text-xs font-bold text-black/30 uppercase tracking-[0.3em] mb-8">
-            Explorar mais
+          <p className="text-xs sm:text-sm font-bold text-tomo-pink uppercase tracking-[0.3em] mb-8">
+            Criamos contigo, não só para ti.
           </p>
 
-          <Link to="/trabalhos" className="block w-full">
+          <Link to="/contactos" className="block w-full">
             <Magnetic>
                 <div className="group max-w-4xl mx-auto cursor-pointer px-2">
                   <h3 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-black mb-8 group-hover:text-black/50 transition-colors tracking-tighter leading-tight">
-                      Ver Portfólio
+                      Vamos trabalhar juntos?
                   </h3>
                   <div className="inline-flex items-center gap-2 text-black font-bold uppercase tracking-wider text-xs sm:text-sm mt-2 border-b-2 border-black pb-1">
-                      Explorar Projetos
+                      Fala connosco
                       <ArrowUpRight className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" size={16} />
                   </div>
                 </div>

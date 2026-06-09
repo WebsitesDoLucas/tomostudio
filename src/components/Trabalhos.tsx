@@ -71,7 +71,7 @@ const projects: Project[] = [
   },
   {
     id: 2,
-    title: 'AveiMédica',
+    title: 'Aveimédica',
     client: 'Centro Médico',
     year: '2024',
     category: 'Rebrand',
@@ -580,7 +580,7 @@ const HeroSection = () => {
             O nosso trabalho<span className="text-tomo-blue">.</span>
           </h1>
           <p className="text-lg md:text-xl text-black/60 leading-relaxed max-w-2xl mx-auto font-medium">
-            Onde a estratégia ganha forma
+            Onde as ideias ganham vida.
           </p>
         </motion.div>
       </div>

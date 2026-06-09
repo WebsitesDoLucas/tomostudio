@@ -112,29 +112,29 @@ const processSteps: ProcessStepType[] = [
     title: "Diagnóstico e Estratégia",
     icon: Search,
     color: "blue",
-    description: "Não desenhamos com base em 'achismos'. Começamos por auditar o teu negócio, analisar a tua concorrência e definir o teu posicionamento. Queremos perceber exatamente com quem estás a falar para garantir que a nova marca atrai os clientes certos (e afasta os errados).",
-    items: ["Questionário de Branding", "Análise de Concorrência", "Definição de Público-Alvo", "Tom de Voz da Marca"]
+    description: "Agendamos as reuniões iniciais de diagnóstico para analisar o estado atual do teu negócio e alinhar as metas do projeto. É nesta fase que definimos os objetivos para garantir que o design resolve o problema certo.",
+    items: ["Diagnóstico do Negócio", "Análise de Mercado", "Perfil do Cliente Ideal", "Tom de Comunicação"]
   },
   {
-    title: "Conceito e Design",
+    title: "Conceito",
     icon: PenTool,
     color: "pink",
-    description: "Com a estratégia aprovada, traduzimos a tua essência para o visual. Não te enviamos dezenas de opções confusas, apresentamos a solução visual mais forte e fundamentada.",
-    items: ["Logotipo Principal e Variantes", "Paleta de Cores", "Seleção Tipográfica", "Apresentação Fundamentada"]
+    description: "Analisamos o mercado, os concorrentes diretos e o perfil do consumidor. Esta investigação serve para estruturar e fundamentar a direção criativa, garantindo que o design final responde a necessidades do negócio e não a meros palpites.",
+    items: ["Análise de mercado", "Estudo de concorrentes", "Pesquisa de inspiração", "Fundamentação estratégica"]
   },
   {
-    title: "Ecossistema Visual",
+    title: "Execução",
     icon: Target,
     color: "blue",
-    description: "Um logótipo isolado não constrói autoridade. Desenvolvemos todos os elementos de apoio que garantem que a tua marca tem um aspeto profissional e consistente em qualquer plataforma, seja no Instagram, num outdoor ou num cartão de visita.",
-    items: ["Padrões e Texturas (Patterns)", "Iconografia Personalizada", "Direção Fotográfica", "Elementos Gráficos Exclusivos"]
+    description: "Traduzimos a estratégia e a pesquisa em propostas visuais. Desenvolvemos o design final, criamos os layouts necessários e estruturamos todos os materiais do projeto.",
+    items: ["Direção de arte gráfica", "Construção do sistema visual", "Desenho de componentes", "Produção dos ativos digitais"]
   },
   {
-    title: "Entrega e Independência",
+    title: "Entrega",
     icon: FileCheck,
     color: "pink",
-    description: "O nosso objetivo é que sejas 100% independente. Entregamos todos os ficheiros organizados e um Manual de Identidade Visual claro, que servirá de 'livro de regras' para ti, para a tua equipa e para futuros fornecedores.",
-    items: ["Manual de Identidade Visual", "Ficheiros Vetoriais (AI, EPS)", "Ficheiros Web (PNG, JPG)", "Exportação Organizada"]
+    description: "Concluímos o projeto com a preparação e organização de todos os materiais finalizados. Enviamos os ficheiros nos formatos necessários para produção e os guias práticos de utilização, garantindo a tua total independência na aplicação da marca.",
+    items: ["Exportação de ficheiros finais", "Guias e manuais de utilização", "Organização do kit de entrega", "Fecho e conclusão do projeto"]
   }
 ];
 
@@ -261,13 +261,13 @@ export const Processo = () => {
               </span>
             </motion.div>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-black mb-6 tracking-tight leading-tight">
-              Menos decoração.<br />
+              O nosso<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-tomo-blue to-tomo-pink">
-                Mais estratégia.
+                Processo
               </span>
             </h1>
             <p className="text-lg lg:text-xl text-black/80 font-medium max-w-2xl mx-auto leading-relaxed">
-              Desconstruímos a complexidade do teu negócio e simplificamos, numa identidade visual que cria ligações de confiança e validam o teu valor no mercado.
+              Simplificamos a mensagem do teu negócio através do design.
             </p>
           </TransitionReveal>
         </motion.div>
@@ -300,7 +300,7 @@ export const Processo = () => {
             {[
               { title: "Manual de Identidade", desc: "O livro de regras da tua marca. Explica como aplicar cores, espaçamentos e tipografias corretamente para manteres a coerência sempre." },
               { title: "Ficheiros Vetoriais", desc: "Formatos AI, EPS e PDF. Podes imprimir a tua marca num cartão de visita ou num outdoor gigante sem nunca perder qualidade." },
-              { title: "Formatos Digitais", desc: "Formatos PNG e SVG transparentes. Prontos para aplicares no teu website, em assinaturas de email ou sobreposições de fotos." },
+              { title: "Código e Elementos Web", desc: "Entrega do website totalmente funcional. Fornecemos todos os ficheiros de código, componentes de design e acessos necessários para que a tua plataforma fique online sem falhas." },
               { title: "Kit de Redes Sociais", desc: "Ficheiros já otimizados à medida certa para as tuas fotos de perfil e capas de Facebook, Instagram e LinkedIn." }
             ].map((item, i) => (
               <TransitionReveal key={i} delay={i * 0.1}>

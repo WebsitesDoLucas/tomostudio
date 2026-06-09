@@ -6,9 +6,10 @@ import {
   useMotionValue, 
   useMotionTemplate,
   useInView,
+  AnimatePresence,
   Variants
 } from 'framer-motion';
-import { ArrowUpRight, Check, Play } from 'lucide-react';
+import { ArrowUpRight, Check, Play, X } from 'lucide-react';
 import { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation';
@@ -180,10 +181,10 @@ const HeroSection = () => {
           />
 
           {[
-            { title: "Cliente", content: <p className="text-base font-medium text-black">Jazz Concert London</p> },
-            { title: "Tipologia", content: <p className="text-base font-medium text-black">Event Branding</p> },
+            { title: "Cliente", content: <p className="text-base font-medium text-black">Fictício</p> },
+            { title: "Tipologia", content: <p className="text-base font-medium text-black">Branding de Evento</p> },
             { title: "Serviços", content: <ul className="text-base font-medium text-black space-y-1"><li>Direção de Arte</li><li>Identidade Visual</li><li>Sinalética</li></ul> },
-            { title: "Ano", content: <p className="text-base font-medium text-black border-b border-black/20 pb-0.5">2024</p> }
+            { title: "Ano", content: <p className="text-base font-medium text-black border-b border-black/20 pb-0.5">2025</p> }
           ].map((item, i) => (
             <motion.div
               key={item.title}
@@ -305,7 +306,7 @@ const ConceptRow = ({ item, index }: { item: any, index: number }) => {
 };
 
 // ============================================
-// CONCEPT SECTION
+// CONCEPT SECTION (🌟 Foto Reestruturada e Expandida)
 // ============================================
 const ConceptSection = () => {
   const containerRef = useRef(null);
@@ -360,19 +361,20 @@ const ConceptSection = () => {
           </p>
         </FadeIn>
 
-        <motion.div style={{ y: yImage }} className="w-full max-w-[480px] aspect-square flex items-center justify-center my-6 relative z-10 will-change-transform">
+        {/* 🌟 AJUSTADO: max-w-[500px], aspect-[16/10] e remoção do padding interno para preenchimento edge-to-edge */}
+        <motion.div style={{ y: yImage }} className="w-full max-w-[500px] aspect-[16/10] flex items-center justify-center my-6 relative z-10 will-change-transform">
           <Magnetic>
             <motion.div 
               initial={{ opacity: 0, scale: 0.9, y: 50 }}
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }}
-              className="w-full h-full bg-white rounded-[2.5rem] shadow-[0_30px_80px_rgba(0,0,0,0.06)] border border-black/5 p-8 flex items-center justify-center will-change-transform"
+              className="w-full h-full bg-white rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.05)] border border-black/5 overflow-hidden flex items-center justify-center will-change-transform"
             >
               <img 
                 src={billboardImg} 
                 alt="Jazz Concert Ambiente" 
-                className="w-full h-full object-cover rounded-[1.5rem]"
+                className="w-full h-full object-cover"
               />
             </motion.div>
           </Magnetic>
@@ -402,7 +404,7 @@ const ConceptSection = () => {
 };
 
 // ============================================
-// LOGO / GRAFISMO REVEAL SECTION
+// LOGO / GRAFISMO REVEAL SECTION (🌟 Texto Refinado)
 // ============================================
 const LogoRevealSection = () => {
   const ref = useRef(null);
@@ -424,7 +426,7 @@ const LogoRevealSection = () => {
   }
 
   return (
-    <section ref={ref} className="relative min-h-[60vh] sm:min-h-screen flex items-center bg-white py-16 sm:py-32 border-b border-black/5">
+    <section ref={ref} className="relative min-h-[60vh] sm:min-h-[80vh] flex items-center bg-white py-16 sm:py-32 border-b border-black/5">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-12 w-full">
         <motion.div 
           style={{ scale, opacity }}
@@ -476,9 +478,10 @@ const LogoRevealSection = () => {
             </div>
           </FadeIn>
 
+          {/* 🌟 ALTERADO: Texto cru, limpo e puramente focado em impacto estético e atitude de estúdio */}
           <FadeIn delay={0.2}>
             <p className="text-base sm:text-xl md:text-2xl text-black/70 max-w-3xl mx-auto leading-relaxed px-2 font-medium">
-              Uma tipografia expandida que ocupa o espaço de forma arrojada. As formas complementares servem como janelas gráficas, dando à marca uma capacidade camaleónica e adaptável.
+              Uma tipografia que domina o espaço gráfico. As formas geométricas funcionam como molduras dinâmicas, permitindo que a identidade visual se adapte com total flexibilidade a todo o recinto.
             </p>
           </FadeIn>
         </motion.div>
@@ -559,9 +562,11 @@ const ColorSystemSection = () => {
 };
 
 // ============================================
-// APPLICATIONS SECTION (Zero Lag Optimizado)
+// APPLICATIONS SECTION (🌟 Lightbox Funcional Integrado)
 // ============================================
 const ApplicationsSection = () => {
+  const [activeImage, setActiveImage] = useState<{ src: string; name: string } | null>(null);
+
   const applications = [
     { name: 'Sinalética (Wayfinding)', img: wayfindingImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
     { name: 'Posters de Rua', img: postersImg, aspect: 'aspect-[4/5]', colSpan: 'col-span-1' },
@@ -600,7 +605,7 @@ const ApplicationsSection = () => {
           </FadeIn>
           <FadeIn delay={0.1}>
             <p className="text-lg sm:text-xl text-black/50 max-w-2xl mx-auto font-medium">
-              A identidade gráfica imersiva aplicada no recinto através de sinalética arrojada e merchandise.
+              A identidade gráfica aplicada no recinto através de sinalética e merchandise. Clica nas imagens para as expandir.
             </p>
           </FadeIn>
         </div>
@@ -610,22 +615,21 @@ const ApplicationsSection = () => {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          /* TRUQUE DE PERFORMANCE: Dispara 800px ANTES de aparecer no ecrã */
           viewport={{ once: true, margin: "800px" }}
         >
-          {applications.map((app) => (
+          {applications.map((app, index) => (
             <motion.div
-              key={app.name}
+              key={`${app.name}-${index}`}
               variants={itemVariants}
-              className={`will-change-transform transform-gpu w-full ${app.colSpan}`}
+              className="will-change-transform transform-gpu w-full"
+              onClick={() => setActiveImage({ src: app.img, name: app.name })}
             >
-              <div className={`relative ${app.aspect} rounded-3xl overflow-hidden group cursor-pointer border border-black/[0.03] shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-shadow duration-700 w-full`}>
-                {/* REMOVIDO o loading="lazy" para não engasgar o scroll, MANTIDO o decoding="async" */}
+              <div className="relative aspect-[4/5] rounded-3xl overflow-hidden group cursor-pointer border border-black/[0.03] shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-shadow duration-700 w-full">
                 <img 
                   src={app.img} 
                   alt={app.name} 
                   decoding="async"
-                  className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[0.16,1,0.3,1] group-hover:scale-[1.05] will-change-transform transform-gpu"
+                  className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[0.16,1,0.3,1] group-hover:scale-[1.03] will-change-transform transform-gpu"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 
@@ -637,12 +641,50 @@ const ApplicationsSection = () => {
           ))}
         </motion.div>
       </div>
+
+      {/* Lightbox para visualização das peças em ecrã inteiro */}
+      <AnimatePresence>
+        {activeImage && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
+            onClick={() => setActiveImage(null)}
+          >
+            <button 
+              className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all z-30"
+              onClick={() => setActiveImage(null)}
+            >
+              <X size={24} />
+            </button>
+
+            <motion.div 
+              initial={{ scale: 0.97, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.97, y: 15 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="relative max-w-full max-h-[85vh] rounded-2xl overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img 
+                src={activeImage.src} 
+                alt={activeImage.name}
+                className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-xl"
+              />
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-black/40 text-white text-xs font-medium tracking-wide rounded-full backdrop-blur-sm pointer-events-none">
+                {activeImage.name}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };
 
 // ============================================
-// VIDEO NARRATIVE SECTION (C/ Cursor Magnético Mantido)
+// VIDEO NARRATIVE SECTION
 // ============================================
 const VideoSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);

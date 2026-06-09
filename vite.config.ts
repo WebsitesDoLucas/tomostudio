@@ -4,6 +4,10 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    port: 5175, // 🌟 Força o servidor local num porto novo para quebrar a cache de favicons do Brave
+    open: true, // Opcional: abre automaticamente o navegador ao iniciar
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

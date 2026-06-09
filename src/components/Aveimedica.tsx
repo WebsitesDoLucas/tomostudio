@@ -8,7 +8,7 @@ import {
   useInView,
   Variants
 } from 'framer-motion';
-import { ArrowUpRight, Check, Download } from 'lucide-react';
+import { ArrowUpRight, Check, Download, Play, X } from 'lucide-react';
 import { useRef, useState, useLayoutEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigation } from './Navigation';
@@ -17,6 +17,7 @@ import { Navigation } from './Navigation';
 // IMPORTAÇÃO DE ASSETS (PASTA AVEIMEDICA)
 // ============================================
 import logoImg from '../assets/aveimedica/logo.webp'; 
+import logofachadaImg from '../assets/aveimedica/FACHADA1.webp'; 
 import antesImg from '../assets/aveimedica/AntesAveimedica.webp'; 
 
 // Imagens
@@ -27,9 +28,11 @@ import fachadaImg from '../assets/aveimedica/FACHADA1.webp';
 import mupiImg from '../assets/aveimedica/mupi.webp';
 import posterImg from '../assets/aveimedica/POSTER.webp';
 import standImg from '../assets/aveimedica/STAND1.webp';
+import postersImg from '../assets/aveimedica/POSTERS.webp';
+import flyerImg from '../assets/aveimedica/flyer.webp';
 
 // Vídeos
-import video1 from '../assets/aveimedica/produto-especifico.mp4';
+import video1 from '../assets/aveimedica/pubvideo3.mp4';
 import video2 from '../assets/aveimedica/produtos-diversos.mp4';
 
 // PDF (Manual de Identidade)
@@ -130,7 +133,6 @@ const HeroSection = () => {
       >
         <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
         
-        {/* Breathing Gradient Aveimédica */}
         <div className="absolute top-0 right-0 w-full lg:w-[60%] h-[600px] flex items-center justify-center lg:justify-end lg:pr-[10%]">
           <motion.div 
             animate={{ 
@@ -190,7 +192,7 @@ const HeroSection = () => {
           {[
             { title: "Cliente", content: <p className="text-base font-medium text-black">Aveimédica</p> },
             { title: "Setor", content: <p className="text-base font-medium text-black">Produtos Ortopédicos</p> },
-            { title: "Serviços", content: <ul className="text-base font-medium text-black space-y-1"><li>Branding</li><li>Identidade Visual</li><li>Design Editorial</li></ul> },
+            { title: "Serviços", content: <ul className="text-base font-medium text-black space-y-1"><li>Rebranding</li><li>Identidade Visual</li><li>Design Editorial</li></ul> },
             { title: "Ano", content: <p className="text-base font-medium text-black border-b border-black/20 pb-0.5">2024</p> }
           ].map((item, i) => (
             <motion.div
@@ -313,7 +315,7 @@ const ConceptRow = ({ item, index }: { item: any, index: number }) => {
 };
 
 // ============================================
-// CONCEPT SECTION
+// CONCEPT SECTION (Resolvido o problema de escala da Fachada)
 // ============================================
 const ConceptSection = () => {
   const containerRef = useRef(null);
@@ -351,7 +353,6 @@ const ConceptSection = () => {
   return (
     <section ref={containerRef} className="relative py-24 lg:py-36 bg-gray-50 border-t border-black/5 overflow-hidden flex flex-col items-center">
       
-      {/* Aumentámos a margem inferior (mb-24 lg:mb-32) para dar bastante espaço ao parallax do logótipo */}
       <div className="max-w-[1000px] mx-auto px-6 w-full text-center flex flex-col items-center mb-24 lg:mb-32">
         <FadeIn yOffset={50}>
           <span className="text-[10px] tracking-[0.3em] font-bold text-[#3A9DC5] uppercase block mb-6">
@@ -369,26 +370,26 @@ const ConceptSection = () => {
           </p>
         </FadeIn>
 
-        <motion.div style={{ y: yImage }} className="w-full max-w-[380px] aspect-square flex items-center justify-center my-6 relative z-10 will-change-transform">
+        {/* 🌟 CONTAINER REESTRUTURADO: Sem padding excessivo e com preenchimento total da imagem */}
+        <motion.div style={{ y: yImage }} className="w-full max-w-[500px] aspect-[16/10] flex items-center justify-center my-6 relative z-10 will-change-transform">
           <Magnetic>
             <motion.div 
               initial={{ opacity: 0, scale: 0.9, y: 50 }}
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] as const }}
-              className="w-full h-full bg-white rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.04)] border border-black/5 p-12 flex items-center justify-center will-change-transform"
+              className="w-full h-full bg-white rounded-3xl shadow-[0_30px_70px_rgba(0,0,0,0.05)] border border-black/5 overflow-hidden flex items-center justify-center will-change-transform"
             >
               <img 
-                src={logoImg} 
-                alt="Aveimédica Símbolo" 
-                className="w-full h-full object-contain mix-blend-multiply"
+                src={logofachadaImg} 
+                alt="Aveimédica Fachada Completa" 
+                className="w-full h-full object-cover"
               />
             </motion.div>
           </Magnetic>
         </motion.div>
       </div>
 
-      {/* Removido o "-mt-10 lg:-mt-20" que estava a causar o choque com o cartão de cima */}
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12 w-full bg-white pt-16 lg:pt-24 pb-12 lg:pb-16 rounded-[3rem] border border-black/[0.03] shadow-sm relative z-20">
         <div className="max-w-3xl mb-12 lg:mb-16">
           <FadeIn>
@@ -396,7 +397,7 @@ const ConceptSection = () => {
           </FadeIn>
           <FadeIn delay={0.1}>
             <p className="text-xl sm:text-2xl text-black/50 font-medium tracking-tight">
-              A desconstrução conceptual do símbolo baseada na união entre cuidado, movimento e harmonia humana.
+              A desconstrução conceptual do símbolo baseada na união entre cuidado, movemento e harmonia humana.
             </p>
           </FadeIn>
         </div>
@@ -434,31 +435,29 @@ const BeforeAfterSection = () => {
           </FadeIn>
         </div>
 
-        <FadeIn delay={0.2} yOffset={20}>
-          <div className="flex justify-center mb-10 lg:mb-16">
-            <div className="bg-gray-50 p-1.5 rounded-full inline-flex relative shadow-inner border border-black/5">
-              <motion.div
-                className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white rounded-full shadow-sm will-change-transform border border-black/[0.03]"
-                initial={false}
-                animate={{ x: showAfter ? '100%' : '0%' }}
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              />
-              
-              <button 
-                onClick={() => setShowAfter(false)} 
-                className={`relative z-10 px-8 py-3 text-sm font-bold transition-colors rounded-full ${!showAfter ? 'text-black' : 'text-black/40 hover:text-black/60'}`}
-              >
-                Antes
-              </button>
-              <button 
-                onClick={() => setShowAfter(true)} 
-                className={`relative z-10 px-8 py-3 text-sm font-bold transition-colors rounded-full ${showAfter ? 'text-[#3A9DC5]' : 'text-black/40 hover:text-black/60'}`}
-              >
-                Depois
-              </button>
-            </div>
+        <div className="flex justify-center mb-10 lg:mb-16">
+          <div className="bg-gray-50 p-1.5 rounded-full inline-flex relative shadow-inner border border-black/5">
+            <motion.div
+              className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white rounded-full shadow-sm will-change-transform border border-black/[0.03]"
+              initial={false}
+              animate={{ x: showAfter ? '100%' : '0%' }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            />
+            
+            <button 
+              onClick={() => setShowAfter(false)} 
+              className={`relative z-10 px-8 py-3 text-sm font-bold transition-colors rounded-full ${!showAfter ? 'text-black' : 'text-black/40 hover:text-black/60'}`}
+            >
+              Antes
+            </button>
+            <button 
+              onClick={() => setShowAfter(true)} 
+              className={`relative z-10 px-8 py-3 text-sm font-bold transition-colors rounded-full ${showAfter ? 'text-[#3A9DC5]' : 'text-black/40 hover:text-black/60'}`}
+            >
+              Depois
+            </button>
           </div>
-        </FadeIn>
+        </div>
 
         <motion.div 
           initial={{ opacity: 0, y: 50, scale: 0.95 }}
@@ -579,16 +578,21 @@ const ColorSystemSection = () => {
 };
 
 // ============================================
-// APPLICATIONS SECTION (Performance Optimized Stagger)
+// APPLICATIONS SECTION (🌟 Lightbox Funcional Integrado)
 // ============================================
 const ApplicationsSection = () => {
+  const [activeImage, setActiveImage] = useState<{ src: string; name: string } | null>(null);
+
   const applications = [
+    { name: 'Campanhas (Billboard)', img: billboardImg },
     { name: 'Sinalética Exterior (MUPI)', img: mupiImg },
     { name: 'Fachadas Corporativas', img: fachadaImg },
-    { name: 'Bancas de Exposição', img: standImg },
-    { name: 'Comunicação (Posters)', img: posterImg },
+    { name: 'Folhetos Promocionais (Flyer)', img: flyerImg },
+    { name: 'Cartaz Institucional (Poster)', img: posterImg },
+    { name: 'Sinalética de Rua (Posters)', img: postersImg },
     { name: 'Estacionário (Agendas)', img: agendaImg },
     { name: 'Brindes Institucionais', img: canetasImg },
+    { name: 'Bancas de Exposição (Stand)', img: standImg },
   ];
 
   const containerVariants: Variants = {
@@ -596,7 +600,7 @@ const ApplicationsSection = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
+        staggerChildren: 0.08,
       }
     }
   };
@@ -622,7 +626,7 @@ const ApplicationsSection = () => {
           </FadeIn>
           <FadeIn delay={0.1}>
             <p className="text-lg sm:text-xl text-black/50 max-w-2xl mx-auto font-medium">
-              Garantindo coesão em todos os suportes, desde a fachada corporativa até ao estacionário e brindes promocionais.
+              Garantindo coesão em todos os suportes, desde a fachada corporativa até ao estacionário e brindes promocionais. Clica nas imagens para as expandir.
             </p>
           </FadeIn>
         </div>
@@ -634,18 +638,19 @@ const ApplicationsSection = () => {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
         >
-          {applications.map((app) => (
+          {applications.map((app, index) => (
             <motion.div
-              key={app.name}
+              key={`${app.name}-${index}`}
               variants={itemVariants}
               className="will-change-transform"
+              onClick={() => setActiveImage({ src: app.img, name: app.name })}
             >
               <div className="relative aspect-[4/5] rounded-3xl overflow-hidden group cursor-pointer border border-black/[0.03] shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-shadow duration-700">
                 <img 
                   src={app.img} 
                   alt={app.name} 
                   loading="lazy"
-                  className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[0.16,1,0.3,1] group-hover:scale-[1.05] will-change-transform"
+                  className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[0.16,1,0.3,1] group-hover:scale-[1.03] will-change-transform"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 
@@ -657,6 +662,44 @@ const ApplicationsSection = () => {
           ))}
         </motion.div>
       </div>
+
+      {/* Lightbox para visualização de imagem inteira */}
+      <AnimatePresence>
+        {activeImage && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8"
+            onClick={() => setActiveImage(null)}
+          >
+            <button 
+              className="absolute top-6 right-6 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all z-30"
+              onClick={() => setActiveImage(null)}
+            >
+              <X size={24} />
+            </button>
+
+            <motion.div 
+              initial={{ scale: 0.97, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.97, y: 15 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="relative max-w-full max-h-[85vh] rounded-2xl overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img 
+                src={activeImage.src} 
+                alt={activeImage.name}
+                className="max-w-full max-h-[85vh] w-auto h-auto object-contain rounded-xl"
+              />
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-black/40 text-white text-xs font-medium tracking-wide rounded-full backdrop-blur-sm pointer-events-none">
+                {activeImage.name}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };
