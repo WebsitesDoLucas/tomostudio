@@ -910,7 +910,7 @@ const AboutSection = () => {
   );
 };
 // ============================================
-// CONTACT SECTION
+// CONTACT SECTION (🌟 Atualizada: Integrada com Web3Forms)
 // ============================================
 const ContactSection = () => {
   const containerRef = useRef(null);
@@ -922,29 +922,29 @@ const ContactSection = () => {
   const y = useTransform(scrollYProgress, [0, 1], [-50, 50]);
   const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [0, 1, 1]);
 
-  const [formData, setFormData] = useState({ name: '', email: '', projectType: '', message: '' });
-  // Novo estado para controlar o botão (idle, loading, success, error)
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormStatus('loading');
-
-    const form = e.target as HTMLFormElement;
-    const data = new FormData(form);
+    
+    const formData = new FormData(e.currentTarget);
 
     try {
-      await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(data as any).toString(),
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
       });
-      
-      setFormStatus('success');
-      setFormData({ name: '', email: '', projectType: '', message: '' }); // Limpa o formulário
-      
-      // Volta ao estado normal após 5 segundos
-      setTimeout(() => setFormStatus('idle'), 5000);
+
+      const data = await response.json();
+
+      if (data.success) {
+        setFormStatus('success');
+        e.currentTarget.reset(); // Limpa o formulário
+        setTimeout(() => setFormStatus('idle'), 5000);
+      } else {
+        throw new Error("Erro no envio");
+      }
     } catch (error) {
       setFormStatus('error');
       setTimeout(() => setFormStatus('idle'), 5000);
@@ -958,21 +958,13 @@ const ContactSection = () => {
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-tomo-pink/20 rounded-full blur-3xl" />
       </motion.div>
 
-      <motion.div
-        style={{ opacity }}
-        className="max-w-[1400px] mx-auto px-6 lg:px-12 relative"
-      >
+      <motion.div style={{ opacity }} className="max-w-[1400px] mx-auto px-6 lg:px-12 relative">
         <TransitionReveal>
           <div className="text-center mb-10 lg:mb-16">
             <div className="inline-block px-6 py-2 border border-black/10 rounded-full mb-6">
-              <span className="text-xs tracking-[0.3em] text-black/40 uppercase font-medium">
-                Capítulo Final
-              </span>
+              <span className="text-xs tracking-[0.3em] text-black/40 uppercase font-medium">Capítulo Final</span>
             </div>
-
-            <h2 className="text-5xl lg:text-7xl font-bold text-black mb-4 leading-tight tracking-tight">
-              Vamos criar algo juntos?
-            </h2>
+            <h2 className="text-5xl lg:text-7xl font-bold text-black mb-4 leading-tight tracking-tight">Vamos criar algo juntos?</h2>
             <p className="text-lg lg:text-xl text-black/60 max-w-2xl mx-auto">
               Conta-nos em que capítulo está a tua marca. Respondemos em menos de 24 horas.
             </p>
@@ -981,122 +973,30 @@ const ContactSection = () => {
 
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 max-w-5xl mx-auto">
           <TransitionReveal direction="left">
-            <div className="space-y-10">
-              <div>
-                <h3 className="text-2xl font-bold text-black mb-4 tracking-tight">Fala connosco</h3>
-                <p className="text-base text-black/60 leading-relaxed">
-                  Quer seja uma marca nova ou um rebrand, estamos aqui para ajudar.
-                </p>
-              </div>
-
-              <div className="space-y-6">
-                {[
-                  {
-                    icon: MapPin,
-                    title: 'Localização',
-                    info: 'Viseu, Portugal',
-                    sub: 'Presencial + Remoto',
-                    color: 'blue'
-                  },
-                  {
-                    icon: Mail,
-                    title: 'Email',
-                    info: 'tomostudiocontacto@gmail.com',
-
-                    color: 'pink'
-                  },
-{
-  icon: Instagram,
-  title: 'Instagram',
-  info: '@tomostudio.pt',
-  color: 'blue',
-  // Garante que o link tem o https completo
-  href: 'https://www.instagram.com/tomostudio.pt' 
-}
-                ].map(item => (
-    <motion.a
-      key={item.title}
-      href={item.href} // Adicionamos o atributo href
-      target={item.href?.startsWith('http') ? "_blank" : undefined} // Abre redes sociais noutro tab
-      rel={item.href?.startsWith('http') ? "noopener noreferrer" : undefined}
-      className="flex items-start gap-4 cursor-pointer"
-      whileHover={{ x: 4 }}
-    >
-      <div
-        className={`w-12 h-12 rounded-2xl ${
-          item.color === 'blue' ? 'bg-tomo-blue/10' : 'bg-tomo-pink/10'
-        } flex items-center justify-center flex-shrink-0`}
-      >
-        <item.icon
-          className={
-            item.color === 'blue' ? 'text-tomo-blue' : 'text-tomo-pink'
-          }
-          size={18}
-        />
-      </div>
-      <div>
-        <h4 className="text-sm font-medium text-black mb-1">{item.title}</h4>
-        <p className="text-sm text-black/60 hover:text-tomo-blue transition-colors">{item.info}</p>
-        <p className="text-xs text-black/40 italic">{item.sub}</p>
-      </div>
-    </motion.a>
-  ))
-}
-              </div>
-            </div>
-          </TransitionReveal>
+  {/* Aqui deves colocar o conteúdo que pretendes animar */}
+  <div>Exemplo de Conteúdo</div> 
+</TransitionReveal>
 
           <TransitionReveal direction="right">
-            <form 
-              name="contacto" 
-              method="POST" 
-              data-netlify="true" 
-              onSubmit={handleSubmit} 
-              className="space-y-5"
-            >
-              {/* Input escondido exigido pelo Netlify */}
-              <input type="hidden" name="form-name" value="contacto" />
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Chave de Acesso Web3Forms */}
+              <input type="hidden" name="access_key" value="1e246a3b-79ac-4fa7-915a-b33c5d0af2b2" />
 
+              {/* Nome e Email */}
               {[
                 { id: 'name', label: 'Nome *', type: 'text', placeholder: 'O teu nome' },
                 { id: 'email', label: 'Email *', type: 'email', placeholder: 'email@exemplo.com' }
               ].map(field => (
                 <div key={field.id}>
-                  <label
-                    htmlFor={field.id}
-                    className="block text-sm font-medium text-black mb-2"
-                  >
-                    {field.label}
-                  </label>
-                  <input
-                    type={field.type}
-                    id={field.id}
-                    name={field.id} // <-- MUITO IMPORTANTE!
-                    required
-                    value={formData[field.id as keyof typeof formData]}
-                    onChange={e =>
-                      setFormData({ ...formData, [field.id]: e.target.value })
-                    }
-                    className="w-full px-4 py-3 bg-white border-2 border-black/10 rounded-2xl text-black placeholder:text-black/30 focus:outline-none focus:border-tomo-blue focus:ring-2 focus:ring-tomo-blue/20 transition-all"
-                    placeholder={field.placeholder}
-                  />
+                  <label htmlFor={field.id} className="block text-sm font-medium text-black mb-2">{field.label}</label>
+                  <input type={field.type} id={field.id} name={field.id} required className="w-full px-4 py-3 bg-white border-2 border-black/10 rounded-2xl text-black placeholder:text-black/30 focus:outline-none focus:border-tomo-blue focus:ring-2 focus:ring-tomo-blue/20 transition-all" placeholder={field.placeholder} />
                 </div>
               ))}
 
+              {/* Tipo de projeto */}
               <div>
-                <label
-                  htmlFor="projectType"
-                  className="block text-sm font-medium text-black mb-2"
-                >
-                  Tipo de projeto
-                </label>
-                <select
-                  id="projectType"
-                  name="projectType" // <-- MUITO IMPORTANTE!
-                  value={formData.projectType}
-                  onChange={e => setFormData({ ...formData, projectType: e.target.value })}
-                  className="w-full px-4 py-3 bg-white border-2 border-black/10 rounded-2xl text-black focus:outline-none focus:border-tomo-blue focus:ring-2 focus:ring-tomo-blue/20 transition-all"
-                >
+                <label htmlFor="projectType" className="block text-sm font-medium text-black mb-2">Tipo de projeto</label>
+                <select id="projectType" name="projectType" className="w-full px-4 py-3 bg-white border-2 border-black/10 rounded-2xl text-black focus:outline-none focus:border-tomo-blue focus:ring-2 focus:ring-tomo-blue/20 transition-all">
                   <option value="">Seleciona uma opção</option>
                   <option value="branding">Branding & Identidade</option>
                   <option value="uiux">UI/UX Design</option>
@@ -1105,25 +1005,10 @@ const ContactSection = () => {
                 </select>
               </div>
 
+              {/* Mensagem */}
               <div>
-                <label
-                  htmlFor="message"
-                  className="block text-sm font-medium text-black mb-2"
-                >
-                  Mensagem *
-                </label>
-                <textarea
-                  id="message"
-                  name="message" // <-- MUITO IMPORTANTE!
-                  required
-                  rows={4}
-                  value={formData.message}
-                  onChange={e =>
-                    setFormData({ ...formData, message: e.target.value })
-                  }
-                  className="w-full px-4 py-3 bg-white border-2 border-black/10 rounded-2xl text-black placeholder:text-black/30 focus:outline-none focus:border-tomo-blue focus:ring-2 focus:ring-tomo-blue/20 transition-all resize-none"
-                  placeholder="Conta-nos sobre o teu negócio..."
-                />
+                <label htmlFor="message" className="block text-sm font-medium text-black mb-2">Mensagem *</label>
+                <textarea id="message" name="message" required rows={4} className="w-full px-4 py-3 bg-white border-2 border-black/10 rounded-2xl text-black placeholder:text-black/30 focus:outline-none focus:border-tomo-blue focus:ring-2 focus:ring-tomo-blue/20 transition-all resize-none" placeholder="Conta-nos sobre o teu negócio..." />
               </div>
 
               <motion.button
@@ -1134,8 +1019,6 @@ const ContactSection = () => {
                   formStatus === 'error' ? 'bg-red-500' :
                   'bg-gradient-to-r from-tomo-blue to-tomo-pink hover:shadow-lg'
                 }`}
-                whileHover={formStatus === 'idle' ? { scale: 1.02, y: -2 } : {}}
-                whileTap={formStatus === 'idle' ? { scale: 0.98 } : {}}
               >
                 <span className="flex items-center justify-center gap-3">
                   {formStatus === 'idle' && <>Enviar mensagem <Send size={16} /></>}
