@@ -910,7 +910,7 @@ const AboutSection = () => {
   );
 };
 // ============================================
-// CONTACT SECTION (🌟 Atualizada: Integrada com Web3Forms)
+// CONTACT SECTION (🌟 Contactos Restaurados + Web3Forms)
 // ============================================
 const ContactSection = () => {
   const containerRef = useRef(null);
@@ -972,11 +972,74 @@ const ContactSection = () => {
         </TransitionReveal>
 
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 max-w-5xl mx-auto">
+          
+          {/* LADO ESQUERDO: CONTACTOS RESTAURADOS */}
           <TransitionReveal direction="left">
-  {/* Aqui deves colocar o conteúdo que pretendes animar */}
-  <div>Exemplo de Conteúdo</div> 
-</TransitionReveal>
+            <div className="space-y-10">
+              <div>
+                <h3 className="text-2xl font-bold text-black mb-4 tracking-tight">Fala connosco</h3>
+                <p className="text-base text-black/60 leading-relaxed">
+                  Quer seja uma marca nova ou um rebrand, estamos aqui para ajudar.
+                </p>
+              </div>
 
+              <div className="space-y-6">
+                {[
+                  {
+                    icon: MapPin,
+                    title: 'Localização',
+                    info: 'Viseu, Portugal',
+                    sub: 'Presencial + Remoto',
+                    color: 'blue',
+                    href: '#'
+                  },
+                  {
+                    icon: Mail,
+                    title: 'Email',
+                    info: 'tomostudiocontacto@gmail.com',
+                    sub: 'Geral e Orçamentos',
+                    color: 'pink',
+                    href: 'mailto:tomostudiocontacto@gmail.com'
+                  },
+                  {
+                    icon: Instagram,
+                    title: 'Instagram',
+                    info: '@tomostudio.pt',
+                    sub: 'Segue o nosso trabalho',
+                    color: 'blue',
+                    href: 'https://www.instagram.com/tomostudio.pt' 
+                  }
+                ].map(item => (
+                  <motion.a
+                    key={item.title}
+                    href={item.href}
+                    target={item.href?.startsWith('http') ? "_blank" : undefined}
+                    rel={item.href?.startsWith('http') ? "noopener noreferrer" : undefined}
+                    className="flex items-start gap-4 cursor-pointer"
+                    whileHover={{ x: 4 }}
+                  >
+                    <div
+                      className={`w-12 h-12 rounded-2xl ${
+                        item.color === 'blue' ? 'bg-tomo-blue/10' : 'bg-tomo-pink/10'
+                      } flex items-center justify-center flex-shrink-0`}
+                    >
+                      <item.icon
+                        className={item.color === 'blue' ? 'text-tomo-blue' : 'text-tomo-pink'}
+                        size={18}
+                      />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-black mb-1">{item.title}</h4>
+                      <p className="text-sm text-black/60 hover:text-tomo-blue transition-colors">{item.info}</p>
+                      <p className="text-xs text-black/40 italic">{item.sub}</p>
+                    </div>
+                  </motion.a>
+                ))}
+              </div>
+            </div>
+          </TransitionReveal>
+
+          {/* LADO DIREITO: FORMULÁRIO WEB3FORMS */}
           <TransitionReveal direction="right">
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Chave de Acesso Web3Forms */}
@@ -1019,6 +1082,8 @@ const ContactSection = () => {
                   formStatus === 'error' ? 'bg-red-500' :
                   'bg-gradient-to-r from-tomo-blue to-tomo-pink hover:shadow-lg'
                 }`}
+                whileHover={formStatus === 'idle' ? { scale: 1.02, y: -2 } : {}}
+                whileTap={formStatus === 'idle' ? { scale: 0.98 } : {}}
               >
                 <span className="flex items-center justify-center gap-3">
                   {formStatus === 'idle' && <>Enviar mensagem <Send size={16} /></>}
@@ -1029,6 +1094,7 @@ const ContactSection = () => {
               </motion.button>
             </form>
           </TransitionReveal>
+          
         </div>
       </motion.div>
     </section>
@@ -1151,7 +1217,7 @@ export const Home = () => {
       <ServicesSection />
       <WorksSection />
       <ProcessJourney />
-      <AboutSection />git
+      <AboutSection />
       <ContactSection />
       
       <Footer />
