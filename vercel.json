@@ -1,6 +1,6 @@
 {
   "public": true,
   "cleanUrls": true,
-  "buildCommand": "cd tomo-clean && npm run build",
-  "outputDirectory": "tomo-clean/dist"
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist"
 }
