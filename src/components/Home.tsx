@@ -925,31 +925,45 @@ const ContactSection = () => {
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setFormStatus('loading');
-    
-    const formData = new FormData(e.currentTarget);
+  e.preventDefault();
+  setFormStatus('loading');
+  
+  const form = e.currentTarget;
+  const formData = new FormData(form);
+  
+  // Converte o FormData num objeto JSON para a API do Web3Forms aceitar sem falhas
+  const object = Object.fromEntries(formData);
+  const json = JSON.stringify(object);
 
-    try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        body: formData,
-      });
+  try {
+    const response = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: json
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (data.success) {
-        setFormStatus('success');
-        e.currentTarget.reset(); // Limpa o formulário
-        setTimeout(() => setFormStatus('idle'), 5000);
-      } else {
-        throw new Error("Erro no envio");
-      }
-    } catch (error) {
+    if (data.success) {
+      setFormStatus('success');
+      form.reset(); // Limpa os campos do formulário visualmente
+      
+      // Volta ao estado normal após 5 segundos
+      setTimeout(() => setFormStatus('idle'), 5000);
+    } else {
+      console.error("Erro reportado pela API:", data);
       setFormStatus('error');
       setTimeout(() => setFormStatus('idle'), 5000);
     }
-  };
+  } catch (error) {
+    console.error("Erro de rede/submissão:", error);
+    setFormStatus('error');
+    setTimeout(() => setFormStatus('idle'), 5000);
+  }
+};
 
   return (
    <section id="contacto" ref={containerRef} className="relative py-16 lg:py-20 bg-white overflow-hidden">
