@@ -423,7 +423,7 @@ const ColorSystemSection = () => {
     { name: 'Azul Escuro', hex: '#050838', cmyk: 'C:98% M:93% Y:42% K:58%', pantone: 'PANTONE 2768 C', bg: 'bg-[#050838]' },
     { name: 'Azul Celeste', hex: '#49B6FF', cmyk: 'C:57% M:16% Y:0% K:0%', pantone: 'PANTONE 298 C', bg: 'bg-[#49B6FF]' },
     { name: 'Rosa', hex: '#E56399', cmyk: 'C:5% M:76% Y:9% K:0%', pantone: 'PANTONE 7423 C', bg: 'bg-[#E56399]' },
-    { name: 'Creme', hex: '#FCF3CF', cmyk: 'C:20% M:0% Y:52% K:0%', pantone: 'PANTONE 372 C', bg: 'bg-[#FCF3CF]' },
+    { name: 'Verde Lima', hex: '#D2F898', cmyk: 'C:20% M:0% Y:52% K:0%', pantone: 'PANTONE 372 C', bg: 'bg-[#D2F898]' },
   ];
 
   const handleCopy = (hex: string, index: number) => {
