@@ -1076,8 +1076,8 @@ const ContactSection = () => {
                 <select id="projectType" name="projectType" className="w-full px-4 py-3 bg-white border-2 border-black/10 rounded-2xl text-black focus:outline-none focus:border-tomo-blue focus:ring-2 focus:ring-tomo-blue/20 transition-all">
                   <option value="">Seleciona uma opção</option>
                   <option value="branding">Branding & Identidade</option>
-                  <option value="uiux">UI/UX Design</option>
-                  <option value="social">Design para Redes Sociais</option>
+                  <option value="uiux">Website</option>
+                  <option value="social">Redes Sociais</option>
                   <option value="completo">Projeto completo</option>
                 </select>
               </div>
