@@ -237,6 +237,7 @@ const ChapterIndicator = () => {
           <motion.a
             key={chapter.id}
             href={`#${chapter.id}`}
+            
             className="group flex items-center gap-3"
             whileHover={{ x: 8 }}
           >
@@ -385,14 +386,22 @@ const HeroSection = () => {
                 src={logowebp} 
                 alt="Tomo Logo" 
                 initial={{ scale: 0, rotate: -90, opacity: 0 }}
-                animate={{ scale: 0.9, rotate: 0, opacity: 1 }}
-                whileInView={{ y: [0, -6, 0], rotate: [0, 5, 0] }}
-                transition={{ 
-                  scale: { type: "spring", duration: 1.2, delay: 0.1 },
-                  opacity: { duration: 0.4, delay: 0.1 },
-                  y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.2 },
-                  rotate: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.1 }
-                }}
+                animate={{
+  y: [0, -6, 0],
+  rotate: [0, 5, 0]
+}}
+transition={{
+  y: {
+    duration: 6,
+    repeat: Infinity,
+    ease: "easeInOut"
+  },
+  rotate: {
+    duration: 8,
+    repeat: Infinity,
+    ease: "easeInOut"
+  }
+}}
                 className="w-full h-full object-contain drop-shadow-2xl"
               />
             </motion.div>
@@ -434,7 +443,10 @@ const HeroSection = () => {
         className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-30"
       >
         <motion.div 
-          animate={{ height: [0, 40, 0], opacity: [0, 1, 0] }}
+animate={{
+    scaleY:[0,1,0],
+    opacity:[0,1,0]
+}}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           className="w-[1px] bg-[#020224]"
         />
@@ -626,13 +638,16 @@ const WorksSection = () => {
                     >
                       {/* OTIMIZAÇÃO 2: decoding="async" adicionado e fetchPriority corrigido (CamelCase) */}
                  <motion.img 
-  style={{ y: project.parallax, scale: 1.15 }} 
+style={{
+    y: project.parallax
+}}
+
   src={project.image} 
   alt={project.title} 
   decoding="async" 
   loading="eager" // 🌟 FORÇA O SAFARI A CARREGAR IMEDIATAMENTE
   fetchPriority={index === 0 ? "high" : "auto"} 
-  className="w-full h-full object-cover transition-transform duration-700 will-change-transform" 
+className="w-full h-full object-cover scale-110"
 />
                       <div className="absolute inset-0 bg-black/0 hover:bg-black/5 transition-colors duration-500 pointer-events-none" />
                     </div>
